@@ -2,16 +2,22 @@
 {
     public interface INTEXInterface
     {
-        Task<IEnumerable<movies_users>> GetAllUsersAsync();
-        Task<movies_users?> GetUserByIdAsync(int id);
+        // ratings
+        IEnumerable<movies_ratings> GetRatings();
+        movies_ratings? GetRatingById(int ratingId);
+        void AddRating(movies_ratings rating);
 
-        Task<IEnumerable<movies_titles>> GetAllTitlesAsync();
-        Task<movies_titles?> GetTitleByIdAsync(string id);
+        // users
+        IEnumerable<movies_users> GetUsers();
+        movies_users? GetUserById(int userId);
+        void AddUser(movies_users user);
 
-        Task<IEnumerable<movies_ratings>> GetRatingsByUserAsync(int userId);
-
-        Task AddRatingAsync(movies_ratings rating);
-        Task SaveAsync();
+        // movies
+        IEnumerable<movies_titles> GetMovies();
+        movies_ratings? GetMovieById(int movieId);
+        void AddMovie(movies_ratings movie);
+        void UpdateMovie(movies_ratings movie);
+        void DeleteMovie(int movieId);
 
     }
 }

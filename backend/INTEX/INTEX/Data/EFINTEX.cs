@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace INTEX.Data
 {
@@ -11,42 +13,87 @@ namespace INTEX.Data
             _context = context;
         }
 
-        public async Task<IEnumerable<movies_users>> GetAllUsersAsync()
+        // ratings
+        public IEnumerable<movies_ratings> GetRatings()
         {
-            return await _context.movies_users.ToListAsync();
+            return _context.movies_ratings.ToList();
         }
 
-        public async Task<movies_users?> GetUserByIdAsync(int id)
+        public movies_ratings? GetRatingById(int ratingId)
         {
-            return await _context.movies_users.FindAsync(id);
+            return _context.movies_ratings.Find(ratingId);
         }
 
-        public async Task<IEnumerable<movies_titles>> GetAllTitlesAsync()
+        public void AddRating(movies_ratings rating)
         {
-            return await _context.movies_titles.ToListAsync();
+            _context.movies_ratings.Add(rating);
+            _context.SaveChanges();
         }
 
-        public async Task<movies_titles?> GetTitleByIdAsync(string id)
+        // users
+        public IEnumerable<movies_users> GetUsers()
         {
-            return await _context.movies_titles.FindAsync(id);
+            return _context.movies_users.ToList();
         }
 
-        public async Task<IEnumerable<movies_ratings>> GetRatingsByUserAsync(int userId)
+        public movies_users? GetUserById(int userId)
         {
-            return await _context.movies_ratings
-                .Where(r => r.user_id == userId)
-                .ToListAsync();
+            return _context.movies_users.Find(userId);
         }
 
-        public async Task AddRatingAsync(movies_ratings rating)
+        public void AddUser(movies_users user)
         {
-            await _context.movies_ratings.AddAsync(rating);
+            _context.movies_users.Add(user);
+            _context.SaveChanges();
         }
 
-        public async Task SaveAsync()
+        // movies
+        public IEnumerable<movies_titles> GetMovies()
         {
-            await _context.SaveChangesAsync();
+            return _context.movies_titles.ToList();
+        }
+
+        public movies_titles? GetMovieById(int movieId)
+        {
+            return _context.movies_titles.Find(movieId);
+        }
+
+        public void AddMovie(movies_titles movie)
+        {
+            _context.movies_titles.Add(movie);
+            _context.SaveChanges();
+        }
+
+        public void UpdateMovie(movies_titles movie)
+        {
+            _context.movies_titles.Update(movie);
+            _context.SaveChanges();
+        }
+
+        public void DeleteMovie(int movieId)
+        {
+            var movie = _context.movies_titles.Find(movieId);
+            if (movie != null)
+            {
+                _context.movies_titles.Remove(movie);
+                _context.SaveChanges();
+            }
+        }
+
+        movies_ratings? INTEXInterface.GetMovieById(int movieId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddMovie(movies_ratings movie)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateMovie(movies_ratings movie)
+        {
+            throw new NotImplementedException();
         }
     }
-
 }
+W
