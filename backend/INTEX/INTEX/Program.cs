@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<INTEXContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("IntexConnection")));
 
-//builder.Services.AddScoped<INTEXInterface, EFINTEX>();
+builder.Services.AddScoped<INTEXInterface, EFINTEX>();
 
 builder.Services.AddCors(options =>
     options.AddPolicy("Add",
