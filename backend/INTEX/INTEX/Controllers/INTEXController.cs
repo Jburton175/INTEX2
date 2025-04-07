@@ -84,6 +84,17 @@ namespace INTEX.Controllers
         }
 
 
+        [HttpGet("GetTypes")]
+        public IActionResult GetTypes()
+        {
+            var types = _repo.GetMovies()
+                .Select(m => m.type)
+                .Distinct()
+                .ToList();
+
+            return Ok(types);
+        }
+
 
 
     }
