@@ -14,10 +14,9 @@
 
         // movies
         IEnumerable<movies_titles> GetMovies();
-        movies_ratings? GetMovieById(int movieId);
-        void AddMovie(movies_ratings movie);
-        void UpdateMovie(movies_ratings movie);
+        movies_titles? GetMovieById(int movieId);
+        void AddMovie(movies_titles movie);
+        void UpdateMovie(movies_titles movie);
         void DeleteMovie(int movieId);
-
     }
 }
