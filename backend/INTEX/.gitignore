@@ -1,0 +1,26 @@
+# Node
+node_modules/
+.env
+
+# .NET Build Output
+bin/
+obj/
+
+# User Secrets & Configs
+appsettings.json
+appsettings.*.json
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Rider / JetBrains
+.idea/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
