@@ -79,20 +79,5 @@ namespace INTEX.Data
                 _context.SaveChanges();
             }
         }
-
-        movies_ratings? INTEXInterface.GetMovieById(int movieId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddMovie(movies_ratings movie)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateMovie(movies_ratings movie)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
