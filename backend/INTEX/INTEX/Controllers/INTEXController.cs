@@ -1,6 +1,7 @@
 ﻿using INTEX.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 namespace INTEX.Controllers
 {
@@ -45,5 +46,45 @@ namespace INTEX.Controllers
             };
             return Ok(response);
         }
+
+
+        [HttpGet("GetGenres")]
+        public IActionResult GetGenres()
+        {
+            var genreProperties = new List<string>
+    {
+        "Action", "Adventure", "AnimeSeriesInternationalTVShows", "BritishTVShowsDocuseriesInternationalTVShows",
+        "Children", "Comedies", "ComediesDramasInternationalMovies", "ComediesInternationalMovies",
+        "ComediesRomanticMovies", "CrimeTVShowsDocuseries", "Documentaries", "DocumentariesInternationalMovies",
+        "Docuseries", "Dramas", "DramasInternationalMovies", "DramasRomanticMovies", "FamilyMovies", "Fantasy",
+        "HorrorMovies", "InternationalMoviesThrillers", "InternationalTVShowsRomanticTVShowsTVDramas", "KidsTV",
+        "LanguageTVShows", "Musicals", "NatureTV", "RealityTV", "Spirituality", "TVAction", "TVComedies",
+        "TVDramas", "TalkShowsTVComedies", "Thrillers"
+    };
+
+            var genresInUse = new List<string>();
+
+            // Bring all movies into memory once
+            var movies = _repo.GetMovies().ToList();
+
+            foreach (var genre in genreProperties)
+            {
+                if (movies.Any(m =>
+                {
+                    var prop = typeof(movies_titles).GetProperty(genre);
+                    var value = prop?.GetValue(m) as int?;
+                    return value == 1;
+                }))
+                {
+                    genresInUse.Add(genre);
+                }
+            }
+
+            return Ok(genresInUse);
+        }
+
+
+
+
     }
 }
