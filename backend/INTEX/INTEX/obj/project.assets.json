@@ -1117,9 +1117,7 @@
             "related": ".pdb;.xml"
           }
         },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
+        "frameworkReferences": ["Microsoft.AspNetCore.App"]
       },
       "Swashbuckle.AspNetCore.SwaggerGen/6.6.2": {
         "type": "package",
@@ -1149,9 +1147,7 @@
             "related": ".pdb;.xml"
           }
         },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
+        "frameworkReferences": ["Microsoft.AspNetCore.App"]
       },
       "System.ClientModel/1.0.0": {
         "type": "package",
@@ -4759,23 +4755,24 @@
     ]
   },
   "packageFolders": {
-    "/Users/michaelbackman/.nuget/packages/": {}
+    "C:\\Users\\jburt\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/INTEX.csproj",
+      "projectUniqueName": "C:\\Users\\jburt\\OneDrive\\Documents\\Winter_2025_Classes\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\INTEX.csproj",
       "projectName": "INTEX",
-      "projectPath": "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/INTEX.csproj",
-      "packagesPath": "/Users/michaelbackman/.nuget/packages/",
-      "outputPath": "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/obj/",
+      "projectPath": "C:\\Users\\jburt\\OneDrive\\Documents\\Winter_2025_Classes\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\INTEX.csproj",
+      "packagesPath": "C:\\Users\\jburt\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\jburt\\OneDrive\\Documents\\Winter_2025_Classes\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/michaelbackman/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\jburt\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
-      "originalTargetFrameworks": [
-        "net8.0"
-      ],
+      "originalTargetFrameworks": ["net8.0"],
       "sources": {
         "https://api.nuget.org/v3/index.json": {}
       },
@@ -4786,9 +4783,7 @@
         }
       },
       "warningProperties": {
-        "warnAsError": [
-          "NU1605"
-        ]
+        "warnAsError": ["NU1605"]
       }
     },
     "frameworks": {
