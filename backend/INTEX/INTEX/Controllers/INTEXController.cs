@@ -18,7 +18,7 @@ namespace INTEX.Controllers
 
         // the main API to fetch all movies.
         [HttpGet("GetAllMovies")]
-        public IActionResult GetMovies(int pageSize = 10, int pageNum = 1, [FromQuery] List<string>? movieTypes = null)
+        public IActionResult GetMovies(int pageSize = 9, int pageNum = 1, [FromQuery] List<string>? movieTypes = null)
         {
 
 

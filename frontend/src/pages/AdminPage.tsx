@@ -1,13 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AdminPage.module.css";
 import Header from "../components/homePage/Header";
 import Footer from "../components/homePage/Footer";
 import ResultsPerPageSelector from "../components/admin/ResultsPerPageSelector";
+import { Movies } from "../types/Movies";
+import { fetchMovies } from "../api/API";
 
 const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const navigate = useNavigate();
+  const [Movies, setMovies] = useState<Movies[]>([]);
+  const [movieLoading, setMovieLoading] = useState(true);
+  const [movieError, setMovieError] = useState<string | null>(null);
+  const [MoviePageSize, setMoviePageSize] = useState<number>(9);
+  const [MoviePageNum, setMoviePageNum] = useState<number>(1);
+  const [totalMovies, setTotalMovies] = useState<number>(0);
+  const [totalMoviePages, setTotalMoviePages] = useState<number>(0);
+
+  useEffect(() => {
+    const loadMovies = async () => {
+      try {
+        const data = await fetchMovies(
+          MoviePageSize,
+          MoviePageNum,
+          [] // no categories added on this page
+        );
+        setMovies(data.movies);
+        setTotalMovies(data.totalNumMovies);
+        setTotalMoviePages(Math.ceil(totalMovies / MoviePageSize));
+      } catch (err) {
+        setMovieError((err as Error).message);
+      } finally {
+        setMovieLoading(false);
+      }
+    };
+
+    loadMovies();
+  }, [MoviePageSize, MoviePageNum, totalMovies]);
+
+  if (movieLoading) return <p>Loading...</p>;
+  if (movieError) return <p className="text-red-500">Error: {movieError}</p>;
 
   return (
     <div className={styles.adminPage}>
@@ -40,12 +73,6 @@ const AdminPage: React.FC = () => {
           >
             Content
           </button>
-          <button
-            className={`${styles.tabButton} ${activeTab === "settings" ? styles.activeTab : ""}`}
-            onClick={() => setActiveTab("settings")}
-          >
-            Settings
-          </button>
         </div>
 
         <div className={styles.adminPanel}>
@@ -55,10 +82,6 @@ const AdminPage: React.FC = () => {
                 <div className={styles.statCard}>
                   <h3 className={styles.statTitle}>Total Users</h3>
                   <p className={styles.statValue}>12,345</p>
-                </div>
-                <div className={styles.statCard}>
-                  <h3 className={styles.statTitle}>Active Subscriptions</h3>
-                  <p className={styles.statValue}>8,721</p>
                 </div>
                 <div className={styles.statCard}>
                   <h3 className={styles.statTitle}>Total Movies</h3>
@@ -151,22 +174,26 @@ const AdminPage: React.FC = () => {
               </div>
 
               <div className={styles.contentGrid}>
-                {[1, 2, 3, 4, 5, 6].map((item) => (
-                  <div key={item} className={styles.contentCard}>
+                {Movies.map((m) => (
+                  <div key={m.show_id} className={styles.contentCard}>
                     <div className={styles.contentImageContainer}>
-                      <div className={styles.contentImage} />
+                      <div
+                        className={styles.contentImage}
+                        style={{
+                          backgroundImage: `url(https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(m.title || "default-title")}.jpg)`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          backgroundRepeat: "no-repeat",
+                        }}
+                      />
                     </div>
                     <div className={styles.contentInfo}>
-                      <h3 className={styles.contentTitle}>
-                        Content Title {item}
-                      </h3>
-                      <p className={styles.contentType}>
-                        {item % 2 === 0 ? "Movie" : "TV Show"}
-                      </p>
+                      <h3 className={styles.contentTitle}>{m.title}</h3>
+                      <p className={styles.contentType}>{m.type}</p>
                       <div className={styles.contentActions}>
                         <button
                           className={styles.contentActionButton}
-                          onClick={() => navigate(`/update-movie/${item}`)}
+                          onClick={() => navigate(`/update-movie/${m.show_id}`)}
                         >
                           Edit
                         </button>
@@ -191,90 +218,6 @@ const AdminPage: React.FC = () => {
                   <button className={styles.pageNumber}>3</button>
                 </div>
                 <button className={styles.paginationButton}>Next</button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "settings" && (
-            <div className={styles.settingsPanel}>
-              <h2 className={styles.panelTitle}>Platform Settings</h2>
-
-              <div className={styles.settingsForm}>
-                <div className={styles.settingGroup}>
-                  <h3 className={styles.settingGroupTitle}>General Settings</h3>
-
-                  <div className={styles.settingItem}>
-                    <label className={styles.settingLabel}>Platform Name</label>
-                    <input
-                      type="text"
-                      className={styles.settingInput}
-                      defaultValue="CineNiche"
-                    />
-                  </div>
-
-                  <div className={styles.settingItem}>
-                    <label className={styles.settingLabel}>Contact Email</label>
-                    <input
-                      type="email"
-                      className={styles.settingInput}
-                      defaultValue="contact@cineniche.com"
-                    />
-                  </div>
-
-                  <div className={styles.settingItem}>
-                    <label className={styles.settingLabel}>
-                      Results Per Page
-                    </label>
-                    <div className={styles.settingInputContainer}>
-                      <ResultsPerPageSelector />
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.settingGroup}>
-                  <h3 className={styles.settingGroupTitle}>
-                    Subscription Plans
-                  </h3>
-
-                  <div className={styles.planCard}>
-                    <div className={styles.planHeader}>
-                      <h4 className={styles.planTitle}>Basic Plan</h4>
-                      <input
-                        type="text"
-                        className={styles.planPriceInput}
-                        defaultValue="9.99"
-                      />
-                    </div>
-                    <ul className={styles.planFeatures}>
-                      <li className={styles.planFeature}>HD Streaming</li>
-                      <li className={styles.planFeature}>Watch on 1 device</li>
-                      <li className={styles.planFeature}>Limited content</li>
-                    </ul>
-                  </div>
-
-                  <div className={styles.planCard}>
-                    <div className={styles.planHeader}>
-                      <h4 className={styles.planTitle}>Premium Plan</h4>
-                      <input
-                        type="text"
-                        className={styles.planPriceInput}
-                        defaultValue="14.99"
-                      />
-                    </div>
-                    <ul className={styles.planFeatures}>
-                      <li className={styles.planFeature}>4K Streaming</li>
-                      <li className={styles.planFeature}>Watch on 4 devices</li>
-                      <li className={styles.planFeature}>
-                        All content included
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className={styles.settingsActions}>
-                  <button className={styles.saveButton}>Save Changes</button>
-                  <button className={styles.resetButton}>Reset</button>
-                </div>
               </div>
             </div>
           )}
