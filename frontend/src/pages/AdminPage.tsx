@@ -1,13 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AdminPage.module.css";
 import Header from "../components/homePage/Header";
 import Footer from "../components/homePage/Footer";
 import ResultsPerPageSelector from "../components/admin/ResultsPerPageSelector";
+import { Movies } from "../types/Movies";
+import { fetchMovies } from "../api/API";
 
 const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const navigate = useNavigate();
+  const [Movies, setMovies] = useState<Movies[]>([]);
+  const [movieLoading, setMovieLoading] = useState(true);
+  const [movieError, setMovieError] = useState<string | null>(null);
+  const [MoviePageSize, setMoviePageSize] = useState<number>(9);
+  const [MoviePageNum, setMoviePageNum] = useState<number>(1);
+  const [totalMovies, setTotalMovies] = useState<number>(0);
+  const [totalMoviePages, setTotalMoviePages] = useState<number>(0);
+
+  useEffect(() => {
+    const loadMovies = async () => {
+      try {
+        const data = await fetchMovies(
+          MoviePageSize,
+          MoviePageNum,
+          [] // no categories added on this page
+        );
+        setMovies(data.movies);
+        setTotalMovies(data.totalNumMovies);
+        setTotalMoviePages(Math.ceil(totalMovies / MoviePageSize));
+      } catch (err) {
+        setMovieError((err as Error).message);
+      } finally {
+        setMovieLoading(false);
+      }
+    };
+
+    loadMovies();
+  }, [MoviePageSize, MoviePageNum, totalMovies]);
+
+  if (movieLoading) return <p>Loading...</p>;
+  if (movieError) return <p className="text-red-500">Error: {movieError}</p>;
 
   return (
     <div className={styles.adminPage}>
@@ -138,22 +171,26 @@ const AdminPage: React.FC = () => {
               </div>
 
               <div className={styles.contentGrid}>
-                {[1, 2, 3, 4, 5, 6].map((item) => (
-                  <div key={item} className={styles.contentCard}>
+                {Movies.map((m) => (
+                  <div key={m.show_id} className={styles.contentCard}>
                     <div className={styles.contentImageContainer}>
-                      <div className={styles.contentImage} />
+                      <div
+                        className={styles.contentImage}
+                        style={{
+                          backgroundImage: `url(https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(m.title || "default-title")}.jpg)`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          backgroundRepeat: "no-repeat",
+                        }}
+                      />
                     </div>
                     <div className={styles.contentInfo}>
-                      <h3 className={styles.contentTitle}>
-                        Content Title {item}
-                      </h3>
-                      <p className={styles.contentType}>
-                        {item % 2 === 0 ? "Movie" : "TV Show"}
-                      </p>
+                      <h3 className={styles.contentTitle}>{m.title}</h3>
+                      <p className={styles.contentType}>{m.type}</p>
                       <div className={styles.contentActions}>
                         <button
                           className={styles.contentActionButton}
-                          onClick={() => navigate(`/update-movie/${item}`)}
+                          onClick={() => navigate(`/update-movie/${m.show_id}`)}
                         >
                           Edit
                         </button>

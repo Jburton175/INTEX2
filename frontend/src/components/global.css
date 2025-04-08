@@ -5,7 +5,7 @@
   }
   
   [data-theme="dark"] {
-    --bg-gradient: linear-gradient(to bottom, #000000, #1d2951);
+    --bg-gradient: linear-gradient(to bottom, #000000, #511d1d);
     --text: #cccccc;
   }
   

@@ -1,13 +1,43 @@
+/* === Theme Variables === */
+:root {
+  --bg-main: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-accent: #e50000;
+  --text-main: #000000;
+  --text-secondary: #333333;
+  --border-color: #cccccc;
+  --card-bg: #f0f0f0;
+  --badge-bg: #eaeaea;
+  --footer-bg: #e6e6e6;
+  --bg-gradient: linear-gradient(to bottom, #ffffff, #f8f9fa); /* light mode default */
+}
+
+[data-theme="dark"] {
+  --bg-main: #141414;
+  --bg-secondary: #0f0f0f;
+  --bg-accent: #e50000;
+  --text-main: #ffffff;
+  --text-secondary: #bfbfbf;
+  --border-color: #262626;
+  --card-bg: #1a1a1a;
+  --badge-bg: #141414;
+  --footer-bg: #0f0f0f;
+  --bg-gradient: linear-gradient(to bottom, #000000, #511d1d); /* 💥 dark mode gradient */
+}
+
+
+/* === Global === */
 .moviesPage {
-  background-color: #141414;
+  background-color: var(--bg-main);
+  color: var(--text-main);
   overflow: hidden;
-  color: #fff;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: 3.5rem;
 }
 
-/* Navbar Styles */
+/* === Navbar === */
 .navbarContainer {
   display: flex;
   align-items: stretch;
@@ -29,74 +59,51 @@
   width: 166px;
   object-fit: contain;
   object-position: center;
-  align-self: stretch;
-  z-index: 0;
-  margin: auto 0;
 }
 
 .searchContainer {
-  align-self: stretch;
-  z-index: 0;
   display: flex;
-  margin: auto 0;
   align-items: center;
   gap: 14px;
 }
 
 .searchIcon {
   width: 24px;
-  aspect-ratio: 1;
   object-fit: contain;
-  object-position: center;
-  align-self: stretch;
-  margin: auto 0;
 }
 
 .navButtons {
   display: flex;
   align-items: center;
   border-radius: 10px;
-  border: 3px solid #1f1f1f;
-  background-color: #0f0f0f;
+  border: 3px solid var(--border-color);
+  background-color: var(--bg-secondary);
   position: absolute;
-  z-index: 0;
   min-width: 240px;
   padding: 8px 30px;
   gap: 16px;
-  overflow: hidden;
-  font-family:
-    Manrope,
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
-  font-size: 14px;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 }
 
 .navButton {
-  color: #bfbfbf;
+  color: var(--text-secondary);
   font-weight: 400;
-  align-self: stretch;
-  margin: auto 0;
   cursor: pointer;
 }
 
 .navButtonActive {
   border-radius: 8px;
-  border: 1px solid #1a1a1a;
-  background-color: #1a1a1a;
-  align-self: stretch;
-  margin: auto 0;
-  padding: 12px 16px;
-  color: #fff;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  color: var(--text-main);
   font-weight: 500;
+  padding: 12px 16px;
   cursor: pointer;
 }
 
-/* Main Content Styles */
+/* === Main Content === */
 .mainContent {
   z-index: 10;
   margin-top: 40px;
@@ -104,229 +111,153 @@
   padding: 0 80px;
 }
 
-/* Hero Section Styles */
+/* === Hero Section === */
 .heroSection {
+  position: relative;
+  min-height: 900px; /* ⬆ Increased height */
+  padding: 200px 40px 16px; /* ⬇ Lowered top padding to reveal more of the top */
+  overflow: hidden;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
-  position: relative;
-  min-height: 709px;
-  padding: 498px 40px 16px;
-  overflow: hidden;
-  font-family:
-    Manrope,
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
 }
+
 
 .heroImage {
   position: absolute;
   inset: 0;
-  height: 100%;
   width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: top; /* 👈 this makes the top of the image show */
 }
+
 
 .heroContent {
   position: relative;
   display: flex;
-  width: 100%;
   flex-direction: column;
-  align-items: stretch;
 }
 
 .heroButtonContainer {
   align-self: center;
   display: flex;
-  margin-top: 24px;
-  align-items: center;
   gap: 20px;
-  font-size: 14px;
-  color: #fff;
-  font-weight: 600;
-  line-height: 2;
+  margin-top: 24px;
 }
 
 .playButton {
   display: flex;
   align-items: center;
   border-radius: 8px;
-  background-color: #e50000;
+  background-color: var(--bg-accent);
   padding: 14px 20px;
   gap: 4px;
-  border: none;
   color: #fff;
   font-weight: 600;
-  font-size: 14px;
+  border: none;
   cursor: pointer;
 }
 
 .playIcon {
   width: 24px;
-  aspect-ratio: 1;
   object-fit: contain;
-  object-position: center;
 }
 
-/* Tab Navigation Styles */
+/* === Tabs === */
 .tabContainer {
   margin-top: 40px;
 }
 
 .tabButtons {
-  position: relative;
   display: flex;
-  width: 100%;
-  padding: 0 40px;
   flex-direction: column;
-  font-family:
-    Manrope,
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
-  font-size: 16px;
-  color: #fff;
-  font-weight: 600;
+  padding: 0 40px;
 }
 
-.tabButton {
+.tabButton,
+.tabButtonActive {
   border-radius: 6px;
-  z-index: 0;
-  width: 95px;
   padding: 8px 20px;
-  background-color: transparent;
-  color: #fff;
-  border: none;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+  width: 95px;
   text-align: center;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
 }
 
 .tabButtonActive {
-  border-radius: 6px;
-  background-color: #e50000;
-  z-index: 0;
-  padding: 8px 20px;
+  background-color: var(--bg-accent);
   color: #fff;
-  border: none;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: center;
-  width: 91px;
 }
 
-/* Categories Container Styles */
+/* === Categories === */
 .categoriesContainer {
   border-radius: 12px;
-  border: 1px solid #262626;
+  border: 1px solid var(--border-color);
   width: 100%;
   padding: 40px;
   margin-top: 20px;
 }
 
-/* Must Watch Section Styles */
 .categorySection {
   margin-top: 80px;
-  width: 100%;
 }
 
 .categoryHeader {
-  width: 100%;
-  gap: 40px 100px;
-  font-family:
-    Manrope,
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
   font-size: 30px;
-  color: #fff;
+  color: var(--text-main);
   font-weight: 700;
   margin-bottom: 40px;
 }
 
-.categoryTitle {
-  font-size: 30px;
-  font-weight: 700;
-  margin: 0;
-}
-
 .mustWatchGrid {
   display: flex;
-  width: 100%;
-  gap: 20px;
   flex-wrap: wrap;
+  gap: 20px;
 }
 
 .mustWatchCard {
   border-radius: 10px;
-  border: 1px solid #262626;
-  background-color: #1a1a1a;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
   min-width: 240px;
   min-height: 404px;
   padding: 16px;
   flex: 1;
-  flex-basis: 0%;
-  display: flex;
-  flex-direction: column;
 }
 
 .mustWatchImage {
-  aspect-ratio: 1;
-  object-fit: contain;
-  object-position: center;
   width: 100%;
   border-radius: 10px;
-  flex: 1;
+  object-fit: contain;
+  aspect-ratio: 1;
 }
 
 .mustWatchDetails {
   display: flex;
   margin-top: 16px;
-  width: 100%;
-  align-items: center;
   justify-content: space-between;
   gap: 40px;
 }
 
-.durationBadge {
-  display: flex;
-  align-items: center;
-  border-radius: 51px;
-  border: 1px solid #262626;
-  background-color: #141414;
-  padding: 6px 10px 6px 6px;
-  gap: 2px;
-  font-family:
-    Manrope,
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
-  font-size: 12px;
-  color: #999;
-  font-weight: 500;
-}
-
-.clockIcon {
-  width: 20px;
-  margin: auto 0;
-}
-
+.durationBadge,
 .ratingBadge {
   display: flex;
   align-items: center;
   border-radius: 51px;
-  border: 1px solid #262626;
-  background-color: #141414;
+  border: 1px solid var(--border-color);
+  background-color: var(--badge-bg);
   padding: 6px 10px;
-  gap: 4px;
+  font-size: 12px;
+  color: #999;
+}
+
+.clockIcon {
+  width: 20px;
 }
 
 .starRating {
@@ -336,83 +267,54 @@
 
 .starIcon {
   width: 14px;
-  aspect-ratio: 1;
   object-fit: contain;
 }
 
-/* Footer Styles */
+/* === Footer === */
 .footer {
-  background-color: #0f0f0f;
+  background-color: var(--footer-bg);
   margin-top: auto;
-  width: 100%;
   padding: 80px 80px 40px;
-  font-family:
-    Manrope,
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
   font-size: 14px;
   color: #999;
-  font-weight: 400;
 }
 
-.footerContainer {
-  width: 100%;
+.footerDivider,
+.footerDividerVertical {
+  background-color: var(--border-color);
 }
 
 .footerDivider {
-  border: 1px solid #262626;
-  background-color: #262626;
-  min-height: 1px;
+  height: 1px;
   width: 100%;
+}
+
+.footerDividerVertical {
+  width: 1px;
+  height: 21px;
 }
 
 .footerContent {
   display: flex;
-  margin-top: 20px;
-  width: 100%;
-  align-items: center;
-  gap: 100px;
   justify-content: space-between;
   flex-wrap: wrap;
-}
-
-.footerCopyright {
-  align-self: stretch;
-  margin: auto 0;
+  margin-top: 20px;
+  gap: 100px;
 }
 
 .footerLinks {
-  align-self: stretch;
   display: flex;
-  margin: auto 0;
-  align-items: stretch;
+  align-items: center;
   gap: 16px;
 }
 
-.footerDividerVertical {
-  border: 1px solid #262626;
-  background-color: #262626;
-  width: 0;
-  height: 21px;
-}
-
-.footerLink {
-  cursor: pointer;
-}
-
-/* Responsive adjustments */
+/* === Responsive === */
 @media (max-width: 1200px) {
   .navbar,
   .mainContent,
   .footer {
     padding-left: 40px;
     padding-right: 40px;
-  }
-
-  .mustWatchGrid {
-    flex-wrap: wrap;
   }
 
   .mustWatchCard {
@@ -442,4 +344,36 @@
     flex-direction: column;
     gap: 20px;
   }
+}
+.tabButtons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tabButton {
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Active tab - always red with white text */
+.activeTab {
+  background-color: red;
+  color: white;
+}
+
+/* Default for light mode */
+.inactiveTab {
+  background-color: white;
+  color: black;
+}
+
+/* Dark mode override using attribute selector */
+[data-theme="dark"] .inactiveTab {
+  background-color: black;
+  color: white;
 }
