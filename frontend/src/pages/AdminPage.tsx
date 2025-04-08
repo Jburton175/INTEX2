@@ -5,7 +5,7 @@ import Header from "../components/homePage/Header";
 import Footer from "../components/homePage/Footer";
 import ResultsPerPageSelector from "../components/admin/ResultsPerPageSelector";
 import { Movies } from "../types/Movies";
-import { fetchMovies } from "../api/API";
+import { fetchMovies, fetchUsers } from "../api/API";
 
 const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -17,6 +17,10 @@ const AdminPage: React.FC = () => {
   const [MoviePageNum, setMoviePageNum] = useState<number>(1);
   const [totalMovies, setTotalMovies] = useState<number>(0);
   const [totalMoviePages, setTotalMoviePages] = useState<number>(0);
+  const [Users, setUsers] = useState<Users[]>([]);
+  const [userLoading, setUserLoading] = useState(true);
+  const [userError, setUserError] = useState<string | null>(null);
+
 
   useEffect(() => {
     const loadMovies = async () => {
@@ -35,6 +39,23 @@ const AdminPage: React.FC = () => {
         setMovieLoading(false);
       }
     };
+
+    useEffect(() => {
+      if (activeTab === "users") {
+        const loadUsers = async () => {
+          try {
+            const userData = await fetchUsers();
+            setUsers(userData);
+          } catch (err) {
+            setUserError((err as Error).message);
+          } finally {
+            setUserLoading(false);
+          }
+        };
+        loadUsers();
+      }
+    }, [activeTab]);
+    
 
     loadMovies();
   }, [MoviePageSize, MoviePageNum, totalMovies]);

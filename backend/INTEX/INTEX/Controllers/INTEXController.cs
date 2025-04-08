@@ -202,6 +202,26 @@ namespace INTEX.Controllers
             return Ok(titles);
         }
 
+        [HttpGet("GetAllUsers")]
+        public IActionResult GetUsers()
+        {
+            var users = _repo.GetUsers();
+            return Ok(users);
+        }
+
+        [HttpDelete("DeleteUser/{userId}")]
+        public IActionResult DeleteUser(int userId)
+        {
+            var existingUser = _repo.GetUserById(userId);
+            if (existingUser == null)
+                return NotFound(new { message = "User not found" });
+
+            _context.movies_users.Remove(existingUser);
+            _context.SaveChanges();
+            return Ok();
+        }
+
+
 
     }
 }
