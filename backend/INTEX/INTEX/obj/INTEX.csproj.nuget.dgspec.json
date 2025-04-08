@@ -1,20 +1,22 @@
 {
   "format": 1,
   "restore": {
-    "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/INTEX.csproj": {}
+    "C:\\Users\\brojo\\OneDrive\\Desktop\\Winter 2025\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\INTEX.csproj": {}
   },
   "projects": {
-    "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/INTEX.csproj": {
+    "C:\\Users\\brojo\\OneDrive\\Desktop\\Winter 2025\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\INTEX.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/INTEX.csproj",
+        "projectUniqueName": "C:\\Users\\brojo\\OneDrive\\Desktop\\Winter 2025\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\INTEX.csproj",
         "projectName": "INTEX",
-        "projectPath": "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/INTEX.csproj",
-        "packagesPath": "/Users/michaelbackman/.nuget/packages/",
-        "outputPath": "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/obj/",
+        "projectPath": "C:\\Users\\brojo\\OneDrive\\Desktop\\Winter 2025\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\INTEX.csproj",
+        "packagesPath": "C:\\Users\\brojo\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\brojo\\OneDrive\\Desktop\\Winter 2025\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/michaelbackman/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\brojo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
