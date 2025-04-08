@@ -15,11 +15,9 @@
 // }
 
 // export default App
-import React from "react";
 import { BrowserRouter } from "react-router-dom";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import HomePage from "./pages/HomePage";
-import ThemeToggle from "./components/ThemeToggle";
 
 function App() {
   return (

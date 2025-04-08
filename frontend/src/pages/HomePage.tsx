@@ -1,4 +1,3 @@
-import React from "react";
 import TopNavBar from "../components/TopNavBar";
 import CookieConsentBanner from "../components/CookieConsentBanner";
 // import "../components/HomePage.css";
