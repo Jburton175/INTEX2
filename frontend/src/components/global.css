@@ -1,0 +1,24 @@
+/* global.css */
+:root {
+    --bg: #ffffff;
+    --text: #333333;
+    --bg-gradient: linear-gradient(to bottom, #ffffff, #f8f9fa);
+  }
+  
+  [data-theme="dark"] {
+    --bg-gradient: linear-gradient(to bottom, #000000, #2c003e);
+    --text: #cccccc;
+  }
+  
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    transition: background 1s ease, color 1s ease;
+  }
+  
+  body {
+    background: var(--bg-gradient, var(--bg));
+    color: var(--text);
+  }
+  

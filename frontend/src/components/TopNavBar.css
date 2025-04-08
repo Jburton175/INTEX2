@@ -1,0 +1,77 @@
+/* Global Variables */
+:root {
+  --bg: #ffffff;
+  --text: #333333;
+  --bg-gradient: linear-gradient(to right, #ffffff, #f8f9fa);
+}
+
+/* Top Navbar Styling */
+.top-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--bg-gradient, var(--bg));
+  padding: 1.25rem 2rem;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10000; /* Raise the z-index so navbar is above the overlay */
+}
+
+
+/* Left Section (Brand/Logo) */
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+.brand-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text);
+  text-decoration: none;
+}
+
+/* Center Section (Navigation Links) */
+.nav-center {
+  flex-grow: 1;           /* Takes up remaining space */
+  display: flex;
+  justify-content: center;
+}
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+.nav-links li a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+.nav-links li a:hover {
+  color: #007acc;         /* Accent color on hover */
+}
+
+/* Right Section (Theme Toggle) */
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive Adjustment: Hide center nav links on small screens */
+@media (max-width: 768px) {
+  .nav-center {
+    display: none;
+  }
+}
+
+/* Optional: Ensure your page content doesn't hide behind the fixed navbar.
+   Adjust the top padding/margin of your main container accordingly. */
+body {
+  padding-top: 60px; /* Adjust if your navbar height is different */
+}
