@@ -26,6 +26,8 @@ const CookieConsentBanner: React.FC = () => {
       setVisible(true);
     }
 
+    console.log("Cookies on page load:", document.cookie);
+
     const observer = new MutationObserver(() => {
       const updatedTheme =
         document.documentElement.getAttribute("data-theme") || "light";
@@ -41,9 +43,14 @@ const CookieConsentBanner: React.FC = () => {
   }, []);
 
   const handleAccept = () => {
+    const expires = new Date();
+    expires.setFullYear(expires.getFullYear() + 1);
+
     document.cookie =
-      "cookieConsent=accepted; path=/; max-age=" + 60 * 60 * 24 * 365;
+      "cookieConsent=accepted; path=/; expires=" + expires.toUTCString();
     setVisible(false);
+
+    console.log("Cookie consent accepted:", document.cookie);
   };
 
   if (!visible) return null;

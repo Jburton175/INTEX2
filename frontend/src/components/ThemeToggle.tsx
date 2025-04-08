@@ -4,32 +4,44 @@ import SunIcon from "../assets/Sun.webp";
 import MoonIcon from "../assets/Moon.webp";
 
 const ThemeToggle = () => {
-  // Initialize theme from cookie (or default to light)
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  // Local state to trigger the icon spin animation.
   const [animating, setAnimating] = useState<boolean>(false);
+  const [consentGiven, setConsentGiven] = useState<boolean>(false);
 
-  // Read cookie on mount and set the theme.
-  useEffect(() => {
-    const getCookie = (name: string): string | null => {
-      const nameEQ = name + "=";
-      const ca = document.cookie.split(";");
-      for (let i = 0; i < ca.length; i++) {
-        let c = ca[i].trim();
-        if (c.indexOf(nameEQ) === 0) {
-          return c.substring(nameEQ.length);
-        }
+  const getCookie = (name: string): string | null => {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(";");
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i].trim();
+      if (c.indexOf(nameEQ) === 0) {
+        return c.substring(nameEQ.length);
       }
-      return null;
-    };
+    }
+    return null;
+  };
 
-    const storedTheme = getCookie("theme") || "light";
-    setTheme(storedTheme as "light" | "dark");
-    document.documentElement.setAttribute("data-theme", storedTheme);
+  useEffect(() => {
+    const consent = getCookie("cookieConsent");
+    const savedTheme = getCookie("theme") as "light" | "dark" | null;
+
+    if (consent === "accepted") {
+      setConsentGiven(true);
+    }
+
+    const initialTheme = savedTheme === "dark" ? "dark" : "light";
+    setTheme(initialTheme);
+    document.documentElement.setAttribute("data-theme", initialTheme);
   }, []);
 
   const toggleTheme = async () => {
-    // Create an overlay to capture the current background
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+
+    setAnimating(true);
+    setTimeout(() => setAnimating(false), 1000);
+
+    // Background transition effect
     const computedStyle = window.getComputedStyle(document.body);
     const currentBackground = computedStyle.background;
 
@@ -45,29 +57,27 @@ const ThemeToggle = () => {
     overlay.style.transition = "opacity 1s ease";
     document.body.appendChild(overlay);
 
-    // Toggle the theme
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
+    if (consentGiven) {
+      // Set frontend cookie
+      const expires = new Date();
+      expires.setFullYear(expires.getFullYear() + 1);
+      document.cookie = `theme=${newTheme}; path=/; expires=${expires.toUTCString()}`;
 
-    // Trigger the icon spin animation.
-    setAnimating(true);
-    setTimeout(() => setAnimating(false), 1000);
-
-    try {
-      await fetch("/api/Theme/SetTheme", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newTheme),
-      });
-    } catch (error) {
-      console.error("Error updating theme cookie", error);
+      // Call backend
+      try {
+        await fetch("/api/Theme/SetTheme", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newTheme),
+        });
+      } catch (err) {
+        console.error("Failed to persist theme to backend:", err);
+      }
     }
 
-    // Give a short delay (so the new theme has been applied) then fade out the overlay.
+    // Remove overlay after fade
     setTimeout(() => {
       overlay.style.opacity = "0";
-      // Remove the overlay after the fade-out is complete.
       setTimeout(() => {
         if (overlay.parentNode) {
           overlay.parentNode.removeChild(overlay);
