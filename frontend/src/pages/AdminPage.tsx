@@ -5,7 +5,8 @@ import Header from "../components/homePage/Header";
 import Footer from "../components/homePage/Footer";
 import ResultsPerPageSelector from "../components/admin/ResultsPerPageSelector";
 import { Movies } from "../types/Movies";
-import { fetchMovies, fetchUsers } from "../api/API";
+import { deleteMovie, fetchMovies, fetchUsers } from "../api/API";
+import UpdateMoviePage from "./UpdateMoviePage";
 
 const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -17,10 +18,10 @@ const AdminPage: React.FC = () => {
   const [MoviePageNum, setMoviePageNum] = useState<number>(1);
   const [totalMovies, setTotalMovies] = useState<number>(0);
   const [totalMoviePages, setTotalMoviePages] = useState<number>(0);
-  const [Users, setUsers] = useState<Users[]>([]);
-  const [userLoading, setUserLoading] = useState(true);
-  const [userError, setUserError] = useState<string | null>(null);
-
+  const [editingMovies, setEditingMovies] = useState<Book | null>(null);
+  // const [Users, setUsers] = useState<Users[]>([]);
+  // const [userLoading, setUserLoading] = useState(true);
+  // const [userError, setUserError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadMovies = async () => {
@@ -40,33 +41,58 @@ const AdminPage: React.FC = () => {
       }
     };
 
-    useEffect(() => {
-      if (activeTab === "users") {
-        const loadUsers = async () => {
-          try {
-            const userData = await fetchUsers();
-            setUsers(userData);
-          } catch (err) {
-            setUserError((err as Error).message);
-          } finally {
-            setUserLoading(false);
-          }
-        };
-        loadUsers();
-      }
-    }, [activeTab]);
-    
+    // useEffect(() => {
+    //   if (activeTab === "users") {
+    //     const loadUsers = async () => {
+    //       try {
+    //         const userData = await fetchUsers();
+    //         setUsers(userData);
+    //       } catch (err) {
+    //         setUserError((err as Error).message);
+    //       } finally {
+    //         setUserLoading(false);
+    //       }
+    //     };
+    //     loadUsers();
+    //   }
+    // }, [activeTab]);
 
     loadMovies();
   }, [MoviePageSize, MoviePageNum, totalMovies]);
+
+  const handleMovieDelete = async (show_id: string) => {
+    const confirmMovieDelete = window.confirm(
+      "Are you sure you want to delete this movie?"
+    );
+    if (!confirmMovieDelete) return;
+
+    try {
+      await deleteMovie(show_id);
+      setMovies(Movies.filter((m) => m.show_id !== show_id));
+    } catch (error) {
+      alert("Failed to delete movie. Please try again.");
+    }
+  };
 
   if (movieLoading) return <p>Loading...</p>;
   if (movieError) return <p className="text-red-500">Error: {movieError}</p>;
 
   return (
     <div className={styles.adminPage}>
-      <Header />
+      {/* {editingMovies && (
+        <UpdateMoviePage
+          movie={editingMovies}
+          onSuccess={() => {
+            setEditingMovies(null);
+            fetchMovies(MoviePageSize, MoviePageNum, []).then((data) =>
+              setMovies(data.movies)
+            );
+          }}
+          onCancel={() => setEditingMovies(null)}
+        />
+      )} */}
 
+      <Header />
       <main className={styles.adminContent}>
         <div className={styles.adminHeader}>
           <h1 className={styles.adminTitle}>Admin Dashboard</h1>
@@ -96,7 +122,10 @@ const AdminPage: React.FC = () => {
         <div className={styles.adminPanel}>
           {activeTab === "dashboard" && (
             <div className={styles.dashboardPanel}>
-              <div className={styles.statsGrid} style={{ display: 'flex', justifyContent: 'center' }}>
+              <div
+                className={styles.statsGrid}
+                style={{ display: "flex", justifyContent: "center" }}
+              >
                 <div className={styles.statCard}>
                   <h3 className={styles.statTitle}>Total Users</h3>
                   <p className={styles.statValue}>12,345</p>
@@ -215,7 +244,10 @@ const AdminPage: React.FC = () => {
                         >
                           Edit
                         </button>
-                        <button className={styles.contentActionButton}>
+                        <button
+                          className={styles.contentActionButton}
+                          onClick={() => handleMovieDelete(m.show_id)}
+                        >
                           Delete
                         </button>
                       </div>
@@ -241,7 +273,6 @@ const AdminPage: React.FC = () => {
           )}
         </div>
       </main>
-
       <Footer />
     </div>
   );
