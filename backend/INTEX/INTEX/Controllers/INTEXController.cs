@@ -190,5 +190,17 @@ namespace INTEX.Controllers
             return Ok(types);
         }
 
+        [HttpGet("GetTitles")]
+        public IActionResult GetTitles()
+        {
+            var titles = _repo.GetMovies()
+                .Select(m => m.title)
+                .Distinct()
+                .ToList();
+
+            return Ok(titles);
+        }
+
+
     }
 }

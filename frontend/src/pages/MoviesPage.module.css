@@ -345,3 +345,35 @@
     gap: 20px;
   }
 }
+.tabButtons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tabButton {
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Active tab - always red with white text */
+.activeTab {
+  background-color: red;
+  color: white;
+}
+
+/* Default for light mode */
+.inactiveTab {
+  background-color: white;
+  color: black;
+}
+
+/* Dark mode override using attribute selector */
+[data-theme="dark"] .inactiveTab {
+  background-color: black;
+  color: white;
+}
