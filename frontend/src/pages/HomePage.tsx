@@ -1,38 +1,20 @@
-import TopNavBar from "../components/TopNavBar";
-import CookieConsentBanner from "../components/CookieConsentBanner";
-// import "../components/HomePage.css";
+"use client";
+import React from "react";
+import styles from "./HomePage.module.css";
+import Header from "../components/homePage/Header";
+import HeroSection from "../components/homePage/HeroSection";
+import CategorySection from "../components/homePage/CategorySection";
+import Footer from "../components/homePage/Footer";
 
-function HomePage() {
+const CineNiche: React.FC = () => {
   return (
-    <>
-      <TopNavBar />
-      <main
-        style={{
-          padding: "6rem 2rem 2rem", // Top padding accounts for navbar height
-          maxWidth: "800px",
-          margin: "0 auto",
-        }}
-      >
-        <h1>Welcome to CineNiche!</h1>
-        <p>
-          Discover unique, niche, and classic films. Your curated movie
-          experience starts here.
-        </p>
-
-        {[...Array(25)].map((_, i) => (
-          <section key={i} style={{ margin: "2rem 0" }}>
-            <h2>Feature #{i + 1}</h2>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce
-              bibendum pulvinar nisl, sed vehicula mauris facilisis at. Duis
-              vitae nunc a sapien fermentum hendrerit sed non eros.
-            </p>
-          </section>
-        ))}
-      </main>
-      <CookieConsentBanner />
-    </>
+    <div className={styles.container}>
+      <Header />
+      <HeroSection />
+      <CategorySection />
+      <Footer />
+    </div>
   );
-}
+};
 
-export default HomePage;
+export default CineNiche;

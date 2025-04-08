@@ -1,0 +1,53 @@
+.categorySection {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 100px;
+  padding: 0 80px;
+}
+
+.sectionHeader {
+  margin-bottom: 60px;
+}
+
+.sectionTitle {
+  color: #fff;
+  margin-bottom: 10px;
+  font-family: Arial, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 150%;
+}
+
+.sectionDescription {
+  color: #999;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 150%;
+}
+
+.categoryGrid {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  display: grid;
+}
+
+@media (width<=991px) {
+  .categorySection {
+    padding: 0 40px;
+  }
+
+  .categoryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width<=640px) {
+  .categorySection {
+    padding: 0 20px;
+  }
+
+  .categoryGrid {
+    grid-template-columns: 1fr;
+  }
+}

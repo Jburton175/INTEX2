@@ -1,0 +1,239 @@
+.addMoviePage {
+  background-color: #141414;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+}
+
+.mainContent {
+  padding: 40px 80px;
+  flex: 1;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pageTitle {
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 150%;
+  margin: 0;
+}
+
+.formContainer {
+  width: 100%;
+  max-width: 1282px;
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  border: 1px solid #262626;
+  padding: 24px;
+  margin: 0 auto;
+}
+
+.formWrapper {
+  background-color: #292929;
+  border-radius: 10px;
+  padding: 40px;
+}
+
+.formTitle {
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 150%;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroupFull {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  grid-column: span 2;
+}
+
+.formLabel {
+  color: #fff;
+  font-family:
+    Inter,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 140%;
+}
+
+.formInput {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #262626;
+  background-color: #1a1a1a;
+  color: #fff;
+  font-family:
+    Inter,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 16px;
+  line-height: 100%;
+}
+
+.formTextarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #262626;
+  background-color: #1a1a1a;
+  color: #fff;
+  font-family:
+    Inter,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 16px;
+  line-height: 140%;
+  min-height: 100px;
+  resize: vertical;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.addButton {
+  padding: 12px 16px;
+  background-color: #32ade6;
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 150%;
+  border-radius: 8px;
+  border: 1px solid #1a1a1a;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.cancelButton {
+  padding: 12px 16px;
+  background-color: #e50000;
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 150%;
+  border-radius: 8px;
+  border: 1px solid #1a1a1a;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.formInput::placeholder,
+.formTextarea::placeholder {
+  color: #666;
+}
+
+.formInput:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: #32ade6;
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+  .mainContent {
+    padding: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 20px;
+  }
+
+  .pageTitle {
+    font-size: 36px;
+  }
+
+  .formTitle {
+    font-size: 36px;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .formGroupFull {
+    grid-column: span 1;
+  }
+
+  .buttonContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .addButton,
+  .cancelButton {
+    width: 100%;
+    max-width: 300px;
+  }
+}

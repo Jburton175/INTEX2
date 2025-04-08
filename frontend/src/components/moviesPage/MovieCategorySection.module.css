@@ -1,0 +1,97 @@
+.categorySection {
+  margin-top: 80px;
+  width: 100%;
+}
+
+.categoryHeader {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 40px 100px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.categoryTitle {
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  margin: 0;
+  flex: 1;
+}
+
+.navigationControls {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  border: 1px solid #1f1f1f;
+  background-color: #0f0f0f;
+  padding: 12px;
+  gap: 12px;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid #1f1f1f;
+  background-color: #1a1a1a;
+  padding: 10px;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.indicators {
+  display: flex;
+  gap: 3px;
+  width: 69px;
+}
+
+.indicator {
+  border-radius: 100px;
+  background-color: #333;
+  height: 4px;
+  flex: 1;
+}
+
+.indicatorActive {
+  background-color: #e50000;
+  width: 18px;
+  flex: none;
+}
+
+.moviesGrid {
+  display: flex;
+  margin-top: 40px;
+  width: 100%;
+  gap: 20px;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.moviesGrid::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .categoryHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .navigationControls {
+    align-self: center;
+  }
+}
