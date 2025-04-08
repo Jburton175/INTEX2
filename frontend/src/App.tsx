@@ -1,11 +1,19 @@
 import { BrowserRouter } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import HomePage from "./pages/HomePage";
+import Home from "./pages/MoviesPage";
+import MoviePage from "./pages/MoviesPage";
+import TopNavBar from "./components/TopNavBar";
+import CineNiche from "./pages/CineNiche";
+import CookieConsentBanner from "./components/CookieConsentBanner";
 
 function App() {
   return (
     <BrowserRouter>
-      <HomePage />
+      {/* <TopNavBar /> */}
+      <Home/>
+      {/* <CineNiche />
+      <MoviePage/> */}
+      <CookieConsentBanner />
     </BrowserRouter>
   );
 }

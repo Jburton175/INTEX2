@@ -1,0 +1,347 @@
+/* === Theme Variables === */
+:root {
+  --bg-main: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-accent: #e50000;
+  --text-main: #000000;
+  --text-secondary: #333333;
+  --border-color: #cccccc;
+  --card-bg: #f0f0f0;
+  --badge-bg: #eaeaea;
+  --footer-bg: #e6e6e6;
+  --bg-gradient: linear-gradient(to bottom, #ffffff, #f8f9fa); /* light mode default */
+}
+
+[data-theme="dark"] {
+  --bg-main: #141414;
+  --bg-secondary: #0f0f0f;
+  --bg-accent: #e50000;
+  --text-main: #ffffff;
+  --text-secondary: #bfbfbf;
+  --border-color: #262626;
+  --card-bg: #1a1a1a;
+  --badge-bg: #141414;
+  --footer-bg: #0f0f0f;
+  --bg-gradient: linear-gradient(to bottom, #000000, #511d1d); /* 💥 dark mode gradient */
+}
+
+
+/* === Global === */
+.moviesPage {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-top: 3.5rem;
+}
+
+/* === Navbar === */
+.navbarContainer {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.navbar {
+  position: relative;
+  display: flex;
+  width: 100%;
+  padding: 24px 80px;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 2006px;
+  margin: 0 auto;
+}
+
+.logo {
+  width: 166px;
+  object-fit: contain;
+  object-position: center;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.searchIcon {
+  width: 24px;
+  object-fit: contain;
+}
+
+.navButtons {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  border: 3px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  position: absolute;
+  min-width: 240px;
+  padding: 8px 30px;
+  gap: 16px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.navButton {
+  color: var(--text-secondary);
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.navButtonActive {
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  color: var(--text-main);
+  font-weight: 500;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+/* === Main Content === */
+.mainContent {
+  z-index: 10;
+  margin-top: 40px;
+  width: 100%;
+  padding: 0 80px;
+}
+
+/* === Hero Section === */
+.heroSection {
+  position: relative;
+  min-height: 900px; /* ⬆ Increased height */
+  padding: 200px 40px 16px; /* ⬇ Lowered top padding to reveal more of the top */
+  overflow: hidden;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.heroImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top; /* 👈 this makes the top of the image show */
+}
+
+
+.heroContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.heroButtonContainer {
+  align-self: center;
+  display: flex;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.playButton {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  background-color: var(--bg-accent);
+  padding: 14px 20px;
+  gap: 4px;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.playIcon {
+  width: 24px;
+  object-fit: contain;
+}
+
+/* === Tabs === */
+.tabContainer {
+  margin-top: 40px;
+}
+
+.tabButtons {
+  display: flex;
+  flex-direction: column;
+  padding: 0 40px;
+}
+
+.tabButton,
+.tabButtonActive {
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 95px;
+  text-align: center;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+}
+
+.tabButtonActive {
+  background-color: var(--bg-accent);
+  color: #fff;
+}
+
+/* === Categories === */
+.categoriesContainer {
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  width: 100%;
+  padding: 40px;
+  margin-top: 20px;
+}
+
+.categorySection {
+  margin-top: 80px;
+}
+
+.categoryHeader {
+  font-size: 30px;
+  color: var(--text-main);
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+.mustWatchGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.mustWatchCard {
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  min-width: 240px;
+  min-height: 404px;
+  padding: 16px;
+  flex: 1;
+}
+
+.mustWatchImage {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: contain;
+  aspect-ratio: 1;
+}
+
+.mustWatchDetails {
+  display: flex;
+  margin-top: 16px;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.durationBadge,
+.ratingBadge {
+  display: flex;
+  align-items: center;
+  border-radius: 51px;
+  border: 1px solid var(--border-color);
+  background-color: var(--badge-bg);
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #999;
+}
+
+.clockIcon {
+  width: 20px;
+}
+
+.starRating {
+  display: flex;
+  gap: 1px;
+}
+
+.starIcon {
+  width: 14px;
+  object-fit: contain;
+}
+
+/* === Footer === */
+.footer {
+  background-color: var(--footer-bg);
+  margin-top: auto;
+  padding: 80px 80px 40px;
+  font-size: 14px;
+  color: #999;
+}
+
+.footerDivider,
+.footerDividerVertical {
+  background-color: var(--border-color);
+}
+
+.footerDivider {
+  height: 1px;
+  width: 100%;
+}
+
+.footerDividerVertical {
+  width: 1px;
+  height: 21px;
+}
+
+.footerContent {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  gap: 100px;
+}
+
+.footerLinks {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* === Responsive === */
+@media (max-width: 1200px) {
+  .navbar,
+  .mainContent,
+  .footer {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  .mustWatchCard {
+    min-width: 200px;
+    flex-basis: calc(50% - 20px);
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar,
+  .mainContent,
+  .footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .heroSection {
+    min-height: 500px;
+    padding-top: 350px;
+  }
+
+  .mustWatchCard {
+    flex-basis: 100%;
+  }
+
+  .footerContent {
+    flex-direction: column;
+    gap: 20px;
+  }
+}

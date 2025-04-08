@@ -27,14 +27,13 @@
   transition: transform 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
 }
 
-/* === Retracting Effect on Scroll Down === */
 .top-navbar.hide {
   transform: translateY(-100%);
   background: transparent;
   box-shadow: none;
 }
 
-/* === Logo / Left Section === */
+/* === Left === */
 .nav-left {
   display: flex;
   align-items: center;
@@ -51,39 +50,138 @@
   object-fit: contain;
 }
 
-/* === Center Navigation === */
+/* === Center (Search + Genres aligned closer to right) === */
 .nav-center {
-  flex-grow: 1;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  margin-left: auto;
+  margin-right: 15%; /* Keeps center closer to right, without overlapping nav-right */
+  max-width: 45%;
 }
 
 .nav-links {
-  list-style: none;
   display: flex;
-  gap: 2rem;
-  margin: 0;
-  padding: 0;
+  align-items: center;
+  gap: 1.75rem;
+  width: 100%;
+  justify-content: flex-end;
 }
 
-.nav-links li a {
-  color: var(--text);
-  text-decoration: none;
-  font-size: 1rem;
-  transition: color 0.3s ease;
-}
-
-.nav-links li a:hover {
-  color: #007acc;
-}
-
-/* === Right Section === */
-.nav-right {
+/* === Search === */
+.nav-search-container {
+  position: relative;
   display: flex;
   align-items: center;
 }
 
-/* === Mobile Toggle Button === */
+.nav-search-icon {
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  color: gray;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+.nav-search-icon:hover {
+  color: var(--text);
+}
+
+.nav-search-input {
+  margin-left: 0.5rem;
+  border: 1px solid var(--text);
+  border-radius: 25px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: all 0.3s ease;
+  max-width: 200px;
+}
+
+.nav-search-input::placeholder {
+  color: #888;
+}
+
+/* === Genre === */
+.nav-genre-dropdown-container {
+  position: relative;
+}
+
+.nav-genre-button {
+  background-color: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--text);
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-genre-dropdown {
+  position: absolute;
+  top: 120%;
+  left: 0;
+  min-width: 160px;
+  background-color: var(--bg);
+  border: 1px solid var(--text);
+  border-radius: 10px;
+  padding: 0.6rem;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.nav-genre-dropdown-container:hover .nav-genre-dropdown,
+.nav-genre-dropdown:hover {
+  opacity: 1;
+  visibility: visible;
+}
+
+.genre-option {
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.genre-option:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* === Right === */
+.nav-right {
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
+}
+
+/* === Dark Theme Adjustments === */
+[data-theme="dark"] .nav-search-input,
+[data-theme="dark"] .nav-genre-button,
+[data-theme="dark"] .nav-genre-dropdown {
+  background-color: #111;
+  border-color: #444;
+  color: #ccc;
+}
+
+[data-theme="dark"] .genre-option:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* === Mobile === */
 .mobile-toggle {
   display: none;
   font-size: 1.5rem;
@@ -94,30 +192,32 @@
   z-index: 10001;
 }
 
-/* === Responsive Styles === */
 @media (max-width: 768px) {
   .mobile-toggle {
     display: block;
   }
 
   .nav-center {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background: var(--bg-gradient, var(--bg));
-    padding: 1rem 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  .nav-center.open {
-    display: block;
+    flex-grow: 1;
+    justify-content: flex-end;
+    margin-right: 0;
+    padding-right: 0.7rem;
+    max-width: 100%;
   }
 
   .nav-links {
     flex-direction: column;
     gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .nav-search-input {
+    width: 100%;
+  }
+
+  .nav-genre-dropdown {
+    left: 0;
+    right: auto;
   }
 
   .nav-right {

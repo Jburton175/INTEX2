@@ -1,0 +1,121 @@
+/* === Theme Variables for Category Section === */
+:root {
+  --category-bg: #ffffff;
+  --category-text: #000000;
+  --category-border: #dddddd;
+  --indicator: #cccccc;
+  --indicator-active: #e60000;
+  --scrollbar-bg: transparent;
+}
+
+[data-theme="dark"] {
+  --category-bg: #0f0f0f;
+  --category-text: #ffffff;
+  --category-border: #1f1f1f;
+  --indicator: #333333;
+  --indicator-active: #e50000;
+  --scrollbar-bg: transparent;
+}
+
+/* === Category Section === */
+.categorySection {
+  margin-top: 80px;
+  width: 100%;
+}
+
+.categoryHeader {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 40px 100px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.categoryTitle {
+  color: var(--category-text);
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  margin: 0;
+  flex: 1;
+}
+
+/* === Navigation Controls === */
+.navigationControls {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  border: 1px solid var(--category-border);
+  background-color: var(--category-bg);
+  padding: 12px;
+  gap: 12px;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid var(--category-border);
+  background-color: var(--category-bg);
+  padding: 10px;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  color: var(--category-text);
+}
+
+/* === Indicators === */
+.indicators {
+  display: flex;
+  gap: 3px;
+  width: 69px;
+}
+
+.indicator {
+  border-radius: 100px;
+  background-color: var(--indicator);
+  height: 4px;
+  flex: 1;
+}
+
+.indicatorActive {
+  background-color: var(--indicator-active);
+  width: 18px;
+  flex: none;
+}
+
+/* === Movies Grid === */
+.moviesGrid {
+  display: flex;
+  margin-top: 40px;
+  width: 100%;
+  gap: 20px;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  background-color: var(--scrollbar-bg);
+}
+
+.moviesGrid::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .categoryHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .navigationControls {
+    align-self: center;
+  }
+}
