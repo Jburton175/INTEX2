@@ -1,9 +1,10 @@
 .header {
-  z-index: 10;
-  justify-content: space-between;
-  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
   padding: 24px 80px;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   position: relative;
 }
 
@@ -15,7 +16,7 @@
 
 .brandName {
   color: #fff;
-  font-family: Manrope;
+  font-family: Arial, sans-serif;
   font-size: 18px;
   font-weight: 700;
   margin: 0;
@@ -43,7 +44,7 @@
   border: 1px solid #1a1a1a;
   border-radius: 8px;
   padding: 12px 20px;
-  font-family: Manrope;
+  font-family: Arial, sans-serif;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -51,7 +52,7 @@
 
 .tabLabel {
   color: #bfbfbf;
-  font-family: Manrope;
+  font-family: Arial, sans-serif;
   font-size: 14px;
   font-weight: 400;
   text-decoration: none;
