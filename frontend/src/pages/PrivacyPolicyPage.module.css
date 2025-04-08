@@ -35,7 +35,7 @@
 .mainContent {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   padding: 40px 80px;
 }
 
@@ -46,6 +46,7 @@
   border-radius: 10px;
   border: 1px solid #262626;
   background-color: #1a1a1a;
+  text-align: left;
 }
 
 .policyContent {
@@ -72,6 +73,7 @@
   font-weight: 700;
   line-height: 150%;
   margin: 0;
+  text-align: left;
 }
 
 .policyDate {
@@ -86,6 +88,7 @@
   font-weight: 400;
   line-height: 150%;
   margin: 0;
+  text-align: left;
 }
 
 .policyIntro {
@@ -100,6 +103,7 @@
   font-weight: 400;
   line-height: 150%;
   margin: 0;
+  text-align: left;
 }
 
 .policySection {
