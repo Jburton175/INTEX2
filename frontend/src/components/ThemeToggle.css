@@ -1,0 +1,80 @@
+:root {
+    --bg: #ffffff;
+    --text: #333333; /* softer gray text instead of pure black */
+  }
+  
+  [data-theme='dark'] {
+    --bg-gradient: linear-gradient(to bottom, #000000, #2c003e); /* black to dark purple */
+    --text: #cccccc; /* softer gray instead of bright white */
+  }
+  
+  /* Ensure full page height and smooth transitions */
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    transition: background 1s ease, color 1s ease;
+  }
+  
+  body {
+    background: var(--bg-gradient, var(--bg));
+    color: var(--text);
+  }
+  
+  /* Make all headers more bold and prominent */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: var(--heading);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Optional: paragraphs slightly lighter */
+  p {
+    font-size: 1.5rem;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+  
+  /* Theme Toggle Button Styles */
+  .theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 9999;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+  }
+  
+  .theme-toggle:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Theme Icon Styles */
+  .theme-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    transition: transform 1s ease;
+  }
+  
+  /* Spin animation class for icon rotation */
+  .spin {
+    animation: spin 1s ease;
+  }
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  

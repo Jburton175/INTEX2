@@ -1,0 +1,38 @@
+:root {
+    --bg: #ffffff;
+    --text: #333333;
+    --bg-gradient: linear-gradient(to bottom, #ffffff, #f8f9fa);
+  }
+  
+  [data-theme="dark"] {
+    --bg-gradient: linear-gradient(to bottom, #000000, #1d2951);
+    --text: #cccccc;
+  }
+  
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    transition: background 1s ease, color 1s ease;
+  }
+  
+  body {
+    /* background: var(--bg-gradient, var(--bg)); */
+    color: var(--text);
+  }
+  
+  /* 🔥 Fixed background gradient */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background: var(--bg-gradient, var(--bg));
+    background-repeat: no-repeat;
+    background-size: cover;
+    pointer-events: none;
+  }
+  
