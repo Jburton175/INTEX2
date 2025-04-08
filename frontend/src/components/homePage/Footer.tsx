@@ -11,7 +11,9 @@ const Footer: React.FC = () => {
             @2025 CineNiche, All Rights Reserved
           </p>
           <div className={styles.policyLinks}>
-            <button className={styles.policyLink}>Privacy Policy</button>
+            <a href="/privacy-policy" className={styles.policyLink}>
+              Privacy Policy
+            </a>
             <div className={styles.separator} />
             <button className={styles.policyLink}>Cookie Policy</button>
           </div>

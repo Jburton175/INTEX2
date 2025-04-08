@@ -1,34 +1,29 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import './App.css'
-// import HomePage from './pages/HomePage'
-
-// function App() {
-//   const [count, setCount] = useState(0)
-
-//   return (
-//     <>
-//       <HomePage />
-//     </>
-//   )
-// }
-
-// export default App
 import React from "react";
-import { BrowserRouter } from "react-router-dom";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import SignInPage from "./pages/SignInPage";
+import SignUpPage from "./pages/SignUpPage";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import ThemeToggle from "./components/ThemeToggle";
-import Home from "./pages/MoviesPage";
-import MoviePage from "./pages/MoviesPage";
+import MoviesPage from "./pages/MoviesPage";
+import ShowsPage from "./pages/ShowsPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import AdminPage from "./pages/AdminPage";
+import "./App.css";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Home/>
-      <MoviePage/>
-    </BrowserRouter>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/movies" element={<MoviesPage />} />
+          <Route path="/shows" element={<ShowsPage />} />
+          <Route path="/signin" element={<SignInPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

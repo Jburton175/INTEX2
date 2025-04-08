@@ -1,0 +1,651 @@
+.adminPage {
+  background-color: #141414;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+}
+
+.adminContent {
+  padding: 40px 80px;
+  flex: 1;
+}
+
+.adminHeader {
+  margin-bottom: 40px;
+}
+
+.adminTitle {
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 150%;
+  margin: 0 0 10px 0;
+}
+
+.adminSubtitle {
+  color: #999;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 150%;
+  margin: 0;
+}
+
+.adminTabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #262626;
+  padding-bottom: 16px;
+}
+
+.tabButton {
+  background: none;
+  border: none;
+  color: #bfbfbf;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.activeTab {
+  color: #fff;
+  background-color: #1a1a1a;
+  border: 1px solid #262626;
+}
+
+.adminPanel {
+  background-color: #1a1a1a;
+  border: 1px solid #262626;
+  border-radius: 10px;
+  padding: 30px;
+}
+
+/* Dashboard Panel */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.statCard {
+  background-color: #262626;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.statTitle {
+  color: #999;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 10px 0;
+}
+
+.statValue {
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Users Panel */
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.panelTitle {
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.panelControls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.searchBox {
+  position: relative;
+}
+
+.searchInput {
+  background-color: #262626;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  padding: 10px 16px;
+  width: 250px;
+}
+
+.searchInput::placeholder {
+  color: #999;
+}
+
+.resultsPerPageContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.resultsLabel {
+  color: #999;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+}
+
+.userTable {
+  width: 100%;
+  border: 1px solid #262626;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.tableHeader {
+  display: flex;
+  background-color: #262626;
+  padding: 16px;
+  font-weight: 600;
+}
+
+.tableRow {
+  display: flex;
+  border-bottom: 1px solid #262626;
+  padding: 16px;
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableCell {
+  flex: 1;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.tableCell:last-child {
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.actionButton {
+  background-color: #333;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  transition: background-color 0.2s;
+}
+
+.actionButton:hover {
+  background-color: #444;
+}
+
+.actionButton:first-child {
+  background-color: #1a1a1a;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.paginationButton {
+  background-color: #262626;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+}
+
+.pageNumbers {
+  display: flex;
+  gap: 8px;
+}
+
+.pageNumber {
+  background-color: transparent;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 12px;
+  min-width: 36px;
+}
+
+.activePage {
+  background-color: #e50000;
+  border-color: #e50000;
+}
+
+/* Content Panel */
+.addButton {
+  background-color: #e50000;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.contentCard {
+  background-color: #262626;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.contentImageContainer {
+  height: 180px;
+  overflow: hidden;
+}
+
+.contentImage {
+  width: 100%;
+  height: 100%;
+  background-color: #333;
+}
+
+.contentInfo {
+  padding: 16px;
+}
+
+.contentTitle {
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.contentType {
+  color: #999;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  margin: 0 0 16px 0;
+}
+
+.contentActions {
+  display: flex;
+  gap: 10px;
+}
+
+.contentActionButton {
+  background-color: #333;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  flex: 1;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 0;
+  transition: background-color 0.2s;
+}
+
+.contentActionButton:hover {
+  background-color: #444;
+}
+
+.contentActionButton:first-child {
+  background-color: #1a1a1a;
+}
+
+/* Settings Panel */
+.settingsForm {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.settingGroup {
+  border-bottom: 1px solid #262626;
+  padding-bottom: 30px;
+}
+
+.settingGroup:last-child {
+  border-bottom: none;
+}
+
+.settingGroupTitle {
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 24px 0;
+}
+
+.settingItem {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.settingLabel {
+  color: #999;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.settingInput {
+  background-color: #262626;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  padding: 10px 16px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.settingInputContainer {
+  width: fit-content;
+}
+
+.planCard {
+  background-color: #262626;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  max-width: 400px;
+}
+
+.planHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.planTitle {
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.planPriceInput {
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  padding: 6px 12px;
+  width: 80px;
+  text-align: center;
+}
+
+.planFeatures {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.planFeature {
+  color: #bfbfbf;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.planFeature:before {
+  content: "•";
+  color: #e50000;
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.settingsActions {
+  display: flex;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.saveButton {
+  background-color: #e50000;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 24px;
+}
+
+.resetButton {
+  background-color: transparent;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 24px;
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .adminContent {
+    padding: 40px;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contentGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .adminContent {
+    padding: 20px;
+  }
+
+  .panelHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .panelControls {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tableHeader,
+  .tableRow {
+    display: none;
+  }
+}

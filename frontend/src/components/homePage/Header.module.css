@@ -54,6 +54,13 @@
   font-family: Manrope;
   font-size: 14px;
   font-weight: 400;
+  text-decoration: none;
+  padding: 12px 0;
+  margin-right: 16px;
+}
+
+.tabLabel:hover {
+  color: #fff;
 }
 
 .notificationButton {

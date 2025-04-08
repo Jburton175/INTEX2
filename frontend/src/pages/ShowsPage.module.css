@@ -1,0 +1,146 @@
+.showsPage {
+  background-color: #141414;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+}
+
+.contentContainer {
+  flex: 1;
+  padding: 0 40px;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tabsContainer {
+  display: flex;
+  justify-content: center;
+  margin: 32px 0;
+}
+
+.tabs {
+  display: flex;
+  background-color: #0f0f0f;
+  border: 3px solid #1f1f1f;
+  border-radius: 10px;
+  padding: 8px;
+  gap: 16px;
+}
+
+.tabButton {
+  background: none;
+  border: none;
+  color: #bfbfbf;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.activeTab {
+  background-color: #1a1a1a;
+  border: 1px solid #1a1a1a;
+  color: #fff;
+  font-weight: 500;
+}
+
+.heroSection {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 709px;
+  margin-bottom: 64px;
+}
+
+.heroImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.heroContent {
+  position: relative;
+  padding: 450px 40px 16px;
+  text-align: center;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.heroTitle {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.heroDescription {
+  color: #999;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  max-width: 1000px;
+  margin: 0 auto 24px;
+}
+
+.playButton {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #e50000;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 20px;
+  font-family:
+    Manrope,
+    -apple-system,
+    Roboto,
+    Helvetica,
+    sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 0 auto;
+}
+
+.categoriesContainer {
+  padding-bottom: 80px;
+}
+
+@media (max-width: 768px) {
+  .contentContainer {
+    padding: 0 20px;
+  }
+
+  .heroContent {
+    padding: 350px 20px 16px;
+  }
+
+  .heroTitle {
+    font-size: 24px;
+  }
+
+  .heroDescription {
+    font-size: 14px;
+  }
+}
