@@ -22,10 +22,10 @@ const HeroSection: React.FC = () => {
           documentaries, and hidden favorites you won't find on mainstream
           services.
         </p>
-        <button className={styles.ctaButton}>
+        <a href="/signin" className={styles.ctaButton}>
           <PlayIcon />
           <span className={styles.ctaText}>Start Watching Now</span>
-        </button>
+        </a>
       </div>
     </section>
   );

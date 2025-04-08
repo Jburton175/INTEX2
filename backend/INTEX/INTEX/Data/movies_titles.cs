@@ -4,9 +4,9 @@ namespace INTEX.Data
 {
     public class movies_titles
     {
-
         [Key]
-        public string show_id { get; set; }
+        public string show_id { get; set; } = string.Empty;
+
         public string? type { get; set; }
         public string? title { get; set; }
         public string? director { get; set; }
@@ -17,7 +17,7 @@ namespace INTEX.Data
         public string? duration { get; set; }
         public string? description { get; set; }
 
-        // Genres (as per table definition)
+        // Genres
         public int? Action { get; set; }
         public int? Adventure { get; set; }
         public int? AnimeSeriesInternationalTVShows { get; set; }
@@ -53,6 +53,6 @@ namespace INTEX.Data
         public double? duration_minutes_movies { get; set; }
         public double? duration_in_seasons { get; set; }
 
-        public ICollection<movies_ratings> Ratings { get; set; }
+        public ICollection<movies_ratings> Ratings { get; set; } = new List<movies_ratings>(); // ✅ Fix CS8618
     }
 }

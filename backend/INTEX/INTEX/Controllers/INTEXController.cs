@@ -18,14 +18,15 @@ namespace INTEX.Controllers
 
         // the main API to fetch all movies.
         [HttpGet("GetAllMovies")]
-        public IActionResult GetMovies(int pageSize = 10, int pageNum = 1, [FromQuery] List<string> movieTypes = null)
+        public IActionResult GetMovies(int pageSize = 10, int pageNum = 1, [FromQuery] List<string>? movieTypes = null)
         {
 
 
             var query = _repo.GetMovies().AsQueryable();
             if (movieTypes != null && movieTypes.Any())
             {
-                query = query.Where(p => movieTypes.Contains(p.type));
+                query = query.Where(p => p.type != null && movieTypes.Contains(p.type));
+
             }
 
             var totalNumMovies = query.Count();
