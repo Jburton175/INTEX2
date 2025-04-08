@@ -41,7 +41,6 @@ const ThemeToggle = () => {
     setAnimating(true);
     setTimeout(() => setAnimating(false), 1000);
 
-    // Background transition effect
     const computedStyle = window.getComputedStyle(document.body);
     const currentBackground = computedStyle.background;
 
@@ -58,30 +57,32 @@ const ThemeToggle = () => {
     document.body.appendChild(overlay);
 
     if (consentGiven) {
-      // Set frontend cookie
+      // Set theme cookie
       const expires = new Date();
       expires.setFullYear(expires.getFullYear() + 1);
       document.cookie = `theme=${newTheme}; path=/; expires=${expires.toUTCString()}`;
 
-      // Call backend
-      // try {
-      //   await fetch("/api/Theme/SetTheme", {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify(newTheme),
-      //   });
-      // } catch (err) {
-      //   console.error("Failed to persist theme to backend:", err);
-      // }
+      // POST to backend using HTTPS-safe path
+      try {
+        const response = await fetch("/api/Theme/SetTheme", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newTheme),
+        });
+
+        if (!response.ok) {
+          console.error("Backend did not accept theme change");
+        }
+      } catch (err) {
+        console.error("Failed to persist theme to backend:", err);
+      }
     }
 
-    // Remove overlay after fade
+    // Fade overlay away
     setTimeout(() => {
       overlay.style.opacity = "0";
       setTimeout(() => {
-        if (overlay.parentNode) {
-          overlay.parentNode.removeChild(overlay);
-        }
+        overlay.remove();
       }, 1000);
     }, 50);
   };

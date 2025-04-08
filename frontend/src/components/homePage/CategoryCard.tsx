@@ -19,10 +19,11 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ name, images }) => {
           <img src={images[3]} alt="" className={styles.categoryImage} />
         </div>
         <div className={styles.gradient} />
+        <h3 className={styles.categoryName}>{name}</h3>
       </div>
-      <h3 className={styles.categoryName}>{name}</h3>
     </article>
   );
 };
 
 export default CategoryCard;
+    

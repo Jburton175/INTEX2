@@ -51,13 +51,17 @@ namespace INTEX.Controllers
             {
                 HttpContext.Response.Cookies.Append("theme", theme, new CookieOptions
                 {
-                    Expires = DateTimeOffset.UtcNow.AddYears(1)
+                    Expires = DateTimeOffset.UtcNow.AddYears(1),
+                    Path = "/", // ensure it's available app-wide
+                    SameSite = SameSiteMode.Lax
                 });
+
                 return Ok();
             }
 
             return BadRequest("Invalid theme value.");
         }
+
 
 
 
@@ -68,7 +72,7 @@ namespace INTEX.Controllers
             return Ok(newMovie);
         }
 
-        [HttpPut("UpdateMovie/{movieId}")]
+        [HttpPut("UpdateMovie/{show_id}")]
         public IActionResult UpdateMovie(int movieId, [FromBody] movies_titles updateMovie)
         {
             var existingMovie = _repo.GetMovieById(movieId);
@@ -128,16 +132,16 @@ namespace INTEX.Controllers
             return Ok(existingMovie);
         }
 
-        [HttpDelete("DeleteMovie/{movieId}")]
-        public IActionResult DeleteBook(int movieId)
+        [HttpDelete("DeleteMovie/{show_id}")]
+        public IActionResult DeleteBook(int show_id)
         {
-            var existingMovie = _repo.GetMovieById(movieId);
+            var existingMovie = _repo.GetMovieById(show_id);
             if (existingMovie == null)
             {
                 return NotFound(new { message = "Movie not found" });
             }
 
-            _repo.DeleteMovie(movieId);
+            _repo.DeleteMovie(show_id);
             return Ok(existingMovie);
         }
 
@@ -186,6 +190,18 @@ namespace INTEX.Controllers
 
             return Ok(types);
         }
+
+        [HttpGet("GetTitles")]
+        public IActionResult GetTitles()
+        {
+            var titles = _repo.GetMovies()
+                .Select(m => m.title)
+                .Distinct()
+                .ToList();
+
+            return Ok(titles);
+        }
+
 
     }
 }
