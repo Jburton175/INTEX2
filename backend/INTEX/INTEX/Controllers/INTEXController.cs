@@ -20,6 +20,8 @@ namespace INTEX.Controllers
         [HttpGet("GetAllMovies")]
         public IActionResult GetMovies(int pageSize = 10, int pageNum = 1, [FromQuery] List<string> movieTypes = null)
         {
+
+
             var query = _repo.GetMovies().AsQueryable();
             if (movieTypes != null && movieTypes.Any())
             {
@@ -38,6 +40,22 @@ namespace INTEX.Controllers
                 TotalNumMovies = totalNumMovies
             };
             return Ok(response);
+        }
+
+
+        [HttpPost("SetTheme")]
+        public IActionResult SetTheme([FromBody] string theme)
+        {
+            if (theme == "dark" || theme == "light")
+            {
+                HttpContext.Response.Cookies.Append("theme", theme, new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddYears(1)
+                });
+                return Ok();
+            }
+
+            return BadRequest("Invalid theme value.");
         }
 
 
