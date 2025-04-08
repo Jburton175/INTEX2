@@ -45,6 +45,8 @@ const TopNavBar: React.FC = () => {
         ☰
       </button>
 
+    
+
       <div className={`nav-center ${isMobileOpen ? "open" : ""}`}>
         <ul className="nav-links">
           <li><Link to="/">Home</Link></li>
