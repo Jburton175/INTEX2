@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace INTEX.Data
 {
@@ -25,6 +24,6 @@ namespace INTEX.Data
         public string? state { get; set; }
         public int? zip { get; set; }
 
-        public ICollection<movies_ratings> Ratings { get; set; }
+        public ICollection<movies_ratings> Ratings { get; set; } = new List<movies_ratings>();
     }
 }

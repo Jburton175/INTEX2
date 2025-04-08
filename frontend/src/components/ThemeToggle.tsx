@@ -64,15 +64,15 @@ const ThemeToggle = () => {
       document.cookie = `theme=${newTheme}; path=/; expires=${expires.toUTCString()}`;
 
       // Call backend
-      try {
-        await fetch("/api/Theme/SetTheme", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newTheme),
-        });
-      } catch (err) {
-        console.error("Failed to persist theme to backend:", err);
-      }
+      // try {
+      //   await fetch("/api/Theme/SetTheme", {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify(newTheme),
+      //   });
+      // } catch (err) {
+      //   console.error("Failed to persist theme to backend:", err);
+      // }
     }
 
     // Remove overlay after fade
