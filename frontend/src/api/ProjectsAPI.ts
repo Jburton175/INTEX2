@@ -1,7 +1,7 @@
-import { Project } from "../types/Project";
+import { ProjectType } from "../types/Movies";
 
 interface FetchProjectsResponse {
-    projects: Project[];
+    projects: ProjectType[];
     totalNumProjects: number;
 }
 

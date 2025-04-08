@@ -16,9 +16,6 @@ const AdminPage: React.FC = () => {
       <main className={styles.adminContent}>
         <div className={styles.adminHeader}>
           <h1 className={styles.adminTitle}>Admin Dashboard</h1>
-          <p className={styles.adminSubtitle}>
-            Manage your CineNiche streaming platform
-          </p>
         </div>
 
         <div className={styles.adminTabs}>
@@ -40,25 +37,15 @@ const AdminPage: React.FC = () => {
           >
             Content
           </button>
-          <button
-            className={`${styles.tabButton} ${activeTab === "settings" ? styles.activeTab : ""}`}
-            onClick={() => setActiveTab("settings")}
-          >
-            Settings
-          </button>
         </div>
 
         <div className={styles.adminPanel}>
           {activeTab === "dashboard" && (
             <div className={styles.dashboardPanel}>
-              <div className={styles.statsGrid}>
+              <div className={styles.statsGrid} style={{ display: 'flex', justifyContent: 'center' }}>
                 <div className={styles.statCard}>
                   <h3 className={styles.statTitle}>Total Users</h3>
                   <p className={styles.statValue}>12,345</p>
-                </div>
-                <div className={styles.statCard}>
-                  <h3 className={styles.statTitle}>Active Subscriptions</h3>
-                  <p className={styles.statValue}>8,721</p>
                 </div>
                 <div className={styles.statCard}>
                   <h3 className={styles.statTitle}>Total Movies</h3>
@@ -191,90 +178,6 @@ const AdminPage: React.FC = () => {
                   <button className={styles.pageNumber}>3</button>
                 </div>
                 <button className={styles.paginationButton}>Next</button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "settings" && (
-            <div className={styles.settingsPanel}>
-              <h2 className={styles.panelTitle}>Platform Settings</h2>
-
-              <div className={styles.settingsForm}>
-                <div className={styles.settingGroup}>
-                  <h3 className={styles.settingGroupTitle}>General Settings</h3>
-
-                  <div className={styles.settingItem}>
-                    <label className={styles.settingLabel}>Platform Name</label>
-                    <input
-                      type="text"
-                      className={styles.settingInput}
-                      defaultValue="CineNiche"
-                    />
-                  </div>
-
-                  <div className={styles.settingItem}>
-                    <label className={styles.settingLabel}>Contact Email</label>
-                    <input
-                      type="email"
-                      className={styles.settingInput}
-                      defaultValue="contact@cineniche.com"
-                    />
-                  </div>
-
-                  <div className={styles.settingItem}>
-                    <label className={styles.settingLabel}>
-                      Results Per Page
-                    </label>
-                    <div className={styles.settingInputContainer}>
-                      <ResultsPerPageSelector />
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.settingGroup}>
-                  <h3 className={styles.settingGroupTitle}>
-                    Subscription Plans
-                  </h3>
-
-                  <div className={styles.planCard}>
-                    <div className={styles.planHeader}>
-                      <h4 className={styles.planTitle}>Basic Plan</h4>
-                      <input
-                        type="text"
-                        className={styles.planPriceInput}
-                        defaultValue="9.99"
-                      />
-                    </div>
-                    <ul className={styles.planFeatures}>
-                      <li className={styles.planFeature}>HD Streaming</li>
-                      <li className={styles.planFeature}>Watch on 1 device</li>
-                      <li className={styles.planFeature}>Limited content</li>
-                    </ul>
-                  </div>
-
-                  <div className={styles.planCard}>
-                    <div className={styles.planHeader}>
-                      <h4 className={styles.planTitle}>Premium Plan</h4>
-                      <input
-                        type="text"
-                        className={styles.planPriceInput}
-                        defaultValue="14.99"
-                      />
-                    </div>
-                    <ul className={styles.planFeatures}>
-                      <li className={styles.planFeature}>4K Streaming</li>
-                      <li className={styles.planFeature}>Watch on 4 devices</li>
-                      <li className={styles.planFeature}>
-                        All content included
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className={styles.settingsActions}>
-                  <button className={styles.saveButton}>Save Changes</button>
-                  <button className={styles.resetButton}>Reset</button>
-                </div>
               </div>
             </div>
           )}
