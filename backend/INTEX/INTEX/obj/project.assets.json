@@ -4759,27 +4759,18 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\brojo\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
     "/Users/michaelbackman/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\brojo\\OneDrive\\Desktop\\Winter 2025\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\INTEX.csproj",
       "projectUniqueName": "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/INTEX.csproj",
       "projectName": "INTEX",
-      "projectPath": "C:\\Users\\brojo\\OneDrive\\Desktop\\Winter 2025\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\INTEX.csproj",
-      "packagesPath": "C:\\Users\\brojo\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\brojo\\OneDrive\\Desktop\\Winter 2025\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\obj\\",
       "projectPath": "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/INTEX.csproj",
       "packagesPath": "/Users/michaelbackman/.nuget/packages/",
       "outputPath": "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\brojo\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         "/Users/michaelbackman/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
@@ -4855,5 +4846,13 @@
         "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet@8/8.0.13/libexec/sdk/8.0.113/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file /Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/obj/project.nuget.cache : After parsing a value an unexpected character was encountered: \". Path 'expectedPackageFiles[88]', line 98, position 4."
+    }
+  ]
 }

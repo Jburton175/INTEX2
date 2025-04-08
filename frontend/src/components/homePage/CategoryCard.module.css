@@ -1,0 +1,44 @@
+.categoryCard {
+  background-color: #1a1a1a;
+  border: 1px solid #262626;
+  border-radius: 10px;
+  padding: 24px;
+}
+
+.imageContainer {
+  flex-direction: column;
+  gap: 5px;
+  height: 210px;
+  margin-bottom: 20px;
+  display: flex;
+  position: relative;
+}
+
+.imageRow {
+  flex: 1;
+  gap: 5px;
+  display: flex;
+}
+
+.categoryImage {
+  object-fit: cover;
+  border-radius: 6px;
+  flex: 1;
+}
+
+.gradient {
+  background: linear-gradient(#1a1a1a00 0%, #1a1a1a 101.79%);
+  height: 210px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.categoryName {
+  color: #fff;
+  font-family: Manrope;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
