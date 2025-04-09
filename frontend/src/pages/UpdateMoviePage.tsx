@@ -135,9 +135,12 @@ const UpdateMoviePage: React.FC = () => {
 
   return (
     <div className={styles.updateMoviePage}>
-      <Header selectedType={"Movie"} onTypeChange={function (type: "Movie" | "TV Show"): void {
-        throw new Error("Function not implemented.");
-      } } />
+      <Header
+        selectedType={"Movie"}
+        onTypeChange={function (type: "Movie" | "TV Show"): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
 
       {showDeleteConfirmation && (
         <div className={styles.modalOverlay}>

@@ -7,7 +7,6 @@ import ResultsPerPageSelector from "../components/admin/ResultsPerPageSelector";
 import { Movies } from "../types/Movies";
 import { Users } from "../types/Users";
 import { deleteMovie, fetchMovies, fetchUsers, deleteUser } from "../api/API";
-import UpdateMoviePage from "./UpdateMoviePage";
 import Pagination from "../components/Pagination";
 
 const AdminPage: React.FC = () => {
@@ -93,10 +92,6 @@ const AdminPage: React.FC = () => {
   if (movieLoading) return <p>Loading...</p>;
   if (movieError) return <p className="text-red-500">Error: {movieError}</p>;
 
-  function handleMovieDelete(show_id: string): void {
-    throw new Error("Function not implemented.");
-  }
-
   return (
     <div className={styles.adminPage}>
       {/* {editingMovies && (
@@ -112,9 +107,12 @@ const AdminPage: React.FC = () => {
         />
       )} */}
 
-      <Header selectedType={"Movie"} onTypeChange={function (type: "Movie" | "TV Show"): void {
-        throw new Error("Function not implemented.");
-      } } />
+      <Header
+        selectedType={"Movie"}
+        onTypeChange={function (type: "Movie" | "TV Show"): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
       <br />
       <br />
       <main className={styles.adminContent}>
@@ -232,12 +230,13 @@ const AdminPage: React.FC = () => {
                             <button
                               className={styles.actionButton}
                               onClick={() => {
-                                const confirmed = window.confirm("Are you sure you want to delete this user?");
+                                const confirmed = window.confirm(
+                                  "Are you sure you want to delete this user?"
+                                );
                                 if (confirmed) {
                                   handleDeleteUser(user.user_id);
                                 }
                               }}
-                              
                             >
                               Delete
                             </button>
