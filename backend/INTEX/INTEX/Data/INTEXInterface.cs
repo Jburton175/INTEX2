@@ -19,5 +19,15 @@
         void AddMovie(movies_titles movie);
         void UpdateMovie(movies_titles movie);
         void DeleteMovie(string movieId);
+
+        //home recommendations
+        IEnumerable<home_recommendations> GetHomeRecommendations();
+        IEnumerable<home_recommendations> GetHomeRecommendationsByID(int userId);
+        //home recommendations
+        IEnumerable<movie_recommendations> GetMovieRecommendations();
+        IEnumerable<movie_recommendations> GetMovieRecommendationsByID(string movieId);
+
+
+
     }
 }
