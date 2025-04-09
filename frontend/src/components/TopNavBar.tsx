@@ -6,7 +6,12 @@ import { Search } from "lucide-react";
 import "./TopNavBar.css";
 import "./ThemeToggle.css";
 
-const TopNavBar: React.FC = () => {
+interface TopNavBarProps {
+  selectedType: "Movie" | "TV Show";
+  onTypeChange: (type: "Movie" | "TV Show") => void;
+}
+
+const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -40,7 +45,6 @@ const TopNavBar: React.FC = () => {
         setGenres(data);
       } catch (error) {
         console.error("Error fetching genres:", error);
-        // Optional fallback:
         setGenres(["Action", "Comedy", "Drama"]);
       }
     };
@@ -69,10 +73,6 @@ const TopNavBar: React.FC = () => {
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
 
-  const handleGenreSelect = (genre: string) => {
-    console.log("Selected genre:", genre);
-  };
-
   return (
     <nav className={`top-navbar ${isHidden ? "hide" : ""}`}>
       <div className="nav-left">
@@ -81,17 +81,61 @@ const TopNavBar: React.FC = () => {
         </Link>
       </div>
 
-      <button
-        className="mobile-toggle"
-        onClick={() => setIsMobileOpen(!isMobileOpen)}
-        aria-label="Toggle menu"
-      >
-        ☰
-      </button>
+      <div className="nav-center">
+        <button
+          className={`type-toggle ${selectedType === "Movie" ? "active" : ""}`}
+          onClick={() => onTypeChange("Movie")}
+        >
+          Movies
+        </button>
+        <button
+          className={`type-toggle ${selectedType === "TV Show" ? "active" : ""}`}
+          onClick={() => onTypeChange("TV Show")}
+        >
+          TV Shows
+        </button>
+      </div>
 
-      <div className={`nav-center ${isMobileOpen ? "open" : ""}`}>
-        <ul className="nav-links">
-          <li className="nav-search-container">
+      <div className="nav-right">
+        <div className="nav-right-left">
+          {/* Genres come first now */}
+          <div
+            className="nav-genre-dropdown-container"
+            onMouseEnter={() => {
+              if (genreTimeoutRef.current) clearTimeout(genreTimeoutRef.current);
+              setIsGenreOpen(true);
+            }}
+            onMouseLeave={() => {
+              genreTimeoutRef.current = setTimeout(() => {
+                setIsGenreOpen(false);
+              }, 600);
+            }}
+          >
+            <button className="nav-genre-button">Genres</button>
+            {isGenreOpen && (
+              <ul
+                className="nav-genre-dropdown"
+                onMouseEnter={() => {
+                  if (genreTimeoutRef.current) clearTimeout(genreTimeoutRef.current);
+                  setIsGenreOpen(true);
+                }}
+                onMouseLeave={() => {
+                  genreTimeoutRef.current = setTimeout(() => {
+                    setIsGenreOpen(false);
+                  }, 600);
+                }}
+              >
+                {genres.map((genre) => (
+                  <li key={genre}>
+                    <button className="genre-option">{genre}</button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* Search comes after genres now */}
+          <div className="nav-search-container">
             <button
               className="nav-search-icon"
               onClick={() => setShowSearch(!showSearch)}
@@ -125,51 +169,9 @@ const TopNavBar: React.FC = () => {
                 )}
               </div>
             )}
-          </li>
+          </div>
+        </div>
 
-          <li
-            className="nav-genre-dropdown-container"
-            onMouseEnter={() => {
-              if (genreTimeoutRef.current) clearTimeout(genreTimeoutRef.current);
-              setIsGenreOpen(true);
-            }}
-            onMouseLeave={() => {
-              genreTimeoutRef.current = setTimeout(() => {
-                setIsGenreOpen(false);
-              }, 600);
-            }}
-          >
-            <button className="nav-genre-button">Genres</button>
-            {isGenreOpen && (
-              <ul
-                className="nav-genre-dropdown"
-                onMouseEnter={() => {
-                  if (genreTimeoutRef.current) clearTimeout(genreTimeoutRef.current);
-                  setIsGenreOpen(true);
-                }}
-                onMouseLeave={() => {
-                  genreTimeoutRef.current = setTimeout(() => {
-                    setIsGenreOpen(false);
-                  }, 600);
-                }}
-              >
-                {genres.map((genre) => (
-                  <li key={genre}>
-                    <button
-                      className="genre-option"
-                      onClick={() => handleGenreSelect(genre)}
-                    >
-                      {genre}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        </ul>
-      </div>
-
-      <div className="nav-right">
         <ThemeToggle />
       </div>
     </nav>

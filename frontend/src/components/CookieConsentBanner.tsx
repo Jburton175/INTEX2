@@ -108,18 +108,15 @@ const CookieConsentBanner: React.FC = () => {
   return (
     <div style={bannerStyle}>
       {expanded && (
-        <>
+        <div>
           <span style={messageStyle}>
-            We use cookies to enhance your experience. By continuing to use our
-            site, you agree to our cookie policy.
+            We use cookies to enhance your experience. By continuing to use our site, you agree to our cookie policy.
           </span>
-
           <button style={buttonStyle} onClick={handleAccept}>
             Accept
           </button>
-        </>
+        </div>
       )}
-
       <button
         onClick={() => setExpanded(!expanded)}
         style={iconStyle}

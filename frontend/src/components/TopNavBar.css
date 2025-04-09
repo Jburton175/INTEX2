@@ -51,13 +51,7 @@
 }
 
 /* === Center (Search + Genres aligned closer to right) === */
-.nav-center {
-  display: flex;
-  justify-content: flex-start;
-  margin-left: auto;
-  margin-right: 15%; /* Keeps center closer to right, without overlapping nav-right */
-  max-width: 45%;
-}
+
 
 .nav-links {
   display: flex;
@@ -162,11 +156,8 @@
 }
 
 /* === Right === */
-.nav-right {
-  display: flex;
-  align-items: center;
-  padding-left: 1rem;
-}
+
+
 
 /* === Dark Theme Adjustments === */
 [data-theme="dark"] .nav-search-input,
@@ -197,13 +188,7 @@
     display: block;
   }
 
-  .nav-center {
-    flex-grow: 1;
-    justify-content: flex-end;
-    margin-right: 0;
-    padding-right: 0.7rem;
-    max-width: 100%;
-  }
+
 
   .nav-links {
     flex-direction: column;
@@ -220,9 +205,7 @@
     right: auto;
   }
 
-  .nav-right {
-    display: none;
-  }
+
 }
 .search-dropdown {
   position: absolute;
@@ -251,3 +234,72 @@
 .search-result:hover {
   background-color: var(--hover);
 }
+
+
+
+
+/* Center the toggle container */
+.nav-center {
+  position: absolute;      /* Remove from normal flex flow */
+  left: 50%;               /* Position at half the navbar width */
+  transform: translateX(-50%); /* Center it by shifting left by 50% of its width */
+  display: flex;
+  align-items: center;
+  gap: 1rem;               /* Optional gap between toggles */
+}
+
+/* Style the toggle buttons */
+.type-toggle {
+  background: #ccc;             /* Gray background */
+  border: none;                 /* Remove the box (border) */
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  color: #333;                  /* Default text color */
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Center the toggle container */
+.nav-center {
+  display: flex;
+  justify-content: center;  /* Center content horizontally */
+  align-items: center;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Toggle buttons as simple text */
+.type-toggle {
+  background: none;      /* No background */
+  border: none;          /* No border or box */
+  padding: 0.5rem 1rem;   /* Adjust spacing as needed */
+  margin: 0 0.5rem;
+  font-weight: bold;
+  color: gray;           /* Default gray text */
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+/* Hover and active state: white text */
+.type-toggle:hover,
+.type-toggle.active {
+  color: white;
+}
+
+/* Ensure the right side is flex container */
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+/* New container for search and genre group */
+.nav-right-left {
+  display: flex;
+  align-items: center;
+  margin-right: 5rem;  /* Adjust this value as needed to separate them from the ThemeToggle */
+  gap: 1rem;           /* Optional: adds space between search and genre */
+}
+
+/* The rest of your styles for search and genre remain as is... */
