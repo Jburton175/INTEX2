@@ -12,8 +12,8 @@ interface FetchSingleMovieResponse {
 }
 
 const API_URL =
-  //   "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
-  "https://localhost:5000/INTEX";
+  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
+// "https://localhost:5000/INTEX";
 
 export const fetchMovies = async (
   pageSize: number,
