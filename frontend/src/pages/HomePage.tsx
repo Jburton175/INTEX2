@@ -6,13 +6,15 @@ import HeroSection from "../components/homePage/HeroSection";
 import CategorySection from "../components/homePage/CategorySection";
 import Footer from "../components/Footer";
 
-
 const CineNiche: React.FC = () => {
   return (
     <div className={styles.container}>
-      <Header selectedType={"Movie"} onTypeChange={function (type: "Movie" | "TV Show"): void {
-        throw new Error("Function not implemented.");
-      } } />
+      <Header
+        selectedType={"Movie"}
+        onTypeChange={function (_type: "Movie" | "TV Show"): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
       <HeroSection />
       <CategorySection />
       <Footer />
@@ -21,4 +23,3 @@ const CineNiche: React.FC = () => {
 };
 
 export default CineNiche;
-

@@ -69,7 +69,7 @@ const UpdateMoviePage: React.FC = () => {
 
           // Check if data exists and is not empty
           if (data) {
-            setMovieData(data); //this has an error but it works
+            setMovieData(data.movie); //this has an error but it works
           } else {
             console.error("No movie found with the given show_id.");
             // Optionally handle the case where no movie is found
@@ -137,7 +137,7 @@ const UpdateMoviePage: React.FC = () => {
     <div className={styles.updateMoviePage}>
       <Header
         selectedType={"Movie"}
-        onTypeChange={function (type: "Movie" | "TV Show"): void {
+        onTypeChange={function (_type: "Movie" | "TV Show"): void {
           throw new Error("Function not implemented.");
         }}
       />

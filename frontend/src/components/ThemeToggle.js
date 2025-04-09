@@ -1,0 +1,80 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+import { useEffect, useState } from "react";
+import "./ThemeToggle.css";
+import SunIcon from "../assets/Sun.webp";
+import MoonIcon from "../assets/Moon.webp";
+const ThemeToggle = () => {
+    const [theme, setTheme] = useState("light");
+    const [animating, setAnimating] = useState(false);
+    const [consentGiven, setConsentGiven] = useState(false);
+    const getCookie = (name) => {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(nameEQ) === 0) {
+                return c.substring(nameEQ.length);
+            }
+        }
+        return null;
+    };
+    useEffect(() => {
+        const consent = getCookie("cookieConsent");
+        const savedTheme = getCookie("theme");
+        if (consent === "accepted") {
+            setConsentGiven(true);
+        }
+        const initialTheme = savedTheme === "dark" ? "dark" : "light";
+        setTheme(initialTheme);
+        document.documentElement.setAttribute("data-theme", initialTheme);
+    }, []);
+    const toggleTheme = async () => {
+        const newTheme = theme === "light" ? "dark" : "light";
+        setTheme(newTheme);
+        document.documentElement.setAttribute("data-theme", newTheme);
+        setAnimating(true);
+        setTimeout(() => setAnimating(false), 1000);
+        const computedStyle = window.getComputedStyle(document.body);
+        const currentBackground = computedStyle.background;
+        const overlay = document.createElement("div");
+        overlay.style.position = "fixed";
+        overlay.style.top = "0";
+        overlay.style.left = "0";
+        overlay.style.width = "100%";
+        overlay.style.height = "100%";
+        overlay.style.zIndex = "9998";
+        overlay.style.pointerEvents = "none";
+        overlay.style.background = currentBackground;
+        overlay.style.transition = "opacity 1s ease";
+        document.body.appendChild(overlay);
+        if (consentGiven) {
+            // Set theme cookie
+            const expires = new Date();
+            expires.setFullYear(expires.getFullYear() + 1);
+            document.cookie = `theme=${newTheme}; path=/; expires=${expires.toUTCString()}`;
+            // POST to backend using HTTPS-safe path
+            try {
+                const response = await fetch("/api/Theme/SetTheme", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newTheme),
+                });
+                if (!response.ok) {
+                    console.error("Backend did not accept theme change");
+                }
+            }
+            catch (err) {
+                console.error("Failed to persist theme to backend:", err);
+            }
+        }
+        // Fade overlay away
+        setTimeout(() => {
+            overlay.style.opacity = "0";
+            setTimeout(() => {
+                overlay.remove();
+            }, 1000);
+        }, 50);
+    };
+    return (_jsx("button", { className: "theme-toggle", onClick: toggleTheme, children: _jsx("img", { src: theme === "light" ? MoonIcon : SunIcon, alt: "Toggle theme", className: `theme-icon ${animating ? "spin" : ""}` }) }));
+};
+export default ThemeToggle;

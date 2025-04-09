@@ -109,7 +109,7 @@ const AdminPage: React.FC = () => {
 
       <Header
         selectedType={"Movie"}
-        onTypeChange={function (type: "Movie" | "TV Show"): void {
+        onTypeChange={function (_type: "Movie" | "TV Show"): void {
           throw new Error("Function not implemented.");
         }}
       />
