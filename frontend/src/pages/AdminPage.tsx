@@ -24,7 +24,6 @@ const AdminPage: React.FC = () => {
   const [MoviePageNum, setMoviePageNum] = useState<number>(1);
   const [totalMovies, setTotalMovies] = useState<number>(0);
   const [totalMoviePages, setTotalMoviePages] = useState<number>(0);
-  const [editingMovies, setEditingMovies] = useState<Movies | null>(null);
   const [users, setUsers] = useState<Users[]>([]);
   const [userLoading, setUserLoading] = useState(true);
   const [userError, setUserError] = useState<string | null>(null);
@@ -43,7 +42,7 @@ const AdminPage: React.FC = () => {
       }
     };
     loadMovies();
-  }, [MoviePageSize, MoviePageNum]);
+  }, [MoviePageSize, MoviePageNum, totalMovies]);
 
   useEffect(() => {
     if (activeTab === "users") {
@@ -79,7 +78,7 @@ const AdminPage: React.FC = () => {
   // delete movie
   const handleDeleteMovie = async (show_id: string) => {
     const confirmDeleteMovie = window.confirm(
-      "Are you sure you want to delete this book?"
+      "Are you sure you want to delete this movie?"
     );
     if (!confirmDeleteMovie) return;
 
@@ -87,7 +86,7 @@ const AdminPage: React.FC = () => {
       await deleteMovie(show_id);
       setMovies(Movies.filter((m) => m.show_id !== show_id));
     } catch (error) {
-      alert("Failed to delete book. Please try again.");
+      alert("Failed to delete movie. Please try again.");
     }
   };
 
@@ -96,19 +95,6 @@ const AdminPage: React.FC = () => {
 
   return (
     <div className={styles.adminPage}>
-      {/* {editingMovies && (
-        <UpdateMoviePage
-          movie={editingMovies}
-          onSuccess={() => {
-            setEditingMovies(null);
-            fetchMovies(MoviePageSize, MoviePageNum, []).then((data) =>
-              setMovies(data.movies)
-            );
-          }}
-          onCancel={() => setEditingMovies(null)}
-        />
-      )} */}
-
       <Header />
       <main className={styles.adminContent}>
         <div className={styles.adminHeader}>
@@ -384,13 +370,13 @@ const AdminPage: React.FC = () => {
 
 export default AdminPage;
 
-function setUsers(userData: Users[]) {
-  throw new Error("Function not implemented.");
-}
-function setUserError(message: string) {
-  throw new Error("Function not implemented.");
-}
+// function setUsers(userData: Users[]) {
+//   throw new Error("Function not implemented.");
+// }
+// function setUserError(message: string) {
+//   throw new Error("Function not implemented.");
+// }
 
-function setUserLoading(arg0: boolean) {
-  throw new Error("Function not implemented.");
-}
+// function setUserLoading(arg0: boolean) {
+//   throw new Error("Function not implemented.");
+// }

@@ -44,6 +44,23 @@ namespace INTEX.Controllers
         }
 
 
+        [HttpGet("GetOneMovie")]
+        public IActionResult GetOneMovie([FromQuery] string show_id)
+        {
+            if (string.IsNullOrWhiteSpace(show_id))
+                return BadRequest("Missing or invalid show_id.");
+
+            var movie = _repo.GetMovieById(show_id);
+
+            if (movie == null)
+                return NotFound();
+
+            return Ok(movie);
+        }
+
+
+
+
         [HttpPost("SetTheme")]
         public IActionResult SetTheme([FromBody] string theme)
         {
@@ -73,13 +90,16 @@ namespace INTEX.Controllers
         }
 
         [HttpPut("UpdateMovie/{show_id}")]
-        public IActionResult UpdateMovie(int movieId, [FromBody] movies_titles updateMovie)
+        public IActionResult UpdateMovie(string show_id, [FromBody] movies_titles updateMovie)
         {
-            var existingMovie = _repo.GetMovieById(movieId);
+            var existingMovie = _repo.GetMovieById(show_id);
             if (existingMovie == null)
             {
                 return NotFound(new { message = "Movie not found" });
             }
+
+            Console.WriteLine($"Updating movie with ID: {show_id}");
+            //Console.WriteLine($"New movie data: {JsonConvert.SerializeObject(updateMovie)}");
 
             existingMovie.type = updateMovie.type;
             existingMovie.title = updateMovie.title;
@@ -133,7 +153,7 @@ namespace INTEX.Controllers
         }
 
         [HttpDelete("DeleteMovie/{show_id}")]
-        public IActionResult DeleteBook(int show_id)
+        public IActionResult DeleteBook(string show_id)
         {
             var existingMovie = _repo.GetMovieById(show_id);
             if (existingMovie == null)

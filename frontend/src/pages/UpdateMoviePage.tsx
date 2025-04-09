@@ -1,60 +1,110 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styles from "./UpdateMoviePage.module.css";
 import Header from "../components/homePage/Header";
 import Footer from "../components/homePage/Footer";
 import { ArrowLeft } from "lucide-react";
+import { fetchOneMovie, UpdateMovie } from "../api/API";
+import { Movies } from "../types/Movies";
 
 interface MovieData {
-  id: string;
-  type: string;
-  title: string;
-  director: string;
-  cast: string;
-  releaseYear: string;
-  rating: string;
-  duration: string;
-  description: string;
-  genre: string;
-  image?: string;
+  show_id: string;
+  type?: string;
+  title?: string;
+  director?: string;
+  cast?: string;
+  country?: string;
+  release_year?: number;
+  rating?: string;
+  duration?: string;
+  description?: string;
+
+  // Genres
+  Action?: number;
+  Adventure?: number;
+  AnimeSeriesInternationalTVShows?: number;
+  BritishTVShowsDocuseriesInternationalTVShows?: number;
+  Children?: number;
+  Comedies?: number;
+  ComediesDramasInternationalMovies?: number;
+  ComediesInternationalMovies?: number;
+  ComediesRomanticMovies?: number;
+  CrimeTVShowsDocuseries?: number;
+  Documentaries?: number;
+  DocumentariesInternationalMovies?: number;
+  Docuseries?: number;
+  Dramas?: number;
+  DramasInternationalMovies?: number;
+  DramasRomanticMovies?: number;
+  FamilyMovies?: number;
+  Fantasy?: number;
+  HorrorMovies?: number;
+  InternationalMoviesThrillers?: number;
+  InternationalTVShowsRomanticTVShowsTVDramas?: number;
+  KidsTV?: number;
+  LanguageTVShows?: number;
+  Musicals?: number;
+  NatureTV?: number;
+  RealityTV?: number;
+  Spirituality?: number;
+  TVAction?: number;
+  TVComedies?: number;
+  TVDramas?: number;
+  TalkShowsTVComedies?: number;
+  Thrillers?: number;
+  duration_minutes_movies?: number;
+  duration_in_seasons?: number;
 }
 
 const UpdateMoviePage: React.FC = () => {
   const navigate = useNavigate();
+  const { show_id } = useParams();
+  const [movieData, setMovieData] = useState<MovieData | null>(null);
 
-  // In a real application, this would come from a route parameter or context
-  // For now, we'll use mock data
-  const [movieData, setMovieData] = useState<MovieData>({
-    id: "1",
-    type: "Movie",
-    title: "The Cinematic Experience",
-    director: "Jane Director",
-    cast: "Actor One, Actor Two, Actor Three",
-    releaseYear: "2023",
-    rating: "8.5",
-    duration: "2h 15m",
-    description:
-      "A groundbreaking film that explores the boundaries of cinema.",
-    genre: "Drama, Thriller",
-    image:
-      "https://cdn.builder.io/api/v1/image/assets/TEMP/7d070b596a99677bef7f541f0efac5e7a0f3a1af",
-  });
+  useEffect(() => {
+    if (show_id) {
+      fetchOneMovie(show_id)
+        .then((data) => {
+          console.log("Fetched movie data:", data); // Log to inspect the response
+
+          // Check if data exists and is not empty
+          if (data) {
+            setMovieData(data); //this has an error but it works
+          } else {
+            console.error("No movie found with the given show_id.");
+            // Optionally handle the case where no movie is found
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to fetch movie", error);
+        });
+    }
+  }, [show_id]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setMovieData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setMovieData((prev) => (prev ? { ...prev, [name]: value } : null));
   };
 
   const handleUpdate = () => {
-    // In a real application, this would send an API request to update the movie
+    if (!movieData) {
+      console.error("Movie data is not available");
+      return;
+    }
+
     console.log("Updating movie:", movieData);
-    // Navigate back to admin page after successful update
-    navigate("/admin");
+
+    // Type assertion here
+    UpdateMovie(movieData.show_id, movieData as Movies) // Force casting
+      .then((updatedMovie) => {
+        console.log("Movie updated successfully:", updatedMovie);
+        navigate("/admin");
+      })
+      .catch((error) => {
+        console.error("Error updating movie:", error);
+      });
   };
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -69,7 +119,7 @@ const UpdateMoviePage: React.FC = () => {
 
   const handleConfirmDelete = () => {
     // In a real application, this would send an API request to delete the movie
-    console.log("Deleting movie:", movieData.id);
+    console.log("Deleting movie:", movieData?.show_id);
     setShowDeleteConfirmation(false);
     // Navigate back to admin page after successful deletion
     navigate("/admin");
@@ -78,6 +128,10 @@ const UpdateMoviePage: React.FC = () => {
   const handleGoBack = () => {
     navigate("/admin");
   };
+
+  if (!movieData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className={styles.updateMoviePage}>
@@ -130,7 +184,7 @@ const UpdateMoviePage: React.FC = () => {
                 <input
                   type="text"
                   name="type"
-                  value={movieData.type}
+                  value={movieData.type || ""}
                   onChange={handleInputChange}
                   className={styles.formInput}
                   placeholder="Type"
@@ -142,7 +196,7 @@ const UpdateMoviePage: React.FC = () => {
                 <input
                   type="text"
                   name="title"
-                  value={movieData.title}
+                  value={movieData.title || ""}
                   onChange={handleInputChange}
                   className={styles.formInput}
                   placeholder="Title"
@@ -154,7 +208,7 @@ const UpdateMoviePage: React.FC = () => {
                 <input
                   type="text"
                   name="director"
-                  value={movieData.director}
+                  value={movieData.director || ""}
                   onChange={handleInputChange}
                   className={styles.formInput}
                   placeholder="Director"
@@ -166,7 +220,7 @@ const UpdateMoviePage: React.FC = () => {
                 <input
                   type="text"
                   name="cast"
-                  value={movieData.cast}
+                  value={movieData.cast || ""}
                   onChange={handleInputChange}
                   className={styles.formInput}
                   placeholder="Cast"
@@ -176,9 +230,9 @@ const UpdateMoviePage: React.FC = () => {
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Release Year</label>
                 <input
-                  type="text"
-                  name="releaseYear"
-                  value={movieData.releaseYear}
+                  type="number"
+                  name="release_year"
+                  value={movieData.release_year || ""}
                   onChange={handleInputChange}
                   className={styles.formInput}
                   placeholder="Release Year"
@@ -190,7 +244,7 @@ const UpdateMoviePage: React.FC = () => {
                 <input
                   type="text"
                   name="rating"
-                  value={movieData.rating}
+                  value={movieData.rating || ""}
                   onChange={handleInputChange}
                   className={styles.formInput}
                   placeholder="Rating"
@@ -202,7 +256,7 @@ const UpdateMoviePage: React.FC = () => {
                 <input
                   type="text"
                   name="duration"
-                  value={movieData.duration}
+                  value={movieData.duration || ""}
                   onChange={handleInputChange}
                   className={styles.formInput}
                   placeholder="Duration"
@@ -213,25 +267,15 @@ const UpdateMoviePage: React.FC = () => {
                 <label className={styles.formLabel}>Description</label>
                 <textarea
                   name="description"
-                  value={movieData.description}
+                  value={movieData.description || ""}
                   onChange={handleInputChange}
                   className={styles.formTextarea}
                   placeholder="Description"
                 />
               </div>
-
-              <div className={styles.formGroupFull}>
-                <label className={styles.formLabel}>Genre</label>
-                <input
-                  type="text"
-                  name="genre"
-                  value={movieData.genre}
-                  onChange={handleInputChange}
-                  className={styles.formInput}
-                  placeholder="Genre"
-                />
-              </div>
             </div>
+
+            {/* Genres */}
 
             <div className={styles.buttonContainer}>
               <button className={styles.updateButton} onClick={handleUpdate}>
