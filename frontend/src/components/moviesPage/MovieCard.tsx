@@ -1,23 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./MovieCard.module.css";
 
-interface MovieCardProps {
-  image: string;
+interface Movie {
+  id: string;
+  show_id: string;
   title: string;
-  onImageError?: (e: React.SyntheticEvent<HTMLImageElement, Event>) => void;
+  duration: string;
+  rating: number;
+  image: string;
+  releaseDate?: string;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ image, title, onImageError }) => {
+interface MovieCardProps {
+  movie: Movie;
+  onImageError: (movieId: string) => void;
+}
+
+const MovieCard: React.FC<MovieCardProps> = ({ movie, onImageError }) => {
+  const [loaded, setLoaded] = useState(false);
+
   return (
-    <div className={styles.movieCard}>
+    <div className={styles.card}>
+      {/* Show a gray placeholder with spinner until the image has loaded */}
+      {!loaded && (
+        <div className={styles.placeholder}>
+          <div className={styles.spinner}></div>
+        </div>
+      )}
       <img
-        src={image}
-        alt={title}
-        className={styles.movieImage}
-        onError={onImageError}
+        src={movie.image}
+        alt={movie.title}
+        className={styles.image}
+        onLoad={() => setLoaded(true)}
+        onError={() => {
+          onImageError(movie.id);
+          setLoaded(true);
+        }}
+        style={{ display: loaded ? "block" : "none" }}
       />
-      <div className={styles.overlay}>
-        <p className={styles.movieTitle}>{title}</p>
+      <div className={styles.info}>
+        <h3 className={styles.title}>{movie.title}</h3>
+        <p className={styles.duration}>{movie.duration}</p>
       </div>
     </div>
   );
