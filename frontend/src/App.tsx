@@ -9,6 +9,7 @@ import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import AdminPage from "./pages/AdminPage";
 import UpdateMovie from "./pages/UpdateMoviePage";
 import CookiePage from "./pages/CookiePolicyPage";
+import AddMovie from "./pages/AddMoviePage";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/update-movie/:show_id" element={<UpdateMovie />} />
           <Route path="/cookie" element={<CookiePage />} />
+          <Route path="/add-movie" element={<AddMovie />} />
           {/* Add more routes as needed */}
         </Routes>
       </div>

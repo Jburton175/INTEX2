@@ -338,7 +338,16 @@ const AdminPage: React.FC = () => {
                       className={styles.searchInput}
                     />
                   </div>
-                  <button className={styles.addButton}>Add New Content</button>
+                  <button
+                    className={styles.addButton}
+                    type="button"
+                    onClick={() => {
+                      console.log("Add New Content button clicked"); // Debugging step
+                      navigate("/add-movie"); // Navigate to Add Movie page
+                    }}
+                  >
+                    Add New Content
+                  </button>
                 </div>
               </div>
 
