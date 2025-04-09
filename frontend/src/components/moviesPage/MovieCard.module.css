@@ -21,110 +21,59 @@
 
 /* === Movie Card Styles === */
 .movieCard {
-  border-radius: 10px;
-  border: 1px solid var(--movie-border);
-  background-color: var(--movie-bg);
-  min-height: 308px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  width: 224px;
-  flex-shrink: 0;
-  color: var(--movie-text);
-}
-
-.movieImage {
-  aspect-ratio: 1;
-  object-fit: contain;
-  object-position: center;
-  width: 192px;
-  border-radius: 10px;
-  flex: 1;
-}
-
-.movieDetails {
-  display: flex;
-  margin-top: 16px;
-  width: 100%;
-  justify-content: space-between;
-}
-
-/* === Duration Badge === */
-.durationBadge {
-  display: flex;
-  align-items: center;
-  border-radius: 51px;
-  border: 1px solid var(--badge-border);
-  background-color: var(--badge-bg);
-  padding: 4px 8px 4px 4px;
-  gap: 2px;
-}
-
-.clockIcon {
-  width: 20px;
-  height: 20px;
-  margin: auto 0;
-  color: #999;
-}
-
-.durationText {
-  color: #999;
-  font-family:
-    Manrope,
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-/* === Release Badge === */
-.releaseBadge {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border-radius: 51px;
-  border: 1px solid var(--badge-border);
-  background-color: var(--badge-bg);
-  padding: 6px 14px;
-  gap: 2px;
-  font-family:
-    Manrope,
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  text-align: center;
-}
-
-.releaseLabel {
-  color: var(--release-label);
-}
-
-.releaseDate {
-  color: var(--release-date);
-}
-.movieCard {
-  border-radius: 10px;
-  overflow: hidden;
-  background-color: transparent;
-  border: none;
-  padding: 0;
+  position: relative;
   width: 224px;
   height: 308px;
   flex-shrink: 0;
-  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--movie-bg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
 }
 
+/* On hover, scale the card and add a shadow */
+.movieCard:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* The image fills the entire card */
 .movieImage {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  display: block;
-  border-radius: 10px;
+}
+
+/* Overlay to darken the bottom third of the card */
+.overlay {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 50%; /* Cover roughly the bottom third */
+  /* Gradient starts very dark at the bottom and fades to transparent at the top of the overlay */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 90%);
+  display: flex;
+  align-items: flex-end;  /* Ensure title is at the bottom */
+  padding: 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+/* Reveal the overlay on hover */
+.movieCard:hover .overlay {
+  opacity: 1;
+}
+
+/* Style for the movie title that appears in the overlay */
+.movieTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  transform: translateY(-2px);
 }

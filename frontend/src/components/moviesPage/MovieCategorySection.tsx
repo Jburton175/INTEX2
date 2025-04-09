@@ -4,7 +4,7 @@ import MovieCard from "./MovieCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Movie {
-  id: number;
+  id: string; // id remains a string
   title: string;
   image: string;
   duration?: string;
@@ -16,17 +16,19 @@ interface MovieCategorySectionProps {
   title: string;
   movies: Movie[];
   type: "duration" | "release";
+  // Optional onImageError callback so that MovieCard can notify parent if an image fails.
+  onImageError?: (movieId: string) => void;
 }
 
 const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
   title,
   movies,
   type,
+  onImageError,
 }) => {
-  // State to track active indicator
+  // State to track active indicator for navigation.
   const [activeIndex, setActiveIndex] = React.useState(0);
 
-  // Handle navigation
   const handlePrev = () => {
     setActiveIndex((prev) => (prev === 0 ? 0 : prev - 1));
   };
@@ -63,10 +65,13 @@ const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
           <MovieCard
             key={movie.id}
             image={movie.image}
+            title={movie.title}
+            // Pass extra info if needed
             duration={movie.duration}
             rating={movie.rating}
             releaseDate={movie.releaseDate}
-            type={type}
+            // onImageError callback is wrapped to supply the movie's id.
+            onImageError={(e) => onImageError && onImageError(movie.id)}
           />
         ))}
       </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import styles from "./MoviesPage.module.css";
 import TopNavBar from "../components/TopNavBar";
 import MovieCategorySection from "../components/moviesPage/MovieCategorySection";
@@ -14,7 +14,8 @@ interface MovieFromApi {
 }
 
 interface Movie {
-  id: number;
+  // Using the API’s show_id as the stable identifier (a string).
+  id: string;
   show_id: string;
   title: string;
   duration: string;
@@ -23,29 +24,22 @@ interface Movie {
   releaseDate?: string;
 }
 
-const PAGE_SIZE = 20; // Number of movies to request per page
+const PAGE_SIZE = 20; // Movies per API call and target count per section
+const MIN_MOVIES = 7;  // Minimum movies required for a genre to be rendered
 
-// Fisher–Yates shuffle for uniform randomization.
-const shuffleArray = <T,>(array: T[]): T[] => {
-  const newArray = [...array];
-  for (let i = newArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-  }
-  return newArray;
-};
-
+// Generate the image URL from the movie title.
 const generateImageURL = (title: string) =>
   `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(title)}.jpg`;
 
-const convertToMovie = (data: MovieFromApi[], startId = 0): Movie[] => {
-  return data.map((movie, idx) => {
+// Convert API movie data to our Movie interface.
+const convertToMovie = (data: MovieFromApi[]): Movie[] => {
+  return data.map((movie) => {
     const durationMin = movie.duration_minutes_movies ?? 90;
     // Generate a random rating between 3.5 and 5.0.
     const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
     return {
-      id: startId + idx,
-      show_id: `s${Math.floor(Math.random() * 8807) + 1}`,
+      id: movie.show_id,
+      show_id: movie.show_id,
       title: movie.title,
       duration: `${Math.floor(durationMin / 60)}h ${durationMin % 60}min`,
       rating: parseFloat(rating),
@@ -55,6 +49,7 @@ const convertToMovie = (data: MovieFromApi[], startId = 0): Movie[] => {
   });
 };
 
+// Format genre labels by inserting spaces.
 const formatGenreLabel = (raw: string) => {
   return raw
     .replace(/([a-z])([A-Z])/g, "$1 $2")
@@ -62,30 +57,25 @@ const formatGenreLabel = (raw: string) => {
 };
 
 const MoviesPage: React.FC = () => {
-  // All movies loaded so far.
   const [allMovies, setAllMovies] = useState<MovieFromApi[]>([]);
-  // Derived state for recommended movies and genre categories.
   const [recommended, setRecommended] = useState<Movie[]>([]);
   const [genreMovies, setGenreMovies] = useState<Record<string, Movie[]>>({});
-  // Pagination state.
   const [pageNum, setPageNum] = useState(1);
   const [totalNumMovies, setTotalNumMovies] = useState(0);
   const [loading, setLoading] = useState(false);
-  // Array of genres (fetched on mount).
   const [genres, setGenres] = useState<string[]>([]);
-  // Active tab state.
   const [activeTab, setActiveTab] = useState<"movies" | "shows">("movies");
-  // Sentinel ref for infinite scrolling.
+  // Set of movie IDs whose image failed to load.
+  const [erroredMovieIds, setErroredMovieIds] = useState<Set<string>>(new Set());
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  // Load movies for a given page.
+  // Function to load movies for a given page.
   const loadMovies = async (page: number) => {
     setLoading(true);
     try {
       const moviesUrl = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetAllMovies?pageSize=${PAGE_SIZE}&pageNum=${page}`;
       const resMovies = await fetch(moviesUrl);
       const dataMovies = await resMovies.json();
-      // IMPORTANT: Use lowercase "movies" (as in your API sample) and totalNumMovies.
       const newMovies: MovieFromApi[] = dataMovies.movies ?? [];
       setAllMovies(prev => [...prev, ...newMovies]);
       setTotalNumMovies(dataMovies.totalNumMovies);
@@ -101,7 +91,9 @@ const MoviesPage: React.FC = () => {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const resGenres = await fetch("https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetGenres");
+        const resGenres = await fetch(
+          "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetGenres"
+        );
         const genresData: string[] = await resGenres.json();
         setGenres(genresData);
         console.log("Fetched genres:", genresData);
@@ -112,12 +104,12 @@ const MoviesPage: React.FC = () => {
     fetchGenres();
   }, []);
 
-  // Load the first page on mount and load subsequent pages when pageNum changes.
+  // Load the first page on mount and additional pages when pageNum increases.
   useEffect(() => {
     loadMovies(pageNum);
   }, [pageNum]);
 
-  // Set up IntersectionObserver for infinite scrolling.
+  // Infinite scroll: Observe the sentinel element to load more movies.
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {
       const firstEntry = entries[0];
@@ -136,43 +128,53 @@ const MoviesPage: React.FC = () => {
     };
   }, [loading, allMovies, totalNumMovies]);
 
-  // Recalculate recommended and genre movies whenever allMovies or genres change.
+  // Compute the "Recommended For You" section.
+  // Now also filter out movies whose images have failed.
   useEffect(() => {
-    // Filter movies that are of type "Movie".
-    const onlyMovies = allMovies.filter(m => m.type === "Movie");
-    // Recommended: pick PAGE_SIZE random movies.
-    const recommendedMovies = convertToMovie(shuffleArray(onlyMovies).slice(0, PAGE_SIZE));
-    setRecommended(recommendedMovies);
-    console.log("Recommended movies:", recommendedMovies.map(movie => movie.title));
+    if (recommended.length === 0 && allMovies.length > 0) {
+      const onlyMovies = allMovies.filter(
+        m => m.type === "Movie" && !erroredMovieIds.has(m.show_id)
+      );
+      const recs = convertToMovie(onlyMovies.slice(0, PAGE_SIZE));
+      setRecommended(recs);
+      console.log("Recommended movies:", recs.map(m => m.title));
+    }
+  }, [allMovies, recommended.length, erroredMovieIds]);
 
+  // Compute movies for each genre, ensuring no duplicate movies across sections
+  // and that each genre section has at least MIN_MOVIES movies.
+  useEffect(() => {
+    const onlyMovies = allMovies.filter(
+      m => m.type === "Movie" && !erroredMovieIds.has(m.show_id)
+    );
+    // Begin with recommended movies' IDs so they are not rendered again.
+    const usedIds = new Set<string>(recommended.map(movie => movie.id));
     const movieByGenre: Record<string, Movie[]> = {};
+
     genres.forEach((genreKey) => {
-      // Debug logging: show which movies have the matching key.
-      console.log(`\n--- Debug for Genre: "${genreKey}" ---`);
-      onlyMovies.forEach((movie) => {
-        const matchedKeys = Object.keys(movie).filter(
-          (key) => key.toLowerCase() === genreKey.toLowerCase()
-        );
-        if (matchedKeys.length > 0) {
-          console.log(
-            `Movie "${movie.title}" has key(s): ${JSON.stringify(matchedKeys)} with value(s): ${JSON.stringify(matchedKeys.map(key => movie[key]))}`
-          );
-        }
-      });
-      const filtered = onlyMovies.filter((m) =>
+      const formattedGenre = formatGenreLabel(genreKey);
+      const filtered = onlyMovies.filter(m =>
         Object.keys(m).some(
           (key) => key.toLowerCase() === genreKey.toLowerCase() && m[key] === 1
-        )
+        ) && !usedIds.has(m.show_id)
       );
-      const formattedGenre = formatGenreLabel(genreKey);
-      const moviesForGenre = filtered.length > 0
-        ? convertToMovie(shuffleArray(filtered).slice(0, PAGE_SIZE))
-        : [];
-      movieByGenre[formattedGenre] = moviesForGenre;
-      console.log(`Movies for category "${formattedGenre}":`, moviesForGenre.map(movie => movie.title));
+      let moviesForGenre = convertToMovie(filtered).slice(0, PAGE_SIZE);
+      moviesForGenre.forEach(movie => usedIds.add(movie.id));
+      // Only add the genre if we have at least MIN_MOVIES movies.
+      if (moviesForGenre.length >= MIN_MOVIES) {
+        movieByGenre[formattedGenre] = moviesForGenre;
+        console.log(`Movies for category "${formattedGenre}" (>=${MIN_MOVIES}):`, moviesForGenre.map(movie => movie.title));
+      }
     });
+
     setGenreMovies(movieByGenre);
-  }, [allMovies, genres]);
+  }, [allMovies, genres, erroredMovieIds, recommended]);
+
+  // Callback to flag a movie whose image fails to load.
+  const handleImageError = useCallback((movieId: string) => {
+    setErroredMovieIds(prev => new Set(prev).add(movieId));
+    console.log("Image error for movie:", movieId);
+  }, []);
 
   return (
     <div className={styles.moviesPage}>
@@ -212,6 +214,7 @@ const MoviesPage: React.FC = () => {
                   title="Recommended For You"
                   movies={recommended}
                   type="duration"
+                  onImageError={handleImageError}
                 />
                 {Object.entries(genreMovies).map(([genre, movies]) => (
                   <MovieCategorySection
@@ -219,6 +222,7 @@ const MoviesPage: React.FC = () => {
                     title={genre}
                     movies={movies}
                     type="duration"
+                    onImageError={handleImageError}
                   />
                 ))}
               </>
@@ -231,7 +235,7 @@ const MoviesPage: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Sentinel element used for infinite scrolling */}
+      {/* Sentinel element for infinite scrolling */}
       <div ref={sentinelRef} style={{ height: "1px" }} />
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>
