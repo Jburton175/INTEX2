@@ -62,7 +62,9 @@ const AddMoviePage: React.FC = () => {
 
   return (
     <div className={styles.addMoviePage}>
-      <Header />
+      <Header selectedType={"Movie"} onTypeChange={function (type: "Movie" | "TV Show"): void {
+        throw new Error("Function not implemented.");
+      } } />
 
       <main className={styles.mainContent}>
         <div className={styles.pageHeader}>

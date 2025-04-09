@@ -9,7 +9,9 @@ import CategorySection from "../components/homePage/CategorySection";
 const CineNiche: React.FC = () => {
   return (
     <div className={styles.container}>
-      <Header />
+      <Header selectedType={"Movie"} onTypeChange={function (type: "Movie" | "TV Show"): void {
+        throw new Error("Function not implemented.");
+      } } />
       <HeroSection />
 
       <CategorySection />
