@@ -14,13 +14,14 @@ interface Movie {
 interface MovieCardProps {
   movie: Movie;
   onImageError: (movieId: string) => void;
+  onClick: () => void; // Add onClick prop
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie, onImageError }) => {
+const MovieCard: React.FC<MovieCardProps> = ({ movie, onImageError, onClick }) => {
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={onClick}> {/* Make the whole card clickable */}
       {/* Show a placeholder with spinner until image loads */}
       {!loaded && (
         <div className={styles.placeholder}>

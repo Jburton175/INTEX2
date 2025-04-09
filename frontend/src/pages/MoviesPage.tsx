@@ -3,6 +3,7 @@ import styles from "./MoviesPage.module.css";
 import TopNavBar from "../components/TopNavBar";
 import MovieCategorySection from "../components/moviesPage/MovieCategorySection";
 import CookieConsentBanner from "../components/CookieConsentBanner";
+import PageDetails from "./PageDetails";
 
 // --- Interfaces ---
 interface MovieFromApi {
@@ -27,8 +28,8 @@ export interface Movie {
 }
 
 // --- Constants ---
-const PAGE_SIZE = 20;    // for data loading/infinite scroll
-const SECTION_SIZE = 7;  // each section must display 7 movies per carousel page
+const PAGE_SIZE = 800;    // for data loading/infinite scroll
+const SECTION_SIZE = 14;  // each section must display 7 movies per carousel page
 
 const MOVIES_CACHE_KEY = "cachedMovies";
 
@@ -60,14 +61,7 @@ const formatGenreLabel = (raw: string): string =>
     .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
 
-// Optionally, pad an array (if needed for other UI adjustments)
-function padArray<T>(arr: T[], targetLength: number): (T | null)[] {
-  const padded = [...arr];
-  while (padded.length < targetLength) {
-    padded.push(null);
-  }
-  return padded;
-}
+
 
 // --- MoviesPage Component ---
 const MoviesPage: React.FC = () => {
@@ -83,6 +77,8 @@ const MoviesPage: React.FC = () => {
   const [genres, setGenres] = useState<string[]>([]);
   const [erroredMovieIds, setErroredMovieIds] = useState<Set<string>>(new Set());
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const [selectedMovieId, setSelectedMovieId] = useState<string | null>(null); // State to track the selected movie ID
+
 
   // Featured movie for hero section (displayed only for Movies)
   const featuredMovie = {
@@ -135,21 +131,40 @@ const MoviesPage: React.FC = () => {
     fetchGenres();
   }, []);
 
+
+
+
+
+
+
   // Load movies from API for a given page.
   const loadMovies = async (page: number) => {
+    // Only fetch more movies if we have less than the SECTION_SIZE
+    if (allMovies.length >= SECTION_SIZE) {
+      console.log("Already reached the maximum number of movies.");
+      return; // Stop loading if we already have enough movies
+    }
+
     setLoading(true);
     try {
       const moviesUrl = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetAllMovies?pageSize=${PAGE_SIZE}&pageNum=${page}`;
       const resMovies = await fetch(moviesUrl);
       const dataMovies = await resMovies.json();
       const newMovies: MovieFromApi[] = dataMovies.movies ?? [];
-      setTotalNumMovies(dataMovies.totalNumMovies);
-      // Combine previously loaded movies with new ones; deduplicate based on show_id.
+
+      // Stop further calls if there are no more movies to load
+      if (newMovies.length === 0 || allMovies.length >= SECTION_SIZE) {
+        console.log("No more movies to load or reached SECTION_SIZE limit.");
+        return;  // Prevent further loading
+      }
+
+      setTotalNumMovies(dataMovies.totalNumMovies); // Update the total number of movies
       setAllMovies(prev => {
         const combined = [...prev, ...newMovies];
         const unique = Array.from(new Map(combined.map(movie => [movie.show_id, movie])).values());
         return unique;
       });
+
       console.log(`Loaded page ${page}:`, newMovies.map(movie => movie.title));
     } catch (err) {
       console.error("Failed to load movies:", err);
@@ -157,6 +172,11 @@ const MoviesPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+
+
+
+
 
   // Load pages when pageNum increases.
   useEffect(() => {
@@ -167,17 +187,23 @@ const MoviesPage: React.FC = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {
       const firstEntry = entries[0];
-      if (firstEntry.isIntersecting && !loading && allMovies.length < totalNumMovies) {
-        setPageNum(prev => prev + 1);
+      if (
+        firstEntry.isIntersecting && // Check if the sentinel element is in view
+        !loading &&                   // Only trigger if not already loading
+        allMovies.length < totalNumMovies // Only trigger if there are more movies to load
+      ) {
+        setPageNum(prev => prev + 1);  // Increase pageNum for the next request
       }
     });
+  
     const currentSentinel = sentinelRef.current;
     if (currentSentinel) observer.observe(currentSentinel);
+  
     return () => {
       if (currentSentinel) observer.unobserve(currentSentinel);
     };
   }, [loading, allMovies, totalNumMovies]);
-
+  
   // When selectedType changes, reset movies state.
   useEffect(() => {
     setAllMovies([]);
@@ -226,46 +252,64 @@ const MoviesPage: React.FC = () => {
         ? !genreKey.toLowerCase().includes("tv")
         : genreKey.toLowerCase().includes("tv");
     });
-
+  
     const groups: Record<string, (Movie | null)[]> = {};
+  
+    // Combine Action and Adventure into one group "Action & Adventure"
+    const actionAdventureMatches = moviesForType.filter(
+      m => m["action"] === 1 || m["adventure"] === 1
+    );
+    const actionAdventureConverted = convertToMovie(actionAdventureMatches);
+    if (actionAdventureConverted.length > 0) {
+      groups["Action & Adventure"] = actionAdventureConverted;
+    }
+  
+    // Now, filter out "Action" and "Adventure" individually
     applicableGenres.forEach(genreKey => {
-      const formattedGenre = formatGenreLabel(genreKey);
-      const matches = moviesForType.filter(m =>
-        Object.keys(m).some(key => key.toLowerCase() === genreKey.toLowerCase() && m[key] === 1)
-      );
-      const groupFull = convertToMovie(matches);
-      if (groupFull.length === 0 && moviesForType.length < totalNumMovies) return;
-      groups[formattedGenre] = groupFull;
-      console.log(`Genre "${formattedGenre}":`, groupFull.map(i => (i ? i.title : "placeholder")));
+      if (
+        genreKey.toLowerCase() !== "action" &&
+        genreKey.toLowerCase() !== "adventure"
+      ) {
+        const formattedGenre = formatGenreLabel(genreKey);
+        const matches = moviesForType.filter(m =>
+          Object.keys(m).some(
+            key => key.toLowerCase() === genreKey.toLowerCase() && m[key] === 1
+          )
+        );
+        const groupFull = convertToMovie(matches);
+        if (groupFull.length === 0 && moviesForType.length < totalNumMovies) return;
+        groups[formattedGenre] = groupFull;
+        console.log(`Genre "${formattedGenre}":`, groupFull.map(i => (i ? i.title : "placeholder")));
+      }
     });
+  
     setGenreMovies(groups);
   }, [moviesForType, genres, erroredMovieIds, selectedType, totalNumMovies]);
-
-  // Global effect to ensure sections eventually have more items if available.
-  useEffect(() => {
-    const recCount = recommended.length;
-    const newRelCount = newReleases.length;
-    let genreShort = false;
-    for (const group of Object.values(genreMovies)) {
-      if (group.length < SECTION_SIZE) {
-        genreShort = true;
-        break;
-      }
-    }
-    if (
-      (recCount < SECTION_SIZE || newRelCount < SECTION_SIZE || genreShort) &&
-      allMovies.length < totalNumMovies &&
-      !loading
-    ) {
-      setPageNum(prev => prev + 1);
-    }
-  }, [recommended, newReleases, genreMovies, allMovies, totalNumMovies, loading]);
+  
+  
 
   // Callback for image load errors.
   const handleImageError = useCallback((movieId: string) => {
     setErroredMovieIds(prev => new Set(prev).add(movieId));
     console.log("Image error for:", movieId);
   }, []);
+
+  const handleMovieClick = (showId: string) => {
+    setSelectedMovieId(showId);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedMovieId(null);
+  };
+
+
+
+
+
+
+
+
+  
 
   return (
     <div className={styles.moviesPage}>
@@ -289,7 +333,9 @@ const MoviesPage: React.FC = () => {
             </div>
           </div>
         )}
+  
         <div className={styles.categoriesContainer}>
+          {/* Show a message if there are no recommended shows for "TV Show" */}
           {selectedType === "TV Show" && recommended.length === 0 ? (
             <div className={styles.categorySection}>
               <h2 className={styles.categoryTitle}>Shows Coming Soon!</h2>
@@ -302,6 +348,7 @@ const MoviesPage: React.FC = () => {
                 movies={recommended}
                 type="duration"
                 onImageError={handleImageError}
+                onMovieClick={handleMovieClick} // Add this line for handling movie clicks
               />
               {/* New Releases Section */}
               <MovieCategorySection
@@ -309,6 +356,7 @@ const MoviesPage: React.FC = () => {
                 movies={newReleases}
                 type="duration"
                 onImageError={handleImageError}
+                onMovieClick={handleMovieClick} // Add this line for handling movie clicks
               />
               {/* Genre Sections */}
               {Object.entries(genreMovies).map(([genre, movies]) => (
@@ -318,14 +366,25 @@ const MoviesPage: React.FC = () => {
                   movies={movies}
                   type="duration"
                   onImageError={handleImageError}
+                  onMovieClick={handleMovieClick} // Add this line for handling movie clicks
                 />
               ))}
             </>
           )}
         </div>
       </div>
+  
+      {/* Conditional rendering of PageDetails */}
+      {selectedMovieId && (
+        <PageDetails
+          showId={selectedMovieId}
+          onClose={handleCloseDetails} // Close the details view
+        />
+      )}
+  
       {/* Sentinel element for infinite scroll */}
       <div ref={sentinelRef} style={{ height: "1px" }} />
+  
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>
           <div className={styles.footerDivider} />
@@ -344,6 +403,7 @@ const MoviesPage: React.FC = () => {
       </footer>
     </div>
   );
+  
 };
 
 export default MoviesPage;
