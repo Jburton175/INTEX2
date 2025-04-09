@@ -1,6 +1,6 @@
 import { Ratings } from "./Ratings";
 
-export interface Users {
+export interface User {
   user_id: number;
   name?: string;
   phone?: string;
