@@ -230,6 +230,7 @@ const MoviesPage: React.FC = () => {
   
   
 
+  console.log("Selected Movie ID:", selectedMovieId);
 
 
 

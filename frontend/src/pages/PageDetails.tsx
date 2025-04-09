@@ -44,6 +44,9 @@ const PageDetails: React.FC<PageDetailsProps> = ({ showId, onClose }) => {
     return <div>No details available</div>;
   }
 
+  console.log("Fetching details for movie with ID:", showId);
+
+
   return (
     <div className={styles.pageDetails}>
       <button onClick={onClose} className={styles.closeButton}>
