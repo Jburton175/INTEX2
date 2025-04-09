@@ -1,121 +1,121 @@
-/* === Theme Variables for Category Section === */
-:root {
-  --category-bg: #ffffff;
-  --category-text: #000000;
-  --category-border: #dddddd;
-  --indicator: #cccccc;
-  --indicator-active: #e60000;
-  --scrollbar-bg: transparent;
-}
-
-[data-theme="dark"] {
-  --category-bg: #0f0f0f;
-  --category-text: #ffffff;
-  --category-border: #1f1f1f;
-  --indicator: #333333;
-  --indicator-active: #e50000;
-  --scrollbar-bg: transparent;
-}
-
-/* === Category Section === */
 .categorySection {
-  margin-top: 80px;
-  width: 100%;
-}
-
-.categoryHeader {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 40px 100px;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  position: relative;
+  margin-bottom: 20px;
 }
 
 .categoryTitle {
-  color: var(--category-text);
-  font-family:
-    Manrope,
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
-  font-size: 30px;
-  font-weight: 700;
-  margin: 0;
-  flex: 1;
+  margin: 0 0 10px 10px;
+  font-size: 1.5rem;
+  color: #fff;
 }
 
-/* === Navigation Controls === */
-.navigationControls {
+.carouselContainer {
+  position: relative;
   display: flex;
   align-items: center;
-  border-radius: 10px;
-  border: 1px solid var(--category-border);
-  background-color: var(--category-bg);
-  padding: 12px;
-  gap: 12px;
 }
 
-.navButton {
+.carouselViewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+.carouselInner {
+  display: flex;
+}
+
+/* 
+   Each card wrapper uses flex-basis of 1/7 of the width. 
+   We give them some spacing (margin-right), except every 7th card 
+   to avoid pushing the last card offscreen.
+*/
+.cardWrapper {
+  flex: 0 0 calc(100% / 7);
+  margin-right: 10px;
+  box-sizing: border-box;
+}
+
+/* 
+   On every 7th item, remove the margin-right so it doesn’t push 
+   the last card in a row off the screen.
+*/
+.cardWrapper:nth-child(7n) {
+  margin-right: 0;
+}
+
+/* Placeholder styling for missing movie cards */
+.cardPlaceholder {
+  background-color: #ccc;
+  border-radius: 8px;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Arrow Styles */
+.arrowLeft,
+.arrowRight {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50px; /* if this is too wide, reduce it */
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
-  border: 1px solid var(--category-border);
-  background-color: var(--category-bg);
-  padding: 10px;
-  width: 44px;
-  height: 44px;
   cursor: pointer;
-  color: var(--category-text);
+  z-index: 1;
 }
 
-/* === Indicators === */
-.indicators {
+.arrowLeft {
+  left: 0;
+  /* Slight gradient so it doesn’t obscure half the first card */
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8), transparent 60%);
+}
+
+.arrowRight {
+  right: 0;
+  /* 
+     Make this gradient narrower so it doesn’t obscure 
+     the last card when there's only one page
+  */
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.8), transparent 60%);
+}
+
+.arrowIcon {
+  color: #fff;
+  font-size: 2rem;
+  transition: transform 0.3s ease;
+}
+
+.arrowLeft:hover .arrowIcon,
+.arrowRight:hover .arrowIcon {
+  transform: scale(1.1);
+}
+
+/* Reuse spinner & placeholder styles if needed */
+.placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
   display: flex;
-  gap: 3px;
-  width: 69px;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
 }
 
-.indicator {
-  border-radius: 100px;
-  background-color: var(--indicator);
-  height: 4px;
-  flex: 1;
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
 }
 
-.indicatorActive {
-  background-color: var(--indicator-active);
-  width: 18px;
-  flex: none;
-}
-
-/* === Movies Grid === */
-.moviesGrid {
-  display: flex;
-  margin-top: 40px;
-  width: 100%;
-  gap: 20px;
-  overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-  background-color: var(--scrollbar-bg);
-}
-
-.moviesGrid::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-/* === Responsive === */
-@media (max-width: 768px) {
-  .categoryHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-  }
-
-  .navigationControls {
-    align-self: center;
-  }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

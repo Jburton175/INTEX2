@@ -18,3 +18,4 @@ const CineNiche: React.FC = () => {
 };
 
 export default CineNiche;
+

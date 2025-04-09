@@ -6,19 +6,33 @@ import { Search } from "lucide-react";
 import "./TopNavBar.css";
 import "./ThemeToggle.css";
 
-const TopNavBar: React.FC = () => {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+interface TopNavBarProps {
+  selectedType: "Movie" | "TV Show";
+  onTypeChange: (type: "Movie" | "TV Show") => void;
+}
+
+// Helper: Insert spaces between capital letters for genre labels.
+const formatGenreLabel = (raw: string) => {
+  return raw
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
+};
+
+const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => {
+  // State for scroll behavior.
   const [isHidden, setIsHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-
-  const [showSearch, setShowSearch] = useState(false);
+  
+  // State for search functionality.
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<string[]>([]);
 
+  // State for genres.
   const [genres, setGenres] = useState<string[]>([]);
   const [isGenreOpen, setIsGenreOpen] = useState(false);
   const genreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Hide navbar on scroll.
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -29,30 +43,28 @@ const TopNavBar: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  // Fetch genres on component mount.
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await fetch(
-          "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetGenres"
-        );
+        const response = await fetch("https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetGenres");
         if (!response.ok) throw new Error("Failed to fetch genres");
         const data = await response.json();
         setGenres(data);
       } catch (error) {
         console.error("Error fetching genres:", error);
-        // Optional fallback:
         setGenres(["Action", "Comedy", "Drama"]);
       }
     };
     fetchGenres();
   }, []);
 
+  // Debounce search query and call the backend SearchTitles endpoint.
   useEffect(() => {
     if (searchTerm.trim() === "") {
       setSearchResults([]);
       return;
     }
-
     const delayDebounce = setTimeout(async () => {
       try {
         const response = await fetch(
@@ -65,13 +77,8 @@ const TopNavBar: React.FC = () => {
         console.error("Error fetching search results:", error);
       }
     }, 300);
-
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
-
-  const handleGenreSelect = (genre: string) => {
-    console.log("Selected genre:", genre);
-  };
 
   return (
     <nav className={`top-navbar ${isHidden ? "hide" : ""}`}>
@@ -81,53 +88,25 @@ const TopNavBar: React.FC = () => {
         </Link>
       </div>
 
-      <button
-        className="mobile-toggle"
-        onClick={() => setIsMobileOpen(!isMobileOpen)}
-        aria-label="Toggle menu"
-      >
-        ☰
-      </button>
+      <div className="nav-center">
+        <button
+          className={`type-toggle ${selectedType === "Movie" ? "active" : ""}`}
+          onClick={() => onTypeChange("Movie")}
+        >
+          Movies
+        </button>
+        <button
+          className={`type-toggle ${selectedType === "TV Show" ? "active" : ""}`}
+          onClick={() => onTypeChange("TV Show")}
+        >
+          TV Shows
+        </button>
+      </div>
 
-      <div className={`nav-center ${isMobileOpen ? "open" : ""}`}>
-        <ul className="nav-links">
-          <li className="nav-search-container">
-            <button
-              className="nav-search-icon"
-              onClick={() => setShowSearch(!showSearch)}
-              aria-label="Search"
-            >
-              <Search size={24} color="gray" />
-            </button>
-            {showSearch && (
-              <div className="nav-search-box">
-                <input
-                  type="text"
-                  className="nav-search-input"
-                  placeholder="Search..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                {searchResults.length > 0 && (
-                  <ul className="search-dropdown">
-                    {searchResults.map((title) => (
-                      <li key={title}>
-                        <Link
-                          to={`/movies/${encodeURIComponent(title)}`}
-                          className="search-result"
-                          onClick={() => setShowSearch(false)}
-                        >
-                          {title}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-          </li>
-
-          <li
+      <div className="nav-right">
+        <div className="nav-right-left">
+          {/* Genre Dropdown */}
+          <div
             className="nav-genre-dropdown-container"
             onMouseEnter={() => {
               if (genreTimeoutRef.current) clearTimeout(genreTimeoutRef.current);
@@ -155,21 +134,42 @@ const TopNavBar: React.FC = () => {
               >
                 {genres.map((genre) => (
                   <li key={genre}>
-                    <button
-                      className="genre-option"
-                      onClick={() => handleGenreSelect(genre)}
-                    >
-                      {genre}
-                    </button>
+                    <button className="genre-option">{formatGenreLabel(genre)}</button>
                   </li>
                 ))}
               </ul>
             )}
-          </li>
-        </ul>
-      </div>
+          </div>
 
-      <div className="nav-right">
+          {/* Always Expanded Search Bar */}
+          <div className="nav-search-container">
+            <div className="nav-search-field">
+              <Search size={20} color="gray" className="nav-search-icon-inside" />
+              <input
+                type="text"
+                className="nav-search-input"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            {searchResults.length > 0 && (
+              <ul className="search-dropdown">
+                {searchResults.map((title) => (
+                  <li key={title}>
+                    <Link
+                      to={`/movies/${encodeURIComponent(title)}`}
+                      className="search-result"
+                    >
+                      {title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
         <ThemeToggle />
       </div>
     </nav>
@@ -177,3 +177,4 @@ const TopNavBar: React.FC = () => {
 };
 
 export default TopNavBar;
+

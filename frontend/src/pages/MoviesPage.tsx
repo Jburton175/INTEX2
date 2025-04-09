@@ -1,20 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import styles from "./MoviesPage.module.css";
 import TopNavBar from "../components/TopNavBar";
 import MovieCategorySection from "../components/moviesPage/MovieCategorySection";
-import { Clock } from "lucide-react";
+import CookieConsentBanner from "../components/CookieConsentBanner";
 
+// --- Interfaces ---
 interface MovieFromApi {
   show_id: string;
   title: string;
   duration_minutes_movies: number | null;
+  duration_in_seasons?: number | null;
   release_year: number;
   rating: string;
+  type?: string;
   [key: string]: any;
 }
 
-interface Movie {
-  id: number;
+export interface Movie {
+  id: string;
   show_id: string;
   title: string;
   duration: string;
@@ -23,15 +26,24 @@ interface Movie {
   releaseDate?: string;
 }
 
+// --- Constants ---
+const PAGE_SIZE = 20;    // for data loading/infinite scroll
+const SECTION_SIZE = 7;  // each section must display 7 movies per carousel page
+
+const MOVIES_CACHE_KEY = "cachedMovies";
+
+// --- Helper Functions ---
+// Generate the image URL from the movie title.
 const generateImageURL = (title: string) =>
   `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(title)}.jpg`;
 
-const convertToMovie = (data: MovieFromApi[], startId = 0): Movie[] => {
-  return data.map((movie, idx) => {
+// Convert API movie data to our Movie interface.
+const convertToMovie = (data: MovieFromApi[]): Movie[] => {
+  return data.map((movie) => {
     const durationMin = movie.duration_minutes_movies ?? 90;
     const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
     return {
-      id: startId + idx,
+      id: movie.show_id,
       show_id: movie.show_id,
       title: movie.title,
       duration: `${Math.floor(durationMin / 60)}h ${durationMin % 60}min`,
@@ -42,147 +54,278 @@ const convertToMovie = (data: MovieFromApi[], startId = 0): Movie[] => {
   });
 };
 
+// Format genre labels by inserting spaces.
+const formatGenreLabel = (raw: string): string =>
+  raw
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
+
+// Optionally, pad an array (if needed for other UI adjustments)
+function padArray<T>(arr: T[], targetLength: number): (T | null)[] {
+  const padded = [...arr];
+  while (padded.length < targetLength) {
+    padded.push(null);
+  }
+  return padded;
+}
+
+// --- MoviesPage Component ---
 const MoviesPage: React.FC = () => {
-  const [allMovies, setAllMovies] = useState<Movie[]>([]);
-  const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
-  const [mustWatchMovies, setMustWatchMovies] = useState<Movie[]>([]);
-  const [activeTab, setActiveTab] = useState<"movies" | "shows">("movies");
+  // State declarations
+  const [allMovies, setAllMovies] = useState<MovieFromApi[]>([]);
+  const [selectedType, setSelectedType] = useState<"Movie" | "TV Show">("Movie");
+  const [recommended, setRecommended] = useState<(Movie | null)[]>([]);
+  const [newReleases, setNewReleases] = useState<(Movie | null)[]>([]);
+  const [genreMovies, setGenreMovies] = useState<Record<string, (Movie | null)[]>>({});
+  const [pageNum, setPageNum] = useState(1);
+  const [totalNumMovies, setTotalNumMovies] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [genres, setGenres] = useState<string[]>([]);
+  const [erroredMovieIds, setErroredMovieIds] = useState<Set<string>>(new Set());
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
+  // Featured movie for hero section (displayed only for Movies)
+  const featuredMovie = {
+    title: "The Interview",
+    description:
+      "A satirical look at international relations featuring a controversial interview that turns unexpectedly.",
+    image: generateImageURL("The Interview"),
+  };
+
+  // On mount, load cached movies (if any) from localStorage.
   useEffect(() => {
-    const fetchMovies = async () => {
+    const cachedData = localStorage.getItem(MOVIES_CACHE_KEY);
+    if (cachedData) {
       try {
-        const res = await fetch(
-          "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetAllMovies"
-        );
-        const data = await res.json();
-        console.log("Raw movie response:", data);
-  
-        const movieArray = data.movies ?? []; // ✅ Access the actual array
-        const movieOnly = movieArray.filter((m: any) => m.type === "Movie");
-  
-        const movies = convertToMovie(movieOnly, 0);
-        setAllMovies(movies);
-        setRecommendedMovies(movies.slice(0, 7));
-        setMustWatchMovies(movies.slice(7, 11));
+        const parsedCache = JSON.parse(cachedData);
+        if (parsedCache && Array.isArray(parsedCache.allMovies)) {
+          setAllMovies(parsedCache.allMovies);
+          setTotalNumMovies(parsedCache.totalNumMovies || 0);
+          console.log("Loaded movies from cache", parsedCache.allMovies);
+        }
       } catch (err) {
-        console.error("Error loading movies:", err);
+        console.error("Error parsing cached movies:", err);
       }
-    };
-  
-    fetchMovies();
+    }
   }, []);
-  
-  
 
+  // When allMovies state changes, update the localStorage cache.
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.innerHeight + window.scrollY;
-      const threshold = document.body.offsetHeight - 200;
+    localStorage.setItem(
+      MOVIES_CACHE_KEY,
+      JSON.stringify({ allMovies, totalNumMovies })
+    );
+  }, [allMovies, totalNumMovies]);
 
-      if (scrollPosition >= threshold) {
-        const nextMovies = allMovies.slice(
-          recommendedMovies.length,
-          recommendedMovies.length + 7
+  // --- Data Loading ---
+  // Fetch genres from API on mount.
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const resGenres = await fetch(
+          "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetGenres"
         );
-        setRecommendedMovies((prev) => [...prev, ...nextMovies]);
+        const genresData: string[] = await resGenres.json();
+        setGenres(genresData);
+        console.log("Fetched genres:", genresData);
+      } catch (err) {
+        console.error("Failed to load genres:", err);
       }
     };
+    fetchGenres();
+  }, []);
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [allMovies, recommendedMovies]);
+  // Load movies from API for a given page.
+  const loadMovies = async (page: number) => {
+    setLoading(true);
+    try {
+      const moviesUrl = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetAllMovies?pageSize=${PAGE_SIZE}&pageNum=${page}`;
+      const resMovies = await fetch(moviesUrl);
+      const dataMovies = await resMovies.json();
+      const newMovies: MovieFromApi[] = dataMovies.movies ?? [];
+      setTotalNumMovies(dataMovies.totalNumMovies);
+      // Combine previously loaded movies with new ones; deduplicate based on show_id.
+      setAllMovies(prev => {
+        const combined = [...prev, ...newMovies];
+        const unique = Array.from(new Map(combined.map(movie => [movie.show_id, movie])).values());
+        return unique;
+      });
+      console.log(`Loaded page ${page}:`, newMovies.map(movie => movie.title));
+    } catch (err) {
+      console.error("Failed to load movies:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load pages when pageNum increases.
+  useEffect(() => {
+    loadMovies(pageNum);
+  }, [pageNum]);
+
+  // Infinite scroll: Increase pageNum when sentinel is visible.
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      const firstEntry = entries[0];
+      if (firstEntry.isIntersecting && !loading && allMovies.length < totalNumMovies) {
+        setPageNum(prev => prev + 1);
+      }
+    });
+    const currentSentinel = sentinelRef.current;
+    if (currentSentinel) observer.observe(currentSentinel);
+    return () => {
+      if (currentSentinel) observer.unobserve(currentSentinel);
+    };
+  }, [loading, allMovies, totalNumMovies]);
+
+  // When selectedType changes, reset movies state.
+  useEffect(() => {
+    setAllMovies([]);
+    setPageNum(1);
+    setTotalNumMovies(0);
+    setRecommended([]);
+    setNewReleases([]);
+    setGenreMovies({});
+  }, [selectedType]);
+
+  // --- Section Calculations ---
+  // Get movies for the selected type.
+  const moviesForType = allMovies.filter(m => {
+    if (selectedType === "Movie") {
+      return m.type === "Movie" && !erroredMovieIds.has(m.show_id);
+    } else {
+      return m.type && m.type.toLowerCase().includes("tv") && !erroredMovieIds.has(m.show_id);
+    }
+  });
+
+  // Updated Recommended Section (pass full array so that multiple pages are rendered if available)
+  useEffect(() => {
+    if (moviesForType.length > 0) {
+      const recsFull = convertToMovie(moviesForType);
+      if (recsFull.length === 0 && moviesForType.length < totalNumMovies) return;
+      setRecommended(recsFull);
+      console.log("Recommended:", recsFull.map(m => (m ? m.title : "placeholder")));
+    }
+  }, [moviesForType, erroredMovieIds, totalNumMovies]);
+
+  // Updated New Releases Section (pass full array so that multiple pages are rendered if available)
+  useEffect(() => {
+    if (moviesForType.length > 0) {
+      const sorted = moviesForType.slice().sort((a, b) => b.release_year - a.release_year);
+      const newRelFull = convertToMovie(sorted);
+      if (newRelFull.length === 0 && moviesForType.length < totalNumMovies) return;
+      setNewReleases(newRelFull);
+      console.log("New Releases:", newRelFull.map(m => (m ? m.title : "placeholder")));
+    }
+  }, [moviesForType, erroredMovieIds, totalNumMovies]);
+
+  // Updated Genre Grouping Effect (pass full array)
+  useEffect(() => {
+    const applicableGenres = genres.filter(genreKey => {
+      return selectedType === "Movie"
+        ? !genreKey.toLowerCase().includes("tv")
+        : genreKey.toLowerCase().includes("tv");
+    });
+
+    const groups: Record<string, (Movie | null)[]> = {};
+    applicableGenres.forEach(genreKey => {
+      const formattedGenre = formatGenreLabel(genreKey);
+      const matches = moviesForType.filter(m =>
+        Object.keys(m).some(key => key.toLowerCase() === genreKey.toLowerCase() && m[key] === 1)
+      );
+      const groupFull = convertToMovie(matches);
+      if (groupFull.length === 0 && moviesForType.length < totalNumMovies) return;
+      groups[formattedGenre] = groupFull;
+      console.log(`Genre "${formattedGenre}":`, groupFull.map(i => (i ? i.title : "placeholder")));
+    });
+    setGenreMovies(groups);
+  }, [moviesForType, genres, erroredMovieIds, selectedType, totalNumMovies]);
+
+  // Global effect to ensure sections eventually have more items if available.
+  useEffect(() => {
+    const recCount = recommended.length;
+    const newRelCount = newReleases.length;
+    let genreShort = false;
+    for (const group of Object.values(genreMovies)) {
+      if (group.length < SECTION_SIZE) {
+        genreShort = true;
+        break;
+      }
+    }
+    if (
+      (recCount < SECTION_SIZE || newRelCount < SECTION_SIZE || genreShort) &&
+      allMovies.length < totalNumMovies &&
+      !loading
+    ) {
+      setPageNum(prev => prev + 1);
+    }
+  }, [recommended, newReleases, genreMovies, allMovies, totalNumMovies, loading]);
+
+  // Callback for image load errors.
+  const handleImageError = useCallback((movieId: string) => {
+    setErroredMovieIds(prev => new Set(prev).add(movieId));
+    console.log("Image error for:", movieId);
+  }, []);
 
   return (
     <div className={styles.moviesPage}>
-      <TopNavBar />
-
+      <TopNavBar selectedType={selectedType} onTypeChange={setSelectedType} />
+      <CookieConsentBanner />
       <div className={styles.mainContent}>
-        <div className={styles.heroSection}>
-          <img
-            src={`https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent("The Interview")}.jpg`}
-            alt="Featured Movie"
-            className={styles.heroImage}
-          />
-          <div className={styles.heroContent}></div>
-        </div>
-
-        <div className={styles.tabContainer}>
-          <div className={styles.tabButtons}>
-            <button
-              className={`${styles.tabButton} ${
-                activeTab === "movies" ? styles.activeTab : styles.inactiveTab
-              }`}
-              onClick={() => setActiveTab("movies")}
-            >
-              Movies
-            </button>
-            <button
-              className={`${styles.tabButton} ${
-                activeTab === "shows" ? styles.activeTab : styles.inactiveTab
-              }`}
-              onClick={() => setActiveTab("shows")}
-            >
-              Shows
-            </button>
+        {/* Hero Section: Only for Movies */}
+        {selectedType === "Movie" && (
+          <div className={styles.heroSection}>
+            <img
+              src={featuredMovie.image}
+              alt={featuredMovie.title}
+              className={styles.heroImage}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = "https://placehold.co/200x120?text=No+Image";
+              }}
+            />
+            <div className={styles.heroOverlay}>
+              <h1 className={styles.heroTitle}>{featuredMovie.title}</h1>
+              <p className={styles.heroDescription}>{featuredMovie.description}</p>
+            </div>
           </div>
-
-          <div className={styles.categoriesContainer}>
-            {activeTab === "movies" && (
-              <>
+        )}
+        <div className={styles.categoriesContainer}>
+          {selectedType === "TV Show" && recommended.length === 0 ? (
+            <div className={styles.categorySection}>
+              <h2 className={styles.categoryTitle}>Shows Coming Soon!</h2>
+            </div>
+          ) : (
+            <>
+              {/* Recommended Section */}
+              <MovieCategorySection
+                title="Recommended For You"
+                movies={recommended}
+                type="duration"
+                onImageError={handleImageError}
+              />
+              {/* New Releases Section */}
+              <MovieCategorySection
+                title="New Releases"
+                movies={newReleases}
+                type="duration"
+                onImageError={handleImageError}
+              />
+              {/* Genre Sections */}
+              {Object.entries(genreMovies).map(([genre, movies]) => (
                 <MovieCategorySection
-                  title="Recommended For You"
-                  movies={recommendedMovies}
+                  key={genre}
+                  title={genre}
+                  movies={movies}
                   type="duration"
+                  onImageError={handleImageError}
                 />
-                <div className={styles.categorySection}>
-                  <div className={styles.categoryHeader}>
-                    <h2 className={styles.categoryTitle}>Must - Watch Movies</h2>
-                  </div>
-                  <div className={styles.mustWatchGrid}>
-                    {mustWatchMovies.map((movie) => (
-                      <div key={movie.id} className={styles.mustWatchCard}>
-                        <img
-                          src={movie.image}
-                          alt={movie.title}
-                          className={styles.mustWatchImage}
-                        />
-                        <div className={styles.mustWatchDetails}>
-                          <div className={styles.durationBadge}>
-                            <Clock size={20} className={styles.clockIcon} />
-                            <span>{movie.duration}</span>
-                          </div>
-                          <div className={styles.ratingBadge}>
-                            <div className={styles.starRating}>
-                              {[...Array(5)].map((_, i) => (
-                                <img
-                                  key={i}
-                                  src={
-                                    i < Math.floor(movie.rating)
-                                      ? "https://cdn.builder.io/api/v1/image/assets/TEMP/a87d05c6f465996e2e45e3cae25a746e0c10574e"
-                                      : "https://cdn.builder.io/api/v1/image/assets/TEMP/925fae185bd3c66b21f3bd0c8f0bb3fa49efdaa9"
-                                  }
-                                  alt="Star"
-                                  className={styles.starIcon}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-            {activeTab === "shows" && (
-              <div className={styles.categorySection}>
-                <h2 className={styles.categoryTitle}>Shows Coming Soon!</h2>
-              </div>
-            )}
-          </div>
+              ))}
+            </>
+          )}
         </div>
       </div>
-
+      {/* Sentinel element for infinite scroll */}
+      <div ref={sentinelRef} style={{ height: "1px" }} />
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>
           <div className={styles.footerDivider} />
