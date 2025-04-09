@@ -1,4 +1,3 @@
-import React from "react";
 import TopNavBar from "../components/TopNavBar";
 import CookieConsentBanner from "../components/CookieConsentBanner";
 import Footer from "../components/Footer";
@@ -7,9 +6,12 @@ import Footer from "../components/Footer";
 function HomePage() {
   return (
     <>
-      <TopNavBar selectedType={"Movie"} onTypeChange={function (type: "Movie" | "TV Show"): void {
-        throw new Error("Function not implemented.");
-      } } />
+      <TopNavBar
+        selectedType={"Movie"}
+        onTypeChange={function (_type: "Movie" | "TV Show"): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
       <main
         style={{
           padding: "6rem 2rem 2rem", // Top padding accounts for navbar height

@@ -8,7 +8,7 @@ import "./ThemeToggle.css";
 
 interface TopNavBarProps {
   selectedType: "Movie" | "TV Show";
-  onTypeChange: (type: "Movie" | "TV Show") => void;
+  onTypeChange: (_type: "Movie" | "TV Show") => void;
 }
 
 // Helper: Insert spaces between capital letters for genre labels.
@@ -18,11 +18,14 @@ const formatGenreLabel = (raw: string) => {
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
 };
 
-const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => {
+const TopNavBar: React.FC<TopNavBarProps> = ({
+  selectedType,
+  onTypeChange,
+}) => {
   // State for scroll behavior.
   const [isHidden, setIsHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  
+
   // State for search functionality.
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<string[]>([]);
@@ -47,7 +50,9 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await fetch("https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetGenres");
+        const response = await fetch(
+          "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetGenres"
+        );
         if (!response.ok) throw new Error("Failed to fetch genres");
         const data = await response.json();
         setGenres(data);
@@ -109,7 +114,8 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
           <div
             className="nav-genre-dropdown-container"
             onMouseEnter={() => {
-              if (genreTimeoutRef.current) clearTimeout(genreTimeoutRef.current);
+              if (genreTimeoutRef.current)
+                clearTimeout(genreTimeoutRef.current);
               setIsGenreOpen(true);
             }}
             onMouseLeave={() => {
@@ -123,7 +129,8 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
               <ul
                 className="nav-genre-dropdown"
                 onMouseEnter={() => {
-                  if (genreTimeoutRef.current) clearTimeout(genreTimeoutRef.current);
+                  if (genreTimeoutRef.current)
+                    clearTimeout(genreTimeoutRef.current);
                   setIsGenreOpen(true);
                 }}
                 onMouseLeave={() => {
@@ -134,7 +141,9 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
               >
                 {genres.map((genre) => (
                   <li key={genre}>
-                    <button className="genre-option">{formatGenreLabel(genre)}</button>
+                    <button className="genre-option">
+                      {formatGenreLabel(genre)}
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -144,7 +153,11 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
           {/* Always Expanded Search Bar */}
           <div className="nav-search-container">
             <div className="nav-search-field">
-              <Search size={20} color="gray" className="nav-search-icon-inside" />
+              <Search
+                size={20}
+                color="gray"
+                className="nav-search-icon-inside"
+              />
               <input
                 type="text"
                 className="nav-search-input"
@@ -177,4 +190,3 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
 };
 
 export default TopNavBar;
-

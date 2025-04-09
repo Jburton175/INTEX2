@@ -1,16 +1,17 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import styles from "./PrivacyPolicyPage.module.css";
-import { LogoIcon } from "../components/homePage/Icons";
 import Header from "../components/TopNavBar";
 import Footer from "../components/Footer";
 
 const PrivacyPolicyPage: React.FC = () => {
   return (
     <div className={styles.container}>
-      <Header selectedType={"Movie"} onTypeChange={function (type: "Movie" | "TV Show"): void {
-        throw new Error("Function not implemented.");
-      } } />
+      <Header
+        selectedType={"Movie"}
+        onTypeChange={function (_type: "Movie" | "TV Show"): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
 
       <main className={styles.mainContent}>
         <div className={styles.policyContainer}>
