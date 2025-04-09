@@ -4,7 +4,7 @@ import styles from "./HomePage.module.css";
 import Header from "../components/homePage/Header";
 import HeroSection from "../components/homePage/HeroSection";
 import CategorySection from "../components/homePage/CategorySection";
-import Footer from "../components/homePage/Footer";
+import Footer from "../components/Footer";
 
 const CineNiche: React.FC = () => {
   return (

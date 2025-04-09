@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AdminPage.module.css";
-import Header from "../components/homePage/Header";
-import Footer from "../components/homePage/Footer";
+import Header from "../components/TopNavBar";
+import Footer from "../components/Footer";
 import ResultsPerPageSelector from "../components/admin/ResultsPerPageSelector";
 import { Movies } from "../types/Movies";
-import { User } from "../types/Users";
+import { User, Users } from "../types/Users";
 import { deleteMovie, fetchMovies, fetchUsers, deleteUser } from "../api/API";
 import UpdateMoviePage from "./UpdateMoviePage";
 
@@ -72,6 +72,10 @@ const AdminPage: React.FC = () => {
   if (movieLoading) return <p>Loading...</p>;
   if (movieError) return <p className="text-red-500">Error: {movieError}</p>;
 
+  function handleMovieDelete(show_id: string): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className={styles.adminPage}>
       {/* {editingMovies && (
@@ -87,7 +91,11 @@ const AdminPage: React.FC = () => {
         />
       )} */}
 
-      <Header />
+      <Header selectedType={"Movie"} onTypeChange={function (type: "Movie" | "TV Show"): void {
+        throw new Error("Function not implemented.");
+      } } />
+      <br />
+      <br />
       <main className={styles.adminContent}>
         <div className={styles.adminHeader}>
           <h1 className={styles.adminTitle}>Admin Dashboard</h1>
@@ -141,6 +149,12 @@ const AdminPage: React.FC = () => {
             <div className={styles.usersPanel}>
               <div className={styles.panelHeader}>
                 <h2 className={styles.panelTitle}>User Management</h2>
+                <button
+                  className={styles.addButton}
+                  onClick={() => navigate("/signup")}
+                >
+                  Add a User
+                </button>
                 <div className={styles.panelControls}>
                   <div className={styles.searchBox}>
                     <input
@@ -191,12 +205,18 @@ const AdminPage: React.FC = () => {
                             {user.phone ?? "—"}
                           </div>
                           <div className={styles.tableCell}>
-                            <button className={styles.actionButton}>
+                            {/* <button className={styles.actionButton}>
                               Edit
-                            </button>
+                            </button> */}
                             <button
                               className={styles.actionButton}
-                              onClick={() => handleDeleteUser(user.user_id)}
+                              onClick={() => {
+                                const confirmed = window.confirm("Are you sure you want to delete this user?");
+                                if (confirmed) {
+                                  handleDeleteUser(user.user_id);
+                                }
+                              }}
+                              
                             >
                               Delete
                             </button>

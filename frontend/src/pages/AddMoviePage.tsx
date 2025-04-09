@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AddMoviePage.module.css";
-import Header from "../components/homePage/Header";
-import Footer from "../components/homePage/Footer";
+import Header from "../components/TopNavBar";
+import Footer from "../components/Footer";
 import { ArrowLeft } from "lucide-react";
 
 interface MovieData {

@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
               Privacy Policy
             </a>
             <div className={styles.separator} />
-            <button className={styles.policyLink}>Cookie Policy</button>
+            <a href="/cookie" className={styles.policyLink}>Cookie Policy</a>
           </div>
         </div>
       </div>

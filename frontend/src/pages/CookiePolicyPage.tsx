@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./CookiePolicyPage.module.css";
 import { LogoIcon } from "../components/homePage/Icons";
 
+
 const CookiePolicyPage: React.FC = () => {
   return (
     <div className={styles.container}>

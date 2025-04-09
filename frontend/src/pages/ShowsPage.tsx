@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./ShowsPage.module.css";
 import { Clock, Play, Tv } from "lucide-react";
 import Header from "../components/homePage/Header";
-import Footer from "../components/homePage/Footer";
+import Footer from "../components/Footer";
 import ShowCategorySection from "../components/showsPage/ShowCategorySection";
 
 const ShowsPage: React.FC = () => {
