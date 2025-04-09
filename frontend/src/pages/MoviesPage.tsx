@@ -27,8 +27,8 @@ export interface Movie {
 }
 
 // --- Constants ---
-const PAGE_SIZE = 20;      // For data loading/infinite scroll
-const SECTION_SIZE = 7;    // Each section renders 7 cards
+const PAGE_SIZE = 20;    // For data loading/infinite scroll
+const SECTION_SIZE = 7;  // Each section should display 7 movies per page in the carousel
 
 // --- Helper Functions ---
 // Generate the image URL from the movie title.
@@ -69,31 +69,20 @@ function padArray<T>(arr: T[], targetLength: number): (T | null)[] {
 
 // --- MoviesPage Component ---
 const MoviesPage: React.FC = () => {
-  // Instead of one "allMovies" state, we cache movies by type.
-  const [cachedMovies, setCachedMovies] = useState<{
-    Movie: MovieFromApi[];
-    "TV Show": MovieFromApi[];
-  }>({ Movie: [], "TV Show": [] });
-
-  // The selected type (determines which cache to use).
+  // State declarations
+  const [allMovies, setAllMovies] = useState<MovieFromApi[]>([]);
   const [selectedType, setSelectedType] = useState<"Movie" | "TV Show">("Movie");
-
-  // The derived sections that we will render.
   const [recommended, setRecommended] = useState<(Movie | null)[]>([]);
   const [newReleases, setNewReleases] = useState<(Movie | null)[]>([]);
   const [genreMovies, setGenreMovies] = useState<Record<string, (Movie | null)[]>>({});
-
-  // These states are used for infinite scroll.
   const [pageNum, setPageNum] = useState(1);
   const [totalNumMovies, setTotalNumMovies] = useState(0);
   const [loading, setLoading] = useState(false);
-
-  // Other state.
   const [genres, setGenres] = useState<string[]>([]);
   const [erroredMovieIds, setErroredMovieIds] = useState<Set<string>>(new Set());
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  // Featured movie for hero section (only for Movies).
+  // Featured movie for hero section (displayed only for Movies)
   const featuredMovie = {
     title: "The Interview",
     description:
@@ -103,7 +92,7 @@ const MoviesPage: React.FC = () => {
 
   // --- Data Loading ---
 
-  // Fetch genres once on mount.
+  // Fetch genres from API on mount.
   useEffect(() => {
     const fetchGenres = async () => {
       try {
@@ -128,24 +117,13 @@ const MoviesPage: React.FC = () => {
       const resMovies = await fetch(moviesUrl);
       const dataMovies = await resMovies.json();
       const newMovies: MovieFromApi[] = dataMovies.movies ?? [];
-      // Update total count (global for now)
-      setTotalNumMovies(dataMovies.totalNumMovies);
-      // Update our cache by appending new movies into the proper cache by type.
-      setCachedMovies(prev => {
-        const newCache = { ...prev };
-        newMovies.forEach(movie => {
-          if (movie.type === "Movie") {
-            if (!newCache.Movie.some(m => m.show_id === movie.show_id)) {
-              newCache.Movie.push(movie);
-            }
-          } else if (movie.type && movie.type.toLowerCase().includes("tv")) {
-            if (!newCache["TV Show"].some(m => m.show_id === movie.show_id)) {
-              newCache["TV Show"].push(movie);
-            }
-          }
-        });
-        return newCache;
+      // Combine previously loaded movies with newMovies and deduplicate by show_id.
+      setAllMovies((prev) => {
+        const combined = [...prev, ...newMovies];
+        const unique = Array.from(new Map(combined.map(movie => [movie.show_id, movie])).values());
+        return unique;
       });
+      setTotalNumMovies(dataMovies.totalNumMovies);
       console.log(`Loaded page ${page}:`, newMovies.map(movie => movie.title));
     } catch (err) {
       console.error("Failed to load movies:", err);
@@ -159,11 +137,11 @@ const MoviesPage: React.FC = () => {
     loadMovies(pageNum);
   }, [pageNum]);
 
-  // Infinite scroll: Increase pageNum when the sentinel becomes visible.
+  // Infinite scroll: Increase pageNum when sentinel is visible.
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {
       const firstEntry = entries[0];
-      if (firstEntry.isIntersecting && !loading && (cachedMovies[selectedType].length < totalNumMovies)) {
+      if (firstEntry.isIntersecting && !loading && allMovies.length < totalNumMovies) {
         setPageNum(prev => prev + 1);
       }
     });
@@ -172,92 +150,92 @@ const MoviesPage: React.FC = () => {
     return () => {
       if (currentSentinel) observer.unobserve(currentSentinel);
     };
-  }, [loading, cachedMovies, totalNumMovies, selectedType]);
+  }, [loading, allMovies, totalNumMovies]);
 
-  // --- Section Calculations ---  
-  // Get the movies for the current selected type.
-  const moviesForType = cachedMovies[selectedType];
+  // When selectedType changes, reset movies state.
+  useEffect(() => {
+    setAllMovies([]);
+    setPageNum(1);
+    setTotalNumMovies(0);
+    setRecommended([]);
+    setNewReleases([]);
+    setGenreMovies({});
+  }, [selectedType]);
 
-  // Compute "Recommended For You" section.
+  // --- Section Calculations ---
+  // Get the movies for the selected type.
+  const moviesForType = allMovies.filter(m => {
+    if (selectedType === "Movie") {
+      return m.type === "Movie" && !erroredMovieIds.has(m.show_id);
+    } else {
+      return m.type && m.type.toLowerCase().includes("tv") && !erroredMovieIds.has(m.show_id);
+    }
+  });
+
+  // Updated Recommended Section Effect
   useEffect(() => {
     if (moviesForType.length > 0) {
-      const filtered = moviesForType.filter(m => !erroredMovieIds.has(m.show_id));
-      const recsFull = convertToMovie(filtered);
-      // Only set sections if we have enough movies already or no more movies are available.
-      if (recsFull.length < SECTION_SIZE && moviesForType.length < totalNumMovies) return;
-      const recs = recsFull.length >= SECTION_SIZE ? recsFull.slice(0, SECTION_SIZE) : padArray(recsFull, SECTION_SIZE);
-      setRecommended(recs);
-      console.log("Recommended:", recs.map(m => (m ? m.title : "placeholder")));
+      const recsFull = convertToMovie(moviesForType);
+      // Instead of slicing to exactly 7 items, pass the full array (if available) so that multiple pages can be rendered.
+      if (recsFull.length === 0 && moviesForType.length < totalNumMovies) return;
+      setRecommended(recsFull);
+      console.log("Recommended:", recsFull.map(m => (m ? m.title : "placeholder")));
     }
   }, [moviesForType, erroredMovieIds, totalNumMovies]);
 
-  // Compute "New Releases" section.
+  // Updated New Releases Section Effect
   useEffect(() => {
     if (moviesForType.length > 0) {
-      const filtered = moviesForType.filter(m => !erroredMovieIds.has(m.show_id));
-      const sorted = filtered.slice().sort((a, b) => b.release_year - a.release_year);
+      const sorted = moviesForType.slice().sort((a, b) => b.release_year - a.release_year);
       const newRelFull = convertToMovie(sorted);
-      if (newRelFull.length < SECTION_SIZE && moviesForType.length < totalNumMovies) return;
-      const newRel = newRelFull.length >= SECTION_SIZE ? newRelFull.slice(0, SECTION_SIZE) : padArray(newRelFull, SECTION_SIZE);
-      setNewReleases(newRel);
-      console.log("New Releases:", newRel.map(m => (m ? m.title : "placeholder")));
+      if (newRelFull.length === 0 && moviesForType.length < totalNumMovies) return;
+      setNewReleases(newRelFull);
+      console.log("New Releases:", newRelFull.map(m => (m ? m.title : "placeholder")));
     }
   }, [moviesForType, erroredMovieIds, totalNumMovies]);
 
-  // Compute Genre Grouping.
+  // Updated Genre Grouping Effect
   useEffect(() => {
-    // For segregating genres: Movies use genres that do not include "tv"; TV shows use genres that include "tv".
     const applicableGenres = genres.filter(genreKey => {
-      if (selectedType === "Movie") {
-        return !genreKey.toLowerCase().includes("tv");
-      } else {
-        return genreKey.toLowerCase().includes("tv");
-      }
+      return selectedType === "Movie"
+        ? !genreKey.toLowerCase().includes("tv")
+        : genreKey.toLowerCase().includes("tv");
     });
-    const filteredItems = moviesForType.filter(m => !erroredMovieIds.has(m.show_id));
-    // Avoid duplicates by starting with the IDs already in Recommended.
-    const usedIds = new Set<string>(recommended.map(item => item?.id || ""));
+
     const groups: Record<string, (Movie | null)[]> = {};
     applicableGenres.forEach(genreKey => {
       const formattedGenre = formatGenreLabel(genreKey);
-      const matches = filteredItems.filter(m =>
-        Object.keys(m).some(key =>
-          key.toLowerCase() === genreKey.toLowerCase() && m[key] === 1
-        ) && !usedIds.has(m.show_id)
+      // Filter movies that have a property matching the genre and that haven't already been used.
+      const matches = moviesForType.filter(m =>
+        Object.keys(m).some(key => key.toLowerCase() === genreKey.toLowerCase() && m[key] === 1)
       );
       const groupFull = convertToMovie(matches);
-      if (groupFull.length < SECTION_SIZE && moviesForType.length < totalNumMovies) return;
-      const groupItems = groupFull.length >= SECTION_SIZE ? groupFull.slice(0, SECTION_SIZE) : padArray(groupFull, SECTION_SIZE);
-      groupItems.forEach(item => {
-        if (item) usedIds.add(item.id);
-      });
-      if (groupItems.length > 0) {
-        groups[formattedGenre] = groupItems;
-        console.log(`Genre "${formattedGenre}":`, groupItems.map(i => (i ? i.title : "placeholder")));
-      }
+      if (groupFull.length === 0 && moviesForType.length < totalNumMovies) return;
+      groups[formattedGenre] = groupFull;
+      console.log(`Genre "${formattedGenre}":`, groupFull.map(i => (i ? i.title : "placeholder")));
     });
     setGenreMovies(groups);
-  }, [moviesForType, genres, erroredMovieIds, recommended, selectedType, totalNumMovies]);
+  }, [moviesForType, genres, erroredMovieIds, selectedType, totalNumMovies]);
 
-  // --- Global Effect to Ensure Sections Have 7 Items ---
+  // Global effect to ensure sections eventually have more items if available.
   useEffect(() => {
-    const recCount = recommended.filter(m => m !== null).length;
-    const newRelCount = newReleases.filter(m => m !== null).length;
+    const recCount = recommended.length;
+    const newRelCount = newReleases.length;
     let genreShort = false;
     for (const group of Object.values(genreMovies)) {
-      if (group.filter(m => m !== null).length < SECTION_SIZE) {
+      if (group.length < SECTION_SIZE) {
         genreShort = true;
         break;
       }
     }
     if ((recCount < SECTION_SIZE || newRelCount < SECTION_SIZE || genreShort) &&
-        moviesForType.length < totalNumMovies &&
+        allMovies.length < totalNumMovies &&
         !loading) {
       setPageNum(prev => prev + 1);
     }
-  }, [recommended, newReleases, genreMovies, moviesForType, totalNumMovies, loading]);
+  }, [recommended, newReleases, genreMovies, allMovies, totalNumMovies, loading]);
 
-  // --- Callback for Image Load Errors ---
+  // Callback for image load errors.
   const handleImageError = useCallback((movieId: string) => {
     setErroredMovieIds(prev => new Set(prev).add(movieId));
     console.log("Image error for:", movieId);
@@ -268,7 +246,7 @@ const MoviesPage: React.FC = () => {
       <TopNavBar selectedType={selectedType} onTypeChange={setSelectedType} />
       <CookieConsentBanner />
       <div className={styles.mainContent}>
-        {/* Hero Section for Movies */}
+        {/* Hero Section: Only for Movies */}
         {selectedType === "Movie" && (
           <div className={styles.heroSection}>
             <img
@@ -276,8 +254,7 @@ const MoviesPage: React.FC = () => {
               alt={featuredMovie.title}
               className={styles.heroImage}
               onError={(e) => {
-                (e.currentTarget as HTMLImageElement).src =
-                  "https://placehold.co/200x120?text=No+Image";
+                (e.currentTarget as HTMLImageElement).src = "https://placehold.co/200x120?text=No+Image";
               }}
             />
             <div className={styles.heroOverlay}>
@@ -287,7 +264,7 @@ const MoviesPage: React.FC = () => {
           </div>
         )}
         <div className={styles.categoriesContainer}>
-          {selectedType === "TV Show" && recommended.filter(m => m !== null).length === 0 ? (
+          {selectedType === "TV Show" && recommended.length === 0 ? (
             <div className={styles.categorySection}>
               <h2 className={styles.categoryTitle}>Shows Coming Soon!</h2>
             </div>
@@ -321,6 +298,7 @@ const MoviesPage: React.FC = () => {
           )}
         </div>
       </div>
+      {/* Sentinel element for infinite scroll */}
       <div ref={sentinelRef} style={{ height: "1px" }} />
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>

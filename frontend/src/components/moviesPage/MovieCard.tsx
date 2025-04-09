@@ -21,7 +21,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onImageError }) => {
 
   return (
     <div className={styles.card}>
-      {/* Show a gray placeholder with spinner until the image has loaded */}
+      {/* Show a placeholder with spinner until image loads */}
       {!loaded && (
         <div className={styles.placeholder}>
           <div className={styles.spinner}></div>
