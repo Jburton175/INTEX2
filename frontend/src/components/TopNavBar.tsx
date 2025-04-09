@@ -11,7 +11,7 @@ interface TopNavBarProps {
   onTypeChange: (type: "Movie" | "TV Show") => void;
 }
 
-// Helper function to insert spaces between capital letters in genre labels.
+// Helper: Insert spaces between capital letters for genre labels.
 const formatGenreLabel = (raw: string) => {
   return raw
     .replace(/([a-z])([A-Z])/g, "$1 $2")
@@ -19,19 +19,20 @@ const formatGenreLabel = (raw: string) => {
 };
 
 const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  // State for scroll behavior.
   const [isHidden, setIsHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-
-  const [showSearch, setShowSearch] = useState(false);
+  
+  // State for search functionality.
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<string[]>([]);
 
+  // State for genres.
   const [genres, setGenres] = useState<string[]>([]);
   const [isGenreOpen, setIsGenreOpen] = useState(false);
   const genreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Hide navbar on scroll (if needed)
+  // Hide navbar on scroll.
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -42,13 +43,11 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Fetch genres from the API
+  // Fetch genres on component mount.
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await fetch(
-          "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetGenres"
-        );
+        const response = await fetch("https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetGenres");
         if (!response.ok) throw new Error("Failed to fetch genres");
         const data = await response.json();
         setGenres(data);
@@ -60,7 +59,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
     fetchGenres();
   }, []);
 
-  // Debounce search query for search functionality.
+  // Debounce search query and call the backend SearchTitles endpoint.
   useEffect(() => {
     if (searchTerm.trim() === "") {
       setSearchResults([]);
@@ -69,9 +68,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
     const delayDebounce = setTimeout(async () => {
       try {
         const response = await fetch(
-          `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/SearchTitles?query=${encodeURIComponent(
-            searchTerm
-          )}`
+          `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/SearchTitles?query=${encodeURIComponent(searchTerm)}`
         );
         if (!response.ok) throw new Error("Search failed");
         const data = await response.json();
@@ -82,14 +79,6 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
     }, 300);
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
-
-  // Filter genres: For Movies, filter out any genre containing "tv"
-  // For TV Shows, only include genres that contain "tv" (case-insensitive).
-  const filteredGenres = genres.filter((genre) =>
-    selectedType === "Movie"
-      ? !genre.toLowerCase().includes("tv")
-      : genre.toLowerCase().includes("tv")
-  );
 
   return (
     <nav className={`top-navbar ${isHidden ? "hide" : ""}`}>
@@ -145,49 +134,38 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
               >
                 {genres.map((genre) => (
                   <li key={genre}>
-                    <button className="genre-option">
-                      {formatGenreLabel(genre)}
-                    </button>
+                    <button className="genre-option">{formatGenreLabel(genre)}</button>
                   </li>
                 ))}
               </ul>
             )}
           </div>
 
-          {/* Search */}
+          {/* Always Expanded Search Bar */}
           <div className="nav-search-container">
-            <button
-              className="nav-search-icon"
-              onClick={() => setShowSearch(!showSearch)}
-              aria-label="Search"
-            >
-              <Search size={24} color="gray" />
-            </button>
-            {showSearch && (
-              <div className="nav-search-box">
-                <input
-                  type="text"
-                  className="nav-search-input"
-                  placeholder="Search..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                {searchResults.length > 0 && (
-                  <ul className="search-dropdown">
-                    {searchResults.map((title) => (
-                      <li key={title}>
-                        <Link
-                          to={`/movies/${encodeURIComponent(title)}`}
-                          className="search-result"
-                          onClick={() => setShowSearch(false)}
-                        >
-                          {title}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+            <div className="nav-search-field">
+              <Search size={20} color="gray" className="nav-search-icon-inside" />
+              <input
+                type="text"
+                className="nav-search-input"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            {searchResults.length > 0 && (
+              <ul className="search-dropdown">
+                {searchResults.map((title) => (
+                  <li key={title}>
+                    <Link
+                      to={`/movies/${encodeURIComponent(title)}`}
+                      className="search-result"
+                    >
+                      {title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
         </div>
@@ -199,3 +177,4 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
 };
 
 export default TopNavBar;
+

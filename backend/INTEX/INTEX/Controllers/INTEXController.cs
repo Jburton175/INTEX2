@@ -1,8 +1,12 @@
 ﻿using INTEX.Data;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+
+
+
 namespace INTEX.Controllers
 {
     [Route("[controller]")]
@@ -197,6 +201,25 @@ namespace INTEX.Controllers
                 .Select(m => m.title)
                 .Distinct()
                 .ToList();
+
+            return Ok(titles);
+        }
+
+        [HttpGet("SearchTitles")]
+        public async Task<IActionResult> SearchTitles([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return Ok(new List<string>());
+            }
+
+            var titles = await _repo.GetMovies()
+                .AsQueryable() // Convert to IQueryable if necessary
+                .Where(m => EF.Functions.Like(m.title, $"%{query}%"))
+                .Select(m => m.title)
+                .Distinct()
+                .Take(10)
+                .ToListAsync();
 
             return Ok(titles);
         }

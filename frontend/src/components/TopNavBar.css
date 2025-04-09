@@ -62,42 +62,55 @@
 }
 
 /* === Search === */
+/* --- Search Container --- */
 .nav-search-container {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.nav-search-icon {
-  font-size: 1.8rem;
-  background: none;
-  border: none;
-  color: gray;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: color 0.3s ease;
+/* Container for search icon and input */
+.nav-search-field {
+  position: relative;
+  width: 200px;  /* Adjust width as desired */
 }
 
-.nav-search-icon:hover {
-  color: var(--text);
-}
-
+/* Search Input: Add left padding to fit the icon */
 .nav-search-input {
-  margin-left: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;  /* Left padding for the icon */
   border: 1px solid var(--text);
   border-radius: 25px;
-  padding: 0.5rem 1rem;
   font-size: 1rem;
   background-color: var(--bg);
   color: var(--text);
   transition: all 0.3s ease;
-  max-width: 200px;
 }
 
-.nav-search-input::placeholder {
-  color: #888;
+/* Absolutely position the search icon inside the input */
+.nav-search-icon-inside {
+  position: absolute;
+  left: 0.75rem;  /* Adjust spacing */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* So clicks go to the input */
 }
+
+/* Optional: Style the search dropdown if needed */
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--bg);
+  border: 1px solid #ccc;
+  width: 100%;
+  z-index: 999;
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  border-radius: 4px;
+}
+
 
 /* === Genre === */
 .nav-genre-dropdown-container {
