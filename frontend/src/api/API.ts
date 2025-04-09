@@ -1,7 +1,6 @@
 import { Movies } from "../types/Movies";
 import { Users } from "../types/Users";
 
-
 // implement crud for movies
 interface FetchMoviesResponse {
   movies: Movies[];
@@ -57,7 +56,7 @@ export const addMovie = async (newMovie: Movies): Promise<Movies> => {
 };
 
 export const UpdateMovie = async (
-  movieId: number,
+  movieId: string,
   updatedMovie: Movies
 ): Promise<Movies> => {
   try {
@@ -80,7 +79,7 @@ export const UpdateMovie = async (
   }
 };
 
-export const deleteMovie = async (movieId: number): Promise<void> => {
+export const deleteMovie = async (movieId: string): Promise<void> => {
   try {
     const response = await fetch(`${API_URL}/DeleteMovie/${movieId}`, {
       method: "DELETE",

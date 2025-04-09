@@ -6,7 +6,8 @@ import Footer from "../components/homePage/Footer";
 import ResultsPerPageSelector from "../components/admin/ResultsPerPageSelector";
 import { Movies } from "../types/Movies";
 import { Users } from "../types/Users";
-import { fetchMovies, fetchUsers, deleteUser } from "../api/API";
+import { deleteMovie, fetchMovies, fetchUsers, deleteUser } from "../api/API";
+import UpdateMoviePage from "./UpdateMoviePage";
 
 const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -22,11 +23,10 @@ const AdminPage: React.FC = () => {
   const [MoviePageNum, setMoviePageNum] = useState<number>(1);
   const [totalMovies, setTotalMovies] = useState<number>(0);
   const [totalMoviePages, setTotalMoviePages] = useState<number>(0);
-
-  // Users
-  const [Users, setUsers] = useState<Users[]>([]);
-  const [userLoading, setUserLoading] = useState(true);
-  const [userError, setUserError] = useState<string | null>(null);
+  const [editingMovies, setEditingMovies] = useState<Book | null>(null);
+  // const [Users, setUsers] = useState<Users[]>([]);
+  // const [userLoading, setUserLoading] = useState(true);
+  // const [userError, setUserError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadMovies = async () => {
@@ -74,8 +74,20 @@ const AdminPage: React.FC = () => {
 
   return (
     <div className={styles.adminPage}>
-      <Header />
+      {/* {editingMovies && (
+        <UpdateMoviePage
+          movie={editingMovies}
+          onSuccess={() => {
+            setEditingMovies(null);
+            fetchMovies(MoviePageSize, MoviePageNum, []).then((data) =>
+              setMovies(data.movies)
+            );
+          }}
+          onCancel={() => setEditingMovies(null)}
+        />
+      )} */}
 
+      <Header />
       <main className={styles.adminContent}>
         <div className={styles.adminHeader}>
           <h1 className={styles.adminTitle}>Admin Dashboard</h1>
@@ -105,7 +117,10 @@ const AdminPage: React.FC = () => {
         <div className={styles.adminPanel}>
           {activeTab === "dashboard" && (
             <div className={styles.dashboardPanel}>
-              <div className={styles.statsGrid} style={{ display: 'flex', justifyContent: 'center' }}>
+              <div
+                className={styles.statsGrid}
+                style={{ display: "flex", justifyContent: "center" }}
+              >
                 <div className={styles.statCard}>
                   <h3 className={styles.statTitle}>Total Users</h3>
                   <p className={styles.statValue}>{Users.length}</p>
@@ -291,7 +306,12 @@ const AdminPage: React.FC = () => {
                         >
                           Edit
                         </button>
-                        <button className={styles.contentActionButton}>Delete</button>
+                        <button
+                          className={styles.contentActionButton}
+                          onClick={() => handleMovieDelete(m.show_id)}
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -311,7 +331,6 @@ const AdminPage: React.FC = () => {
           )}
         </div>
       </main>
-
       <Footer />
     </div>
   );
