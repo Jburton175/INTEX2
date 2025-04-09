@@ -160,13 +160,12 @@ const AdminPage: React.FC = () => {
                         setUserPageNum(1); // reset to first page when changed
                       }}
                     />
-
                   </div>
                 </div>
               </div>
 
               <>
-              {userLoading ? (
+                {userLoading ? (
                   <p>Loading users...</p>
                 ) : userError ? (
                   <p className="text-red-500">Error: {userError}</p>
@@ -179,25 +178,31 @@ const AdminPage: React.FC = () => {
                       <div className={styles.tableCell}>Actions</div>
                     </div>
 
-                    {users.slice(
-                      (userPageNum - 1) * userPageSize,
-                      userPageNum * userPageSize
-                    ).map((user) => (
-                      <div key={user.user_id} className={styles.tableRow}>
-                        <div className={styles.tableCell}>{user.name}</div>
-                        <div className={styles.tableCell}>{user.email}</div>
-                        <div className={styles.tableCell}>{user.phone ?? "—"}</div>
-                        <div className={styles.tableCell}>
-                          <button className={styles.actionButton}>Edit</button>
-                          <button
-                            className={styles.actionButton}
-                            onClick={() => handleDeleteUser(user.user_id)}
-                          >
-                            Delete
-                          </button>
+                    {users
+                      .slice(
+                        (userPageNum - 1) * userPageSize,
+                        userPageNum * userPageSize
+                      )
+                      .map((user) => (
+                        <div key={user.user_id} className={styles.tableRow}>
+                          <div className={styles.tableCell}>{user.name}</div>
+                          <div className={styles.tableCell}>{user.email}</div>
+                          <div className={styles.tableCell}>
+                            {user.phone ?? "—"}
+                          </div>
+                          <div className={styles.tableCell}>
+                            <button className={styles.actionButton}>
+                              Edit
+                            </button>
+                            <button
+                              className={styles.actionButton}
+                              onClick={() => handleDeleteUser(user.user_id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 )}
               </>
@@ -205,14 +210,18 @@ const AdminPage: React.FC = () => {
               <div className={styles.pagination}>
                 <button
                   className={styles.paginationButton}
-                  onClick={() => setUserPageNum((prev) => Math.max(prev - 1, 1))}
+                  onClick={() =>
+                    setUserPageNum((prev) => Math.max(prev - 1, 1))
+                  }
                   disabled={userPageNum === 1}
                 >
                   Previous
                 </button>
 
                 <div className={styles.pageNumbers}>
-                  {Array.from({ length: Math.ceil(users.length / userPageSize) })
+                  {Array.from({
+                    length: Math.ceil(users.length / userPageSize),
+                  })
                     .map((_, idx) => idx + 1)
                     .filter((pageNum) => {
                       const totalPages = Math.ceil(users.length / userPageSize);
@@ -225,7 +234,12 @@ const AdminPage: React.FC = () => {
                       );
                     })
                     .reduce((acc: (number | string)[], curr, i, arr) => {
-                      if (i > 0 && typeof curr === "number" && typeof arr[i - 1] === "number" && curr - (arr[i - 1] as number) > 1) {
+                      if (
+                        i > 0 &&
+                        typeof curr === "number" &&
+                        typeof arr[i - 1] === "number" &&
+                        curr - (arr[i - 1] as number) > 1
+                      ) {
                         acc.push("...");
                       }
                       acc.push(curr);
@@ -233,7 +247,10 @@ const AdminPage: React.FC = () => {
                     }, [])
                     .map((val, idx) =>
                       val === "..." ? (
-                        <span key={`ellipsis-${idx}`} className={styles.pageNumber}>
+                        <span
+                          key={`ellipsis-${idx}`}
+                          className={styles.pageNumber}
+                        >
                           ...
                         </span>
                       ) : (
@@ -254,17 +271,20 @@ const AdminPage: React.FC = () => {
                   className={styles.paginationButton}
                   onClick={() =>
                     setUserPageNum((prev) =>
-                      prev < Math.ceil(users.length / userPageSize) ? prev + 1 : prev
+                      prev < Math.ceil(users.length / userPageSize)
+                        ? prev + 1
+                        : prev
                     )
                   }
-                  disabled={userPageNum >= Math.ceil(users.length / userPageSize)}
+                  disabled={
+                    userPageNum >= Math.ceil(users.length / userPageSize)
+                  }
                 >
                   Next
                 </button>
               </div>
             </div>
           )}
-
 
           {activeTab === "content" && (
             <div className={styles.contentPanel}>
@@ -289,7 +309,11 @@ const AdminPage: React.FC = () => {
                       <div
                         className={styles.contentImage}
                         style={{
-                          backgroundImage: `url(https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(m.title || "default-title")}.jpg)`,
+                          backgroundImage: `url(https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(
+                            (m.title || "default-title")
+                              .replace(/['’:\-.!?–]/g, "") // Remove : - ' ! .
+                              .replace(/[&()]/g, "") // Remove & ( and )
+                          )}.jpg)`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
                           backgroundRepeat: "no-repeat",
@@ -321,7 +345,11 @@ const AdminPage: React.FC = () => {
               <div className={styles.pagination}>
                 <button className={styles.paginationButton}>Previous</button>
                 <div className={styles.pageNumbers}>
-                  <button className={`${styles.pageNumber} ${styles.activePage}`}>1</button>
+                  <button
+                    className={`${styles.pageNumber} ${styles.activePage}`}
+                  >
+                    1
+                  </button>
                   <button className={styles.pageNumber}>2</button>
                   <button className={styles.pageNumber}>3</button>
                 </div>
@@ -348,4 +376,3 @@ function setUserError(message: string) {
 function setUserLoading(arg0: boolean) {
   throw new Error("Function not implemented.");
 }
-
