@@ -11,6 +11,7 @@
         IEnumerable<movies_users> GetUsers();
         movies_users? GetUserById(int userId);
         void AddUser(movies_users user);
+        void DeleteUser(int userId);
 
         // movies
         IEnumerable<movies_titles> GetMovies();

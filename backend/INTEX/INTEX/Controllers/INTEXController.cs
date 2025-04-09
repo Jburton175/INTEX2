@@ -216,8 +216,7 @@ namespace INTEX.Controllers
             if (existingUser == null)
                 return NotFound(new { message = "User not found" });
 
-            _context.movies_users.Remove(existingUser);
-            _context.SaveChanges();
+            _repo.DeleteUser(userId);
             return Ok();
         }
 

@@ -47,6 +47,16 @@ namespace INTEX.Data
             _context.SaveChanges();
         }
 
+        public void DeleteUser(int userId)
+        {
+            var user = _context.movies_users.Find(userId);
+            if (user != null)
+            {
+                _context.movies_users.Remove(user);
+                _context.SaveChanges();
+            }
+        }
+
         // movies
         public IEnumerable<movies_titles> GetMovies()
         {
