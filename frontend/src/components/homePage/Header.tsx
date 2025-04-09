@@ -13,7 +13,12 @@ const Header: React.FC = () => {
       <nav className={styles.navigation}>
         <div className={styles.navTabs}>
           <button className={styles.activeTab}>Home</button>
-          <span className={styles.tabLabel}>Movies &amp; Shows</span>
+          <a href="/movies" className={styles.tabLabel}>
+            Movies
+          </a>
+          <a href="/shows" className={styles.tabLabel}>
+            Shows
+          </a>
         </div>
       </nav>
 

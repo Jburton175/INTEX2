@@ -22,14 +22,15 @@ namespace INTEX.Controllers
 
         // the main API to fetch all movies.
         [HttpGet("GetAllMovies")]
-        public IActionResult GetMovies(int pageSize = 10, int pageNum = 1, [FromQuery] List<string> movieTypes = null)
+        public IActionResult GetMovies(int pageSize = 9, int pageNum = 1, [FromQuery] List<string>? movieTypes = null)
         {
 
 
             var query = _repo.GetMovies().AsQueryable();
             if (movieTypes != null && movieTypes.Any())
             {
-                query = query.Where(p => movieTypes.Contains(p.type));
+                query = query.Where(p => p.type != null && movieTypes.Contains(p.type));
+
             }
 
             var totalNumMovies = query.Count();
@@ -45,6 +46,23 @@ namespace INTEX.Controllers
             };
             return Ok(response);
         }
+
+
+        [HttpGet("GetOneMovie")]
+        public IActionResult GetOneMovie([FromQuery] string show_id)
+        {
+            if (string.IsNullOrWhiteSpace(show_id))
+                return BadRequest("Missing or invalid show_id.");
+
+            var movie = _repo.GetMovieById(show_id);
+
+            if (movie == null)
+                return NotFound();
+
+            return Ok(movie);
+        }
+
+
 
 
         [HttpPost("SetTheme")]
@@ -76,13 +94,16 @@ namespace INTEX.Controllers
         }
 
         [HttpPut("UpdateMovie/{show_id}")]
-        public IActionResult UpdateMovie(int movieId, [FromBody] movies_titles updateMovie)
+        public IActionResult UpdateMovie(string show_id, [FromBody] movies_titles updateMovie)
         {
-            var existingMovie = _repo.GetMovieById(movieId);
+            var existingMovie = _repo.GetMovieById(show_id);
             if (existingMovie == null)
             {
                 return NotFound(new { message = "Movie not found" });
             }
+
+            Console.WriteLine($"Updating movie with ID: {show_id}");
+            //Console.WriteLine($"New movie data: {JsonConvert.SerializeObject(updateMovie)}");
 
             existingMovie.type = updateMovie.type;
             existingMovie.title = updateMovie.title;
@@ -136,7 +157,7 @@ namespace INTEX.Controllers
         }
 
         [HttpDelete("DeleteMovie/{show_id}")]
-        public IActionResult DeleteBook(int show_id)
+        public IActionResult DeleteBook(string show_id)
         {
             var existingMovie = _repo.GetMovieById(show_id);
             if (existingMovie == null)
@@ -204,6 +225,25 @@ namespace INTEX.Controllers
 
             return Ok(titles);
         }
+
+        [HttpGet("GetAllUsers")]
+        public IActionResult GetUsers()
+        {
+            var users = _repo.GetUsers();
+            return Ok(users);
+        }
+
+        [HttpDelete("DeleteUser/{userId}")]
+        public IActionResult DeleteUser(int userId)
+        {
+            var existingUser = _repo.GetUserById(userId);
+            if (existingUser == null)
+                return NotFound(new { message = "User not found" });
+
+            _repo.DeleteUser(userId);
+            return Ok();
+        }
+
 
         [HttpGet("SearchTitles")]
         public async Task<IActionResult> SearchTitles([FromQuery] string query)

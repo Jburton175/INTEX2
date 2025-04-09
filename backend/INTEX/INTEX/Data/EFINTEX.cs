@@ -47,16 +47,27 @@ namespace INTEX.Data
             _context.SaveChanges();
         }
 
+        public void DeleteUser(int userId)
+        {
+            var user = _context.movies_users.Find(userId);
+            if (user != null)
+            {
+                _context.movies_users.Remove(user);
+                _context.SaveChanges();
+            }
+        }
+
         // movies
         public IEnumerable<movies_titles> GetMovies()
         {
             return _context.movies_titles.ToList();
         }
 
-        public movies_titles? GetMovieById(int movieId)
+        public movies_titles? GetMovieById(string movieId)
         {
-            return _context.movies_titles.Find(movieId);
+            return _context.movies_titles.FirstOrDefault(m => m.show_id == movieId);
         }
+
 
         public void AddMovie(movies_titles movie)
         {
@@ -70,7 +81,7 @@ namespace INTEX.Data
             _context.SaveChanges();
         }
 
-        public void DeleteMovie(int movieId)
+        public void DeleteMovie(string movieId)
         {
             var movie = _context.movies_titles.Find(movieId);
             if (movie != null)

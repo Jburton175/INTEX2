@@ -78,7 +78,7 @@
      Make this gradient narrower so it doesn’t obscure 
      the last card when there's only one page
   */
-  background: linear-gradient(to left, rgba(0, 0, 0, 0.8), transparent 60%);
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.8), transparent 30%);
 }
 
 .arrowIcon {

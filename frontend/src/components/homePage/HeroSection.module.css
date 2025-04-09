@@ -39,7 +39,7 @@
 .heroTitle {
   color: #fff;
   margin-bottom: 10px;
-  font-family: Manrope;
+  font-family: Arial, sans-serif;
   font-size: 48px;
   font-weight: 700;
   line-height: 150%;
@@ -48,7 +48,7 @@
 .heroDescription {
   color: #999;
   margin-bottom: 40px;
-  font-family: Manrope;
+  font-family: Arial, sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 150%;
@@ -67,8 +67,8 @@
 
 .ctaText {
   color: #fff;
-  font-family: Manrope;
-  font-size: 14px;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
   font-weight: 600;
 }
 

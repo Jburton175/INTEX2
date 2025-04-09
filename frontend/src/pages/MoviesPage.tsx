@@ -1,9 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom"; // Correctly import useNavigate
 import styles from "./MoviesPage.module.css";
-import TopNavBar from "../components/TopNavBar";
+import Header from "../components/TopNavBar";
 import MovieCategorySection from "../components/moviesPage/MovieCategorySection";
 import CookieConsentBanner from "../components/CookieConsentBanner";
+import Footer from "../components/Footer";
 import PageDetails from "./PageDetails";
+import { useParams } from "react-router-dom";
+import fetchMoviesByGenres from "../components/fetchMoviesByGenres";
+import { useMemo } from "react";
+
+
 
 // --- Interfaces ---
 interface MovieFromApi {
@@ -14,8 +21,9 @@ interface MovieFromApi {
   release_year: number;
   rating: string;
   type?: string;
-  [key: string]: any;
-}
+  [key: string]: any; // Allow additional properties
+};
+
 
 export interface Movie {
   id: string;
@@ -28,7 +36,7 @@ export interface Movie {
 }
 
 // --- Constants ---
-const PAGE_SIZE = 800;    // for data loading/infinite scroll
+const PAGE_SIZE = 1500;    // for data loading/infinite scroll
 const SECTION_SIZE = 14;  // each section must display 7 movies per carousel page
 
 const MOVIES_CACHE_KEY = "cachedMovies";
@@ -39,28 +47,28 @@ const generateImageURL = (title: string) =>
   `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(title)}.jpg`;
 
 // Convert API movie data to our Movie interface.
+// Replace your convertToMovie function with this:
 const convertToMovie = (data: MovieFromApi[]): Movie[] => {
   return data.map((movie) => {
     const durationMin = movie.duration_minutes_movies ?? 90;
-    const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
     return {
       id: movie.show_id,
       show_id: movie.show_id,
       title: movie.title,
       duration: `${Math.floor(durationMin / 60)}h ${durationMin % 60}min`,
-      rating: parseFloat(rating),
+      rating: parseFloat(movie.rating) || 4.0, // use provided rating or fallback to 4.0
       image: generateImageURL(movie.title),
       releaseDate: `April ${movie.release_year}`,
     };
   });
 };
 
+
 // Format genre labels by inserting spaces.
 const formatGenreLabel = (raw: string): string =>
   raw
     .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
-
 
 
 // --- MoviesPage Component ---
@@ -78,6 +86,19 @@ const MoviesPage: React.FC = () => {
   const [erroredMovieIds, setErroredMovieIds] = useState<Set<string>>(new Set());
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [selectedMovieId, setSelectedMovieId] = useState<string | null>(null); // State to track the selected movie ID
+  const navigate = useNavigate(); 
+  const [stopInfiniteScroll, setStopInfiniteScroll] = useState(false);
+  const [genreMap, setGenreMap] = useState<Record<string, MovieFromApi[]>>({});
+  const [error, setError] = useState<string | null>(null);
+
+
+  const handleMovieClick = (show_id: string) => {
+    // Optionally store it in state
+    setSelectedMovieId(show_id);
+    // Then navigate to the details route
+    navigate(`/movie/${show_id}`);
+  };
+
 
 
   // Featured movie for hero section (displayed only for Movies)
@@ -124,12 +145,16 @@ const MoviesPage: React.FC = () => {
         const genresData: string[] = await resGenres.json();
         setGenres(genresData);
         console.log("Fetched genres:", genresData);
+        // Remove the undefined call:
+        // fetchMoviesForEachGenre();
       } catch (err) {
         console.error("Failed to load genres:", err);
       }
     };
     fetchGenres();
   }, []);
+  
+  
 
 
 
@@ -137,100 +162,81 @@ const MoviesPage: React.FC = () => {
 
 
 
-  // Load movies from API for a given page.
+
   const loadMovies = async (page: number) => {
-    // Only fetch more movies if we have less than the SECTION_SIZE
+    // If already have at least SECTION_SIZE, do nothing
     if (allMovies.length >= SECTION_SIZE) {
-      console.log("Already reached the maximum number of movies.");
-      return; // Stop loading if we already have enough movies
+      console.log("Already reached the maximum number of movies for the carousel.");
+      setStopInfiniteScroll(true);
+      return;
     }
-
+  
     setLoading(true);
+  
     try {
       const moviesUrl = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetAllMovies?pageSize=${PAGE_SIZE}&pageNum=${page}`;
       const resMovies = await fetch(moviesUrl);
       const dataMovies = await resMovies.json();
       const newMovies: MovieFromApi[] = dataMovies.movies ?? [];
-
-      // Stop further calls if there are no more movies to load
-      if (newMovies.length === 0 || allMovies.length >= SECTION_SIZE) {
-        console.log("No more movies to load or reached SECTION_SIZE limit.");
-        return;  // Prevent further loading
+  
+      // If no movies are returned, or we reached SECTION_SIZE, stop loading more
+      if (newMovies.length === 0) {
+        console.log("No more movies to load.");
+        setStopInfiniteScroll(true);
+        return;
       }
-
-      setTotalNumMovies(dataMovies.totalNumMovies); // Update the total number of movies
-      setAllMovies(prev => {
+  
+      // Append the new movies
+      setAllMovies((prev) => {
         const combined = [...prev, ...newMovies];
-        const unique = Array.from(new Map(combined.map(movie => [movie.show_id, movie])).values());
+        const unique = Array.from(new Map(combined.map(m => [m.show_id, m])).values());
+        // If we’re at or beyond SECTION_SIZE, block further fetching
+        if (unique.length >= SECTION_SIZE) {
+          setStopInfiniteScroll(true);
+        }
         return unique;
       });
-
-      console.log(`Loaded page ${page}:`, newMovies.map(movie => movie.title));
+  
+      // Update total if needed
+      setTotalNumMovies(dataMovies.totalNumMovies);
+  
+      console.log(`Loaded page ${page}:`, newMovies.map((m) => m.title));
     } catch (err) {
       console.error("Failed to load movies:", err);
     } finally {
       setLoading(false);
     }
   };
+  
 
 
+ 
+  
 
   useEffect(() => {
-    const fetchMoviesForEachGenre = async () => {
-      for (const genre of genres) {
-        let genreMovies: Movie[] = [];
-        let page = 1;
-        let attempts = 0; // To prevent infinite loops if API can't return enough data
-  
-        console.log(`Fetching movies for genre: ${genre}`);
-  
-        // Ensure at least 7 movies for each genre
-        while (genreMovies.length < 7 && attempts < 5) { // Limit attempts to 5 to prevent infinite loops
-          try {
-            const moviesUrl = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetAllMovies?page=${page}&pageSize=8&genre=${genre}`;
-            const res = await fetch(moviesUrl);
-            
-            if (!res.ok) throw new Error("Failed to fetch movies"); // Check if the response is ok
-  
-            const data = await res.json();
-            const newMovies = data.movies ?? [];
-  
-            console.log(`Total movies available for genre "${genre}": ${data.totalNumMovies}`);
-            console.log(`Fetched page ${page} with ${newMovies.length} movies.`);
-  
-            genreMovies = [...genreMovies, ...newMovies]; // Add fetched movies
-  
-            // If no new movies are found, break the loop
-            if (newMovies.length === 0) {
-              console.log(`No more movies available for genre: ${genre}`);
-              break;
-            }
-  
-            // Increase the page number for the next request
-            page++;
-            attempts++;
-          } catch (error) {
-            console.error("Error fetching movies:", error);
-            break; // Stop fetching if there's an error
-          }
-        }
-  
-        // If there are fewer than 7 movies available for that genre, we will get what we can
-        setGenreMovies(prevState => ({
-          ...prevState,
-          [genre]: genreMovies.slice(0, 7), // Always limit to 7 movies per genre
-        }));
+    // As soon as the component mounts, fetch all genre-based movies
+    (async function loadData() {
+      try {
+        setLoading(true);
+        const data = await fetchMoviesByGenres();
+        setGenreMap(data); 
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message || "Failed to fetch movies by genres");
+      } finally {
+        setLoading(false);
       }
-    };
-  
-    if (genres.length > 0) {
-      fetchMoviesForEachGenre();
-    }
-  }, [genres]); // Trigger fetch when genres change
-  
-  
+    })();
+  }, []);
 
-  console.log("Selected Movie ID:", selectedMovieId);
+  if (loading) {
+    return <div>Loading genres and movies...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+  
 
 
 
@@ -240,26 +246,7 @@ const MoviesPage: React.FC = () => {
     loadMovies(pageNum);
   }, [pageNum]);
 
-  // Infinite scroll: Increase pageNum when sentinel is visible.
-  useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      const firstEntry = entries[0];
-      if (
-        firstEntry.isIntersecting && // Check if the sentinel element is in view
-        !loading &&                   // Only trigger if not already loading
-        allMovies.length < totalNumMovies // Only trigger if there are more movies to load
-      ) {
-        setPageNum(prev => prev + 1);  // Increase pageNum for the next request
-      }
-    });
-  
-    const currentSentinel = sentinelRef.current;
-    if (currentSentinel) observer.observe(currentSentinel);
-  
-    return () => {
-      if (currentSentinel) observer.unobserve(currentSentinel);
-    };
-  }, [loading, allMovies, totalNumMovies]);
+
   
   // When selectedType changes, reset movies state.
   useEffect(() => {
@@ -280,6 +267,37 @@ const MoviesPage: React.FC = () => {
       return m.type && m.type.toLowerCase().includes("tv") && !erroredMovieIds.has(m.show_id);
     }
   });
+
+
+  useEffect(() => {
+    if (stopInfiniteScroll) {
+      // If we’re done loading, unobserve the sentinel (if desired)
+      if (sentinelRef.current) {
+        const observer = new IntersectionObserver(() => {});
+        observer.unobserve(sentinelRef.current);
+      }
+      return;
+    }
+  
+    const observer = new IntersectionObserver((entries) => {
+      const firstEntry = entries[0];
+      if (
+        firstEntry.isIntersecting &&
+        !loading &&
+        allMovies.length < totalNumMovies
+      ) {
+        setPageNum((prev) => prev + 1);
+      }
+    });
+  
+    const currentSentinel = sentinelRef.current;
+    if (currentSentinel) observer.observe(currentSentinel);
+  
+    return () => {
+      if (currentSentinel) observer.unobserve(currentSentinel);
+    };
+  }, [stopInfiniteScroll, loading, allMovies, totalNumMovies]);
+  
 
   // Updated Recommended Section (pass full array so that multiple pages are rendered if available)
   useEffect(() => {
@@ -351,27 +369,15 @@ const MoviesPage: React.FC = () => {
     console.log("Image error for:", movieId);
   }, []);
 
-  const handleMovieClick = (showId: string) => {
-    setSelectedMovieId(showId);
-  };
-
-  const handleCloseDetails = () => {
-    setSelectedMovieId(null);
-  };
-
-
-
-
-
-
 
 
   
 
   return (
     <div className={styles.moviesPage}>
-      <TopNavBar selectedType={selectedType} onTypeChange={setSelectedType} />
+      <Header selectedType={selectedType} onTypeChange={setSelectedType} />
       <CookieConsentBanner />
+  
       <div className={styles.mainContent}>
         {/* Hero Section: Only for Movies */}
         {selectedType === "Movie" && (
@@ -381,12 +387,15 @@ const MoviesPage: React.FC = () => {
               alt={featuredMovie.title}
               className={styles.heroImage}
               onError={(e) => {
-                (e.currentTarget as HTMLImageElement).src = "https://placehold.co/200x120?text=No+Image";
+                (e.currentTarget as HTMLImageElement).src =
+                  "https://placehold.co/200x120?text=No+Image";
               }}
             />
             <div className={styles.heroOverlay}>
               <h1 className={styles.heroTitle}>{featuredMovie.title}</h1>
-              <p className={styles.heroDescription}>{featuredMovie.description}</p>
+              <p className={styles.heroDescription}>
+                {featuredMovie.description}
+              </p>
             </div>
           </div>
         )}
@@ -403,27 +412,26 @@ const MoviesPage: React.FC = () => {
               <MovieCategorySection
                 title="Recommended For You"
                 movies={recommended}
-                type="duration"
                 onImageError={handleImageError}
-                onMovieClick={handleMovieClick} // Add this line for handling movie clicks
+
               />
+  
               {/* New Releases Section */}
               <MovieCategorySection
                 title="New Releases"
                 movies={newReleases}
-                type="duration"
                 onImageError={handleImageError}
-                onMovieClick={handleMovieClick} // Add this line for handling movie clicks
+
               />
+  
               {/* Genre Sections */}
               {Object.entries(genreMovies).map(([genre, movies]) => (
                 <MovieCategorySection
                   key={genre}
                   title={genre}
                   movies={movies}
-                  type="duration"
                   onImageError={handleImageError}
-                  onMovieClick={handleMovieClick} // Add this line for handling movie clicks
+
                 />
               ))}
             </>
@@ -431,33 +439,10 @@ const MoviesPage: React.FC = () => {
         </div>
       </div>
   
-      {/* Conditional rendering of PageDetails */}
-      {selectedMovieId && (
-        <PageDetails
-          showId={selectedMovieId}
-          onClose={handleCloseDetails} // Close the details view
-        />
-      )}
-  
       {/* Sentinel element for infinite scroll */}
       <div ref={sentinelRef} style={{ height: "1px" }} />
   
-      <footer className={styles.footer}>
-        <div className={styles.footerContainer}>
-          <div className={styles.footerDivider} />
-          <div className={styles.footerContent}>
-            <div className={styles.footerCopyright}>
-              @2023 streamvib, All Rights Reserved
-            </div>
-            <div className={styles.footerLinks}>
-              <div className={styles.footerDividerVertical} />
-              <div className={styles.footerLink}>Privacy Policy</div>
-              <div className={styles.footerDividerVertical} />
-              <div className={styles.footerLink}>Cookie Policy</div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
   

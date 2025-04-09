@@ -1,68 +1,85 @@
 import React, { useEffect, useState } from "react";
-import styles from "./PageDetails.module.css"; // Add styling for your page details
+import { useParams, useNavigate } from "react-router-dom";
+import styles from "./PageDetails.module.css";
 
-interface PageDetailsProps {
-  showId: string;
-  onClose: () => void; // Callback to close the details page
+interface MovieData {
+  show_id: string;
+  title: string;
+  duration_minutes_movies?: number;
+  release_year?: number;
+  rating?: string;
+  // ...any other fields
 }
 
-// Define the utility function locally
-const generateImageURL = (title: string): string => {
-  // Example transformation: replace spaces with underscores and lowercase the title
-  const formattedTitle = title.replace(/\s+/g, "_").toLowerCase();
-  return `https://your-image-service.com/images/${formattedTitle}.jpg`;
-};
+const generateImageURL = (title: string) =>
+  `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(title)}.jpg`;
 
-const PageDetails: React.FC<PageDetailsProps> = ({ showId, onClose }) => {
-  const [movieDetails, setMovieDetails] = useState<any>(null); // Type appropriately
-  const [loading, setLoading] = useState<boolean>(true);
+const PageDetails: React.FC = () => {
+  const { show_id } = useParams<{ show_id: string }>();
+  const navigate = useNavigate();
+
+  const [movie, setMovie] = useState<MovieData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMovieDetails = async () => {
-      setLoading(true);
+    if (!show_id) return;
+
+    const fetchMovie = async () => {
       try {
-        const res = await fetch(
-          `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetMovieDetails?showId=${showId}`
+        const response = await fetch(
+          `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovie?show_id=${show_id}`
         );
-        const data = await res.json();
-        setMovieDetails(data);
-      } catch (err) {
-        console.error("Failed to load movie details:", err);
+        const data = await response.json();
+        setMovie(data);
+      } catch (error) {
+        console.error("Error fetching single movie:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMovieDetails();
-  }, [showId]);
+    fetchMovie();
+  }, [show_id]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className={styles.overlay}>Loading...</div>;
   }
 
-  if (!movieDetails) {
-    return <div>No details available</div>;
+  if (!movie) {
+    return <div className={styles.overlay}>Movie details not found.</div>;
   }
-
-  console.log("Fetching details for movie with ID:", showId);
-
 
   return (
-    <div className={styles.pageDetails}>
-      <button onClick={onClose} className={styles.closeButton}>
-        Close
-      </button>
-      <h1 className={styles.movieTitle}>{movieDetails.title}</h1>
-      <img
-        src={generateImageURL(movieDetails.title)} // Use the image generation logic
-        alt={movieDetails.title}
-        className={styles.movieImage}
-      />
-      <div className={styles.movieDescription}>
-        <p>{movieDetails.description}</p>
-        <p><strong>Release Date:</strong> {movieDetails.release_date}</p>
-        <p><strong>Rating:</strong> {movieDetails.rating}</p>
-        <p><strong>Duration:</strong> {movieDetails.duration} minutes</p>
+    <div className={styles.overlay}>
+      <div className={styles.content}>
+        {/* Poster on the left */}
+        <img
+          className={styles.poster}
+          src={generateImageURL(movie.title)}
+          alt={movie.title}
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src =
+              "https://placehold.co/300x450?text=No+Image";
+          }}
+        />
+
+        {/* Details on the right */}
+        <div className={styles.details}>
+          {/* Movie info */}
+          <div className={styles.info}>
+            <br /> <br />
+            <br /> <br />
+            <h1>{movie.title}</h1>
+            <p>Duration: {movie.duration_minutes_movies} minutes</p>
+            <p>Release Year: {movie.release_year}</p>
+            <p>Rating: {movie.rating}</p>
+          </div>
+
+          {/* Button at the bottom */}
+          <div className={styles.buttonContainer}>
+            <button onClick={() => navigate(-1)}>Go Back</button>
+          </div>
+        </div>
       </div>
     </div>
   );

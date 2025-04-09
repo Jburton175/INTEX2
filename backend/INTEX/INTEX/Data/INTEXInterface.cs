@@ -11,12 +11,13 @@
         IEnumerable<movies_users> GetUsers();
         movies_users? GetUserById(int userId);
         void AddUser(movies_users user);
+        void DeleteUser(int userId);
 
         // movies
         IEnumerable<movies_titles> GetMovies();
-        movies_titles? GetMovieById(int movieId);
+        movies_titles? GetMovieById(string movieId);
         void AddMovie(movies_titles movie);
         void UpdateMovie(movies_titles movie);
-        void DeleteMovie(int movieId);
+        void DeleteMovie(string movieId);
     }
 }

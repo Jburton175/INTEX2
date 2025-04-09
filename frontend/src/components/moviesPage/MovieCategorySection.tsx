@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import styles from "./MovieCategorySection.module.css";
-import MovieCard from "./MovieCard"; // Ensure import is correct
+import MovieCard from "./MovieCard";
 
 interface Movie {
   id: string;
@@ -15,100 +16,76 @@ interface Movie {
 interface MovieCategorySectionProps {
   title: string;
   movies: (Movie | null)[];
-  type: string;
   onImageError: (movieId: string) => void;
-  onMovieClick: (movieId: string) => void; // Add this prop for movie click handling
 }
 
-const BASE_SECTION_SIZE = 14; // Initial section size
+const ITEMS_PER_PAGE = 7; // How many movies to show per “page” in the carousel
+
 const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
   title,
   movies,
-  type,
   onImageError,
-  onMovieClick,
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
-  const [sectionSize, setSectionSize] = useState(BASE_SECTION_SIZE); // Dynamic section size
 
-  // Pad the movies array so it fits the current section size
-  const paddedMovies =
-    movies.length % sectionSize === 0
-      ? movies
-      : [
-          ...movies,
-          ...Array(sectionSize - (movies.length % sectionSize)).fill(null),
-        ];
+  // Filter out null placeholders if any
+  const validMovies = movies.filter((m) => m !== null) as Movie[];
+  const totalPages = Math.ceil(validMovies.length / ITEMS_PER_PAGE);
 
-  const totalPages = Math.ceil(paddedMovies.length / sectionSize);
+  // Bound currentPage so it never goes out of range
+  const safeCurrentPage = Math.max(0, Math.min(currentPage, totalPages - 1));
 
-  useEffect(() => {
-    console.log(
-      `[${title}] Movies length: ${movies.length} (padded to ${paddedMovies.length}) | SECTION_SIZE: ${sectionSize} | Total Pages: ${totalPages}`
-    );
-    console.log(`[${title}] Current Page: ${currentPage}`);
-  }, [movies.length, paddedMovies.length, currentPage, totalPages, title, sectionSize]);
+  // Calculate the slice of movies to display
+  const startIndex = safeCurrentPage * ITEMS_PER_PAGE;
+  const visibleMovies = validMovies.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  const canGoLeft = currentPage > 0;
-  const canGoRight = currentPage < totalPages - 1;
+  // Check if we can go left or right
+  const canGoLeft = safeCurrentPage > 0;
+  const canGoRight = safeCurrentPage < totalPages - 1;
 
   const handlePrev = () => {
     if (canGoLeft) {
-      const newPage = currentPage - 1;
-      console.log(`[${title}] Going left: Changing page from ${currentPage} to ${newPage}`);
-      setCurrentPage(newPage);
+      setCurrentPage((prev) => prev - 1);
     }
   };
 
   const handleNext = () => {
     if (canGoRight) {
-      const newPage = currentPage + 1;
-      console.log(`[${title}] Going right: Changing page from ${currentPage} to ${newPage}`);
-      setCurrentPage(newPage);
-      // Increase the section size by 7 when the user clicks next
-      setSectionSize(prevSize => prevSize + 7);
+      setCurrentPage((prev) => prev + 1);
     }
   };
-
-  const startIndex = currentPage * sectionSize;
-  const visibleMovies = paddedMovies.slice(startIndex, startIndex + sectionSize);
 
   return (
     <div className={styles.categorySection}>
       <h2 className={styles.categoryTitle}>{title}</h2>
+
       <div className={styles.carouselContainer}>
+        {/* Left Arrow */}
         {canGoLeft && (
           <div className={styles.arrowLeft} onClick={handlePrev}>
             <span className={styles.arrowIcon}>‹</span>
           </div>
         )}
+
         <div className={styles.carouselViewport}>
+          {/* A single row that slides horizontally based on currentPage */}
           <div
             className={styles.carouselInner}
             style={{
-              transform: `translateX(-${currentPage * 100}%)`,
+              // shift the entire row by currentPage “pages”
+              transform: `translateX(-${safeCurrentPage * 100}%)`,
               transition: "transform 0.5s ease-in-out",
+              display: "flex",
             }}
           >
-            {visibleMovies.map((movie, index) => (
-              <div key={movie ? movie.id : `placeholder-${index}`} className={styles.cardWrapper}>
-                {movie ? (
-                  <MovieCard
-                    movie={movie}
-                    onImageError={onImageError}
-                    onClick={() => onMovieClick(movie.id)} // Make sure to pass onClick here
-                  />
-                ) : (
-                  <div className={styles.cardPlaceholder}>
-                    <div className={styles.placeholder}>
-                      <div className={styles.spinner}></div>
-                    </div>
-                  </div>
-                )}
+            {validMovies.map((movie) => (
+              <div key={movie.id} className={styles.cardWrapper}>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Right Arrow */}
         {canGoRight && (
           <div className={styles.arrowRight} onClick={handleNext}>
             <span className={styles.arrowIcon}>›</span>
