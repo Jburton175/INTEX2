@@ -5,7 +5,7 @@ import Header from "../components/homePage/Header";
 import Footer from "../components/homePage/Footer";
 import ResultsPerPageSelector from "../components/admin/ResultsPerPageSelector";
 import { Movies } from "../types/Movies";
-import { Users } from "../types/Users";
+import { User } from "../types/Users";
 import { deleteMovie, fetchMovies, fetchUsers, deleteUser } from "../api/API";
 import UpdateMoviePage from "./UpdateMoviePage";
 
@@ -23,10 +23,10 @@ const AdminPage: React.FC = () => {
   const [MoviePageNum, setMoviePageNum] = useState<number>(1);
   const [totalMovies, setTotalMovies] = useState<number>(0);
   const [totalMoviePages, setTotalMoviePages] = useState<number>(0);
-  const [editingMovies, setEditingMovies] = useState<Book | null>(null);
-  // const [Users, setUsers] = useState<Users[]>([]);
-  // const [userLoading, setUserLoading] = useState(true);
-  // const [userError, setUserError] = useState<string | null>(null);
+  const [editingMovies, setEditingMovies] = useState<Movies | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [userLoading, setUserLoading] = useState(true);
+  const [userError, setUserError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadMovies = async () => {
@@ -123,7 +123,7 @@ const AdminPage: React.FC = () => {
               >
                 <div className={styles.statCard}>
                   <h3 className={styles.statTitle}>Total Users</h3>
-                  <p className={styles.statValue}>{Users.length}</p>
+                  <p className={styles.statValue}>{users.length}</p>
                 </div>
                 <div className={styles.statCard}>
                   <h3 className={styles.statTitle}>Total Movies</h3>
@@ -179,7 +179,7 @@ const AdminPage: React.FC = () => {
                       <div className={styles.tableCell}>Actions</div>
                     </div>
 
-                    {Users.slice(
+                    {users.slice(
                       (userPageNum - 1) * userPageSize,
                       userPageNum * userPageSize
                     ).map((user) => (
@@ -212,10 +212,10 @@ const AdminPage: React.FC = () => {
                 </button>
 
                 <div className={styles.pageNumbers}>
-                  {Array.from({ length: Math.ceil(Users.length / userPageSize) })
+                  {Array.from({ length: Math.ceil(users.length / userPageSize) })
                     .map((_, idx) => idx + 1)
                     .filter((pageNum) => {
-                      const totalPages = Math.ceil(Users.length / userPageSize);
+                      const totalPages = Math.ceil(users.length / userPageSize);
                       return (
                         pageNum === 1 ||
                         pageNum === totalPages ||
@@ -254,10 +254,10 @@ const AdminPage: React.FC = () => {
                   className={styles.paginationButton}
                   onClick={() =>
                     setUserPageNum((prev) =>
-                      prev < Math.ceil(Users.length / userPageSize) ? prev + 1 : prev
+                      prev < Math.ceil(users.length / userPageSize) ? prev + 1 : prev
                     )
                   }
-                  disabled={userPageNum >= Math.ceil(Users.length / userPageSize)}
+                  disabled={userPageNum >= Math.ceil(users.length / userPageSize)}
                 >
                   Next
                 </button>
@@ -337,3 +337,15 @@ const AdminPage: React.FC = () => {
 };
 
 export default AdminPage;
+
+function setUsers(userData: Users[]) {
+  throw new Error("Function not implemented.");
+}
+function setUserError(message: string) {
+  throw new Error("Function not implemented.");
+}
+
+function setUserLoading(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
+
