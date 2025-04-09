@@ -615,5 +615,32 @@ namespace INTEX.Controllers
         }
 
 
+
+        [HttpGet("GetOneHomeRecommendation")]
+        public IActionResult GetOneHomeRecommendation([FromQuery] int userId)
+        {
+
+            var movie = _repo.GetHomeRecommendationsByID(userId);
+
+            if (movie == null)
+                return NotFound();
+
+            return Ok(movie);
+        }
+
+        [HttpGet("GetOneMovieRecommendation")]
+        public IActionResult GetOneMovieRecommendation([FromQuery] string show_id)
+        {
+            if (string.IsNullOrWhiteSpace(show_id))
+                return BadRequest("Missing or invalid show_id.");
+
+            var movie = _repo.GetMovieRecommendationsByID(show_id);
+
+            if (movie == null)
+                return NotFound();
+
+            return Ok(movie);
+        }
+
     }
 }

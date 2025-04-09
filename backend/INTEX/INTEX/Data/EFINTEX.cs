@@ -90,5 +90,29 @@ namespace INTEX.Data
                 _context.SaveChanges();
             }
         }
+
+        public IEnumerable<home_recommendations> GetHomeRecommendations()
+        {
+            return _context.home_recommendations.ToList();
+        }
+
+        public IEnumerable<home_recommendations> GetHomeRecommendationsByID(int userId)
+        {
+            return _context.home_recommendations
+                           .Where(hr => hr.user_id == userId)
+                           .ToList();
+        }
+        public IEnumerable<movie_recommendations> GetMovieRecommendations()
+        {
+            return _context.movie_recommendations.ToList();
+        }
+
+        public IEnumerable<movie_recommendations> GetMovieRecommendationsByID(string movieId)
+        {
+            return _context.movie_recommendations
+                           .Where(hr => hr.show_id == movieId)
+                           .ToList();
+        }
+
     }
 }
