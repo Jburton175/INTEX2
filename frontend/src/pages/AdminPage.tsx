@@ -18,7 +18,7 @@ const AdminPage: React.FC = () => {
   const [MoviePageNum, setMoviePageNum] = useState<number>(1);
   const [totalMovies, setTotalMovies] = useState<number>(0);
   const [totalMoviePages, setTotalMoviePages] = useState<number>(0);
-  const [editingMovies, setEditingMovies] = useState<Book | null>(null);
+  const [editingMovies, setEditingMovies] = useState<Movies | null>(null);
   // const [Users, setUsers] = useState<Users[]>([]);
   // const [userLoading, setUserLoading] = useState(true);
   // const [userError, setUserError] = useState<string | null>(null);
