@@ -225,5 +225,355 @@ namespace INTEX.Controllers
         }
 
 
+
+
+
+
+        // genre specific routes[HttpGet("GetActionMovies")]
+        [HttpGet("GetActionMovies")]
+        public IActionResult GetActionMovies()
+        {
+            var actionMovies = _repo.GetMovies()
+                .Where(m => m.Action.GetValueOrDefault() == 1) // If null, treat as 0
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(actionMovies);
+        }
+
+
+        [HttpGet("GetAdventureMovies")]
+        public IActionResult GetAdventureMovies()
+        {
+            var adventureMovies = _repo.GetMovies()
+                .Where(m => m.Adventure.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(adventureMovies);
+        }
+
+        [HttpGet("GetAnimeSeriesInternationalTVShows")]
+        public IActionResult GetAnimeSeriesInternationalTVShows()
+        {
+            var animeSeries = _repo.GetMovies()
+                .Where(m => m.AnimeSeriesInternationalTVShows.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(animeSeries);
+        }
+
+        [HttpGet("GetBritishTVShowsDocuseriesInternationalTVShows")]
+        public IActionResult GetBritishTVShowsDocuseriesInternationalTVShows()
+        {
+            var britishTVShows = _repo.GetMovies()
+                .Where(m => m.BritishTVShowsDocuseriesInternationalTVShows.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(britishTVShows);
+        }
+
+        [HttpGet("GetChildrenMovies")]
+        public IActionResult GetChildrenMovies()
+        {
+            var childrenMovies = _repo.GetMovies()
+                .Where(m => m.Children.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(childrenMovies);
+        }
+
+        [HttpGet("GetComediesMovies")]
+        public IActionResult GetComediesMovies()
+        {
+            var comediesMovies = _repo.GetMovies()
+                .Where(m => m.Comedies.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(comediesMovies);
+        }
+
+        [HttpGet("GetComediesDramasInternationalMovies")]
+        public IActionResult GetComediesDramasInternationalMovies()
+        {
+            var comediesDramasMovies = _repo.GetMovies()
+                .Where(m => m.ComediesDramasInternationalMovies.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(comediesDramasMovies);
+        }
+
+        [HttpGet("GetComediesInternationalMovies")]
+        public IActionResult GetComediesInternationalMovies()
+        {
+            var comediesIntlMovies = _repo.GetMovies()
+                .Where(m => m.ComediesInternationalMovies.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(comediesIntlMovies);
+        }
+
+        [HttpGet("GetComediesRomanticMovies")]
+        public IActionResult GetComediesRomanticMovies()
+        {
+            var comediesRomanticMovies = _repo.GetMovies()
+                .Where(m => m.ComediesRomanticMovies.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(comediesRomanticMovies);
+        }
+
+        [HttpGet("GetCrimeTVShowsDocuseries")]
+        public IActionResult GetCrimeTVShowsDocuseries()
+        {
+            var crimeTVShows = _repo.GetMovies()
+                .Where(m => m.CrimeTVShowsDocuseries.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(crimeTVShows);
+        }
+
+        [HttpGet("GetDocumentariesMovies")]
+        public IActionResult GetDocumentariesMovies()
+        {
+            var documentariesMovies = _repo.GetMovies()
+                .Where(m => m.Documentaries.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(documentariesMovies);
+        }
+
+        [HttpGet("GetDramasMovies")]
+        public IActionResult GetDramasMovies()
+        {
+            var dramasMovies = _repo.GetMovies()
+                .Where(m => m.Dramas.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(dramasMovies);
+        }
+
+        [HttpGet("GetFamilyMovies")]
+        public IActionResult GetFamilyMovies()
+        {
+            var familyMovies = _repo.GetMovies()
+                .Where(m => m.FamilyMovies.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(familyMovies);
+        }
+
+        [HttpGet("GetFantasyMovies")]
+        public IActionResult GetFantasyMovies()
+        {
+            var fantasyMovies = _repo.GetMovies()
+                .Where(m => m.Fantasy.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(fantasyMovies);
+        }
+
+        [HttpGet("GetHorrorMovies")]
+        public IActionResult GetHorrorMovies()
+        {
+            var horrorMovies = _repo.GetMovies()
+                .Where(m => m.HorrorMovies.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(horrorMovies);
+        }
+
+        [HttpGet("GetSpiritualityMovies")]
+        public IActionResult GetSpiritualityMovies()
+        {
+            var spiritualityMovies = _repo.GetMovies()
+                .Where(m => m.Spirituality.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(spiritualityMovies);
+        }
+
+        [HttpGet("GetInternationalMoviesThrillers")]
+        public IActionResult GetInternationalMoviesThrillers()
+        {
+            var intlThrillerMovies = _repo.GetMovies()
+                .Where(m => m.InternationalMoviesThrillers.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(intlThrillerMovies);
+        }
+
+        [HttpGet("GetInternationalTVShowsRomanticTVShowsTVDramas")]
+        public IActionResult GetInternationalTVShowsRomanticTVShowsTVDramas()
+        {
+            var intlRomanticTVShows = _repo.GetMovies()
+                .Where(m => m.InternationalTVShowsRomanticTVShowsTVDramas.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(intlRomanticTVShows);
+        }
+
+        [HttpGet("GetKidsTV")]
+        public IActionResult GetKidsTV()
+        {
+            var kidsTVShows = _repo.GetMovies()
+                .Where(m => m.KidsTV.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(kidsTVShows);
+        }
+
+        [HttpGet("GetLanguageTVShows")]
+        public IActionResult GetLanguageTVShows()
+        {
+            var languageTVShows = _repo.GetMovies()
+                .Where(m => m.LanguageTVShows.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(languageTVShows);
+        }
+
+        [HttpGet("GetMusicalsMovies")]
+        public IActionResult GetMusicalsMovies()
+        {
+            var musicalsMovies = _repo.GetMovies()
+                .Where(m => m.Musicals.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(musicalsMovies);
+        }
+
+        [HttpGet("GetNatureTV")]
+        public IActionResult GetNatureTV()
+        {
+            var natureTVShows = _repo.GetMovies()
+                .Where(m => m.NatureTV.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(natureTVShows);
+        }
+
+        [HttpGet("GetRealityTV")]
+        public IActionResult GetRealityTV()
+        {
+            var realityTVShows = _repo.GetMovies()
+                .Where(m => m.RealityTV.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(realityTVShows);
+        }
+
+        [HttpGet("GetTVActionMovies")]
+        public IActionResult GetTVActionMovies()
+        {
+            var tvActionMovies = _repo.GetMovies()
+                .Where(m => m.TVAction.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(tvActionMovies);
+        }
+
+        [HttpGet("GetTVComediesMovies")]
+        public IActionResult GetTVComediesMovies()
+        {
+            var tvComediesMovies = _repo.GetMovies()
+                .Where(m => m.TVComedies.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(tvComediesMovies);
+        }
+
+        [HttpGet("GetTVDramasMovies")]
+        public IActionResult GetTVDramasMovies()
+        {
+            var tvDramasMovies = _repo.GetMovies()
+                .Where(m => m.TVDramas.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(tvDramasMovies);
+        }
+
+
+
+        [HttpGet("GetThrillersMovies")]
+        public IActionResult GetThrillersMovies()
+        {
+            var thrillersMovies = _repo.GetMovies()
+                .Where(m => m.Thrillers.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(thrillersMovies);
+        }
+
+        [HttpGet("GetTVAction")]
+        public IActionResult GetTVAction()
+        {
+            var tvAction = _repo.GetMovies()
+                .Where(m => m.TVAction.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(tvAction);
+        }
+
+        [HttpGet("GetTVComedies")]
+        public IActionResult GetTVComedies()
+        {
+            var tvComedies = _repo.GetMovies()
+                .Where(m => m.TVComedies.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(tvComedies);
+        }
+
+        [HttpGet("GetTVDramas")]
+        public IActionResult GetTVDramas()
+        {
+            var tvDramas = _repo.GetMovies()
+                .Where(m => m.TVDramas.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(tvDramas);
+        }
+
+        [HttpGet("GetTalkShowsTVComedies")]
+        public IActionResult GetTalkShowsTVComedies()
+        {
+            var talkShowsTVComedies = _repo.GetMovies()
+                .Where(m => m.TalkShowsTVComedies.GetValueOrDefault() == 1)
+                .Select(m => new { m.title, m.release_year, m.rating, m.description, m.director, m.cast, m.show_id, m.duration })
+                .ToList();
+
+            return Ok(talkShowsTVComedies);
+        }
+
+
     }
 }

@@ -175,6 +175,62 @@ const MoviesPage: React.FC = () => {
 
 
 
+  useEffect(() => {
+    const fetchMoviesForEachGenre = async () => {
+      for (const genre of genres) {
+        let genreMovies: Movie[] = [];
+        let page = 1;
+        let attempts = 0; // To prevent infinite loops if API can't return enough data
+  
+        console.log(`Fetching movies for genre: ${genre}`);
+  
+        // Ensure at least 7 movies for each genre
+        while (genreMovies.length < 7 && attempts < 5) { // Limit attempts to 5 to prevent infinite loops
+          try {
+            const moviesUrl = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetAllMovies?page=${page}&pageSize=8&genre=${genre}`;
+            const res = await fetch(moviesUrl);
+            
+            if (!res.ok) throw new Error("Failed to fetch movies"); // Check if the response is ok
+  
+            const data = await res.json();
+            const newMovies = data.movies ?? [];
+  
+            console.log(`Total movies available for genre "${genre}": ${data.totalNumMovies}`);
+            console.log(`Fetched page ${page} with ${newMovies.length} movies.`);
+  
+            genreMovies = [...genreMovies, ...newMovies]; // Add fetched movies
+  
+            // If no new movies are found, break the loop
+            if (newMovies.length === 0) {
+              console.log(`No more movies available for genre: ${genre}`);
+              break;
+            }
+  
+            // Increase the page number for the next request
+            page++;
+            attempts++;
+          } catch (error) {
+            console.error("Error fetching movies:", error);
+            break; // Stop fetching if there's an error
+          }
+        }
+  
+        // If there are fewer than 7 movies available for that genre, we will get what we can
+        setGenreMovies(prevState => ({
+          ...prevState,
+          [genre]: genreMovies.slice(0, 7), // Always limit to 7 movies per genre
+        }));
+      }
+    };
+  
+    if (genres.length > 0) {
+      fetchMoviesForEachGenre();
+    }
+  }, [genres]); // Trigger fetch when genres change
+  
+  
+
+
 
 
 
