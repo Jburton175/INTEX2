@@ -29,15 +29,25 @@ const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
 }) => {
   // Carousel state: which page of SECTION_SIZE cards is visible.
   const [currentPage, setCurrentPage] = useState(0);
-  const totalPages = Math.ceil(movies.length / SECTION_SIZE);
 
-  // Logging to help you debug arrow appearance.
+  // Pad the movies array so that its length is a multiple of SECTION_SIZE.
+  const paddedMovies =
+    movies.length % SECTION_SIZE === 0
+      ? movies
+      : [
+          ...movies,
+          ...Array(SECTION_SIZE - (movies.length % SECTION_SIZE)).fill(null),
+        ];
+
+  const totalPages = Math.ceil(paddedMovies.length / SECTION_SIZE);
+
+  // Debug logging.
   useEffect(() => {
     console.log(
-      `[${title}] Movies length: ${movies.length} | SECTION_SIZE: ${SECTION_SIZE} | Total Pages: ${totalPages}`
+      `[${title}] Movies length: ${movies.length} (padded to ${paddedMovies.length}) | SECTION_SIZE: ${SECTION_SIZE} | Total Pages: ${totalPages}`
     );
     console.log(`[${title}] Current Page: ${currentPage}`);
-  }, [movies.length, currentPage, totalPages, title]);
+  }, [movies.length, paddedMovies.length, currentPage, totalPages, title]);
 
   const canGoLeft = currentPage > 0;
   const canGoRight = currentPage < totalPages - 1;
@@ -58,10 +68,10 @@ const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
     }
   };
 
-  // Instead of rendering as a grid, we place all items in one flex container.
-  // The container slides according to the current page.
+  // Calculate the visible items based on currentPage.
   const startIndex = currentPage * SECTION_SIZE;
-  // Note: We render the full list so that the container's width remains accurate.
+  const visibleMovies = paddedMovies.slice(startIndex, startIndex + SECTION_SIZE);
+
   return (
     <div className={styles.categorySection}>
       <h2 className={styles.categoryTitle}>{title}</h2>
@@ -79,16 +89,13 @@ const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
               transition: "transform 0.5s ease-in-out",
             }}
           >
-            {movies.map((movie, index) => (
-              <div
-                key={movie ? movie.id : `placeholder-${index}`}
-                className={styles.cardWrapper}
-              >
+            {paddedMovies.map((movie, index) => (
+              <div key={movie ? movie.id : `placeholder-${index}`} className={styles.cardWrapper}>
                 {movie ? (
                   <MovieCard movie={movie} onImageError={onImageError} />
                 ) : (
                   <div className={styles.cardPlaceholder}>
-                    {/* A placeholder with spinner if desired */}
+                    {/* Render an empty placeholder */}
                     <div className={styles.placeholder}>
                       <div className={styles.spinner}></div>
                     </div>

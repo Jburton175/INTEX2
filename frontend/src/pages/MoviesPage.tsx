@@ -27,8 +27,10 @@ export interface Movie {
 }
 
 // --- Constants ---
-const PAGE_SIZE = 20;    // For data loading/infinite scroll
-const SECTION_SIZE = 7;  // Each section should display 7 movies per page in the carousel
+const PAGE_SIZE = 20;    // for data loading/infinite scroll
+const SECTION_SIZE = 7;  // each section must display 7 movies per carousel page
+
+const MOVIES_CACHE_KEY = "cachedMovies";
 
 // --- Helper Functions ---
 // Generate the image URL from the movie title.
@@ -58,7 +60,7 @@ const formatGenreLabel = (raw: string): string =>
     .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
 
-// Pad an array with null values until it reaches targetLength.
+// Optionally, pad an array (if needed for other UI adjustments)
 function padArray<T>(arr: T[], targetLength: number): (T | null)[] {
   const padded = [...arr];
   while (padded.length < targetLength) {
@@ -90,8 +92,32 @@ const MoviesPage: React.FC = () => {
     image: generateImageURL("The Interview"),
   };
 
-  // --- Data Loading ---
+  // On mount, load cached movies (if any) from localStorage.
+  useEffect(() => {
+    const cachedData = localStorage.getItem(MOVIES_CACHE_KEY);
+    if (cachedData) {
+      try {
+        const parsedCache = JSON.parse(cachedData);
+        if (parsedCache && Array.isArray(parsedCache.allMovies)) {
+          setAllMovies(parsedCache.allMovies);
+          setTotalNumMovies(parsedCache.totalNumMovies || 0);
+          console.log("Loaded movies from cache", parsedCache.allMovies);
+        }
+      } catch (err) {
+        console.error("Error parsing cached movies:", err);
+      }
+    }
+  }, []);
 
+  // When allMovies state changes, update the localStorage cache.
+  useEffect(() => {
+    localStorage.setItem(
+      MOVIES_CACHE_KEY,
+      JSON.stringify({ allMovies, totalNumMovies })
+    );
+  }, [allMovies, totalNumMovies]);
+
+  // --- Data Loading ---
   // Fetch genres from API on mount.
   useEffect(() => {
     const fetchGenres = async () => {
@@ -117,13 +143,13 @@ const MoviesPage: React.FC = () => {
       const resMovies = await fetch(moviesUrl);
       const dataMovies = await resMovies.json();
       const newMovies: MovieFromApi[] = dataMovies.movies ?? [];
-      // Combine previously loaded movies with newMovies and deduplicate by show_id.
-      setAllMovies((prev) => {
+      setTotalNumMovies(dataMovies.totalNumMovies);
+      // Combine previously loaded movies with new ones; deduplicate based on show_id.
+      setAllMovies(prev => {
         const combined = [...prev, ...newMovies];
         const unique = Array.from(new Map(combined.map(movie => [movie.show_id, movie])).values());
         return unique;
       });
-      setTotalNumMovies(dataMovies.totalNumMovies);
       console.log(`Loaded page ${page}:`, newMovies.map(movie => movie.title));
     } catch (err) {
       console.error("Failed to load movies:", err);
@@ -163,7 +189,7 @@ const MoviesPage: React.FC = () => {
   }, [selectedType]);
 
   // --- Section Calculations ---
-  // Get the movies for the selected type.
+  // Get movies for the selected type.
   const moviesForType = allMovies.filter(m => {
     if (selectedType === "Movie") {
       return m.type === "Movie" && !erroredMovieIds.has(m.show_id);
@@ -172,18 +198,17 @@ const MoviesPage: React.FC = () => {
     }
   });
 
-  // Updated Recommended Section Effect
+  // Updated Recommended Section (pass full array so that multiple pages are rendered if available)
   useEffect(() => {
     if (moviesForType.length > 0) {
       const recsFull = convertToMovie(moviesForType);
-      // Instead of slicing to exactly 7 items, pass the full array (if available) so that multiple pages can be rendered.
       if (recsFull.length === 0 && moviesForType.length < totalNumMovies) return;
       setRecommended(recsFull);
       console.log("Recommended:", recsFull.map(m => (m ? m.title : "placeholder")));
     }
   }, [moviesForType, erroredMovieIds, totalNumMovies]);
 
-  // Updated New Releases Section Effect
+  // Updated New Releases Section (pass full array so that multiple pages are rendered if available)
   useEffect(() => {
     if (moviesForType.length > 0) {
       const sorted = moviesForType.slice().sort((a, b) => b.release_year - a.release_year);
@@ -194,7 +219,7 @@ const MoviesPage: React.FC = () => {
     }
   }, [moviesForType, erroredMovieIds, totalNumMovies]);
 
-  // Updated Genre Grouping Effect
+  // Updated Genre Grouping Effect (pass full array)
   useEffect(() => {
     const applicableGenres = genres.filter(genreKey => {
       return selectedType === "Movie"
@@ -205,7 +230,6 @@ const MoviesPage: React.FC = () => {
     const groups: Record<string, (Movie | null)[]> = {};
     applicableGenres.forEach(genreKey => {
       const formattedGenre = formatGenreLabel(genreKey);
-      // Filter movies that have a property matching the genre and that haven't already been used.
       const matches = moviesForType.filter(m =>
         Object.keys(m).some(key => key.toLowerCase() === genreKey.toLowerCase() && m[key] === 1)
       );
@@ -228,9 +252,11 @@ const MoviesPage: React.FC = () => {
         break;
       }
     }
-    if ((recCount < SECTION_SIZE || newRelCount < SECTION_SIZE || genreShort) &&
-        allMovies.length < totalNumMovies &&
-        !loading) {
+    if (
+      (recCount < SECTION_SIZE || newRelCount < SECTION_SIZE || genreShort) &&
+      allMovies.length < totalNumMovies &&
+      !loading
+    ) {
       setPageNum(prev => prev + 1);
     }
   }, [recommended, newReleases, genreMovies, allMovies, totalNumMovies, loading]);

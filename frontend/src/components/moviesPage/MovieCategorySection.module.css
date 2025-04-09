@@ -1,11 +1,12 @@
 .categorySection {
-  margin-bottom: 2rem;
+  position: relative;
+  margin-bottom: 20px;
 }
 
 .categoryTitle {
+  margin: 0 0 10px 10px;
   font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: var(--category-text); /* Use your existing CSS variable or adjust as needed */
+  color: #fff;
 }
 
 .carouselContainer {
@@ -23,11 +24,23 @@
   display: flex;
 }
 
-/* Each card wrapper takes 1/7th of the container's width plus a gap */
+/* 
+   Each card wrapper uses flex-basis of 1/7 of the width. 
+   We give them some spacing (margin-right), except every 7th card 
+   to avoid pushing the last card offscreen.
+*/
 .cardWrapper {
   flex: 0 0 calc(100% / 7);
-  margin-right: 1rem;
+  margin-right: 10px;
   box-sizing: border-box;
+}
+
+/* 
+   On every 7th item, remove the margin-right so it doesn’t push 
+   the last card in a row off the screen.
+*/
+.cardWrapper:nth-child(7n) {
+  margin-right: 0;
 }
 
 /* Placeholder styling for missing movie cards */
@@ -39,13 +52,13 @@
   overflow: hidden;
 }
 
-/* Arrow styling */
+/* Arrow Styles */
 .arrowLeft,
 .arrowRight {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 50px;
+  width: 50px; /* if this is too wide, reduce it */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -55,12 +68,17 @@
 
 .arrowLeft {
   left: 0;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.8), transparent);
+  /* Slight gradient so it doesn’t obscure half the first card */
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8), transparent 60%);
 }
 
 .arrowRight {
   right: 0;
-  background: linear-gradient(to left, rgba(0, 0, 0, 0.8), transparent);
+  /* 
+     Make this gradient narrower so it doesn’t obscure 
+     the last card when there's only one page
+  */
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.8), transparent 60%);
 }
 
 .arrowIcon {
@@ -74,7 +92,7 @@
   transform: scale(1.1);
 }
 
-/* Spinner and placeholder (reuse these if needed) */
+/* Reuse spinner & placeholder styles if needed */
 .placeholder {
   position: absolute;
   top: 0;
