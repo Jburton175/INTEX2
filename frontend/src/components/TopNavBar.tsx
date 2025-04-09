@@ -11,6 +11,13 @@ interface TopNavBarProps {
   onTypeChange: (type: "Movie" | "TV Show") => void;
 }
 
+// Helper function to insert spaces between capital letters in genre labels.
+const formatGenreLabel = (raw: string) => {
+  return raw
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
+};
+
 const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
@@ -24,6 +31,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
   const [isGenreOpen, setIsGenreOpen] = useState(false);
   const genreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Hide navbar on scroll (if needed)
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -34,6 +42,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  // Fetch genres from the API
   useEffect(() => {
     const fetchGenres = async () => {
       try {
@@ -51,16 +60,18 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
     fetchGenres();
   }, []);
 
+  // Debounce search query for search functionality.
   useEffect(() => {
     if (searchTerm.trim() === "") {
       setSearchResults([]);
       return;
     }
-
     const delayDebounce = setTimeout(async () => {
       try {
         const response = await fetch(
-          `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/SearchTitles?query=${encodeURIComponent(searchTerm)}`
+          `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/SearchTitles?query=${encodeURIComponent(
+            searchTerm
+          )}`
         );
         if (!response.ok) throw new Error("Search failed");
         const data = await response.json();
@@ -69,9 +80,16 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
         console.error("Error fetching search results:", error);
       }
     }, 300);
-
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
+
+  // Filter genres: For Movies, filter out any genre containing "tv"
+  // For TV Shows, only include genres that contain "tv" (case-insensitive).
+  const filteredGenres = genres.filter((genre) =>
+    selectedType === "Movie"
+      ? !genre.toLowerCase().includes("tv")
+      : genre.toLowerCase().includes("tv")
+  );
 
   return (
     <nav className={`top-navbar ${isHidden ? "hide" : ""}`}>
@@ -98,7 +116,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
 
       <div className="nav-right">
         <div className="nav-right-left">
-          {/* Genres come first now */}
+          {/* Genre Dropdown */}
           <div
             className="nav-genre-dropdown-container"
             onMouseEnter={() => {
@@ -127,14 +145,16 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
               >
                 {genres.map((genre) => (
                   <li key={genre}>
-                    <button className="genre-option">{genre}</button>
+                    <button className="genre-option">
+                      {formatGenreLabel(genre)}
+                    </button>
                   </li>
                 ))}
               </ul>
             )}
           </div>
 
-          {/* Search comes after genres now */}
+          {/* Search */}
           <div className="nav-search-container">
             <button
               className="nav-search-icon"

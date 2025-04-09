@@ -115,22 +115,7 @@
   transition: all 0.3s ease;
 }
 
-.nav-genre-dropdown {
-  position: absolute;
-  top: 120%;
-  left: 0;
-  min-width: 160px;
-  background-color: var(--bg);
-  border: 1px solid var(--text);
-  border-radius: 10px;
-  padding: 0.6rem;
-  z-index: 9999;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  max-height: 300px;
-  overflow-y: auto;
-}
+
 
 .nav-genre-dropdown-container:hover .nav-genre-dropdown,
 .nav-genre-dropdown:hover {
@@ -138,22 +123,6 @@
   visibility: visible;
 }
 
-.genre-option {
-  background: none;
-  border: none;
-  text-align: left;
-  width: 100%;
-  padding: 0.4rem 0.6rem;
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.genre-option:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
 
 /* === Right === */
 
@@ -302,4 +271,94 @@
   gap: 1rem;           /* Optional: adds space between search and genre */
 }
 
-/* The rest of your styles for search and genre remain as is... */
+/* --- Genre Dropdown Container with 4 columns --- */
+/* Multi-column Genre Dropdown, centered with equal left/right space */
+.nav-genre-dropdown {
+  position: absolute;
+  top: 120%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  padding: 1rem 2rem;               /* 1rem vertical, 2rem horizontal for equal space */
+  background-color: var(--bg);
+  border: 1px solid var(--text);
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));  /* 4 columns */
+  gap: 0.75rem;
+
+  list-style: none;    /* Remove bullet points */
+  margin: 0;
+  
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+/* Show dropdown on container hover */
+.nav-genre-dropdown-container:hover .nav-genre-dropdown,
+.nav-genre-dropdown:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Remove bullet points from list items */
+/* Centered multi-column Genre Dropdown */
+.nav-genre-dropdown {
+  position: absolute;
+  top: 120%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  padding: 1rem 1.5rem;
+  background-color: var(--bg);
+  border: 1px solid var(--text);
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  
+  display: grid;
+  grid-template-columns: repeat(4, minmax(100px, 1fr)); /* 4 columns, slightly reduced min width */
+  gap: 0.5rem;  /* Closer gap between items */
+  
+  list-style: none;
+  margin: 0;
+  
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+.nav-genre-dropdown-container:hover .nav-genre-dropdown,
+.nav-genre-dropdown:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.nav-genre-dropdown li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Genre Option: closer spacing and pop-up hover effect */
+.genre-option {
+  background: none;
+  border: none;
+  text-align: center;
+  padding: 0.4rem 0.5rem; /* Reduced padding */
+  border-radius: 6px;
+  color: #ccc;
+  font-size: 0.9rem;  /* Slightly smaller text */
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.genre-option:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  transform: scale(1.05);
+}
