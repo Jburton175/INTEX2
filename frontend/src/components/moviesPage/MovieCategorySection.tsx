@@ -24,7 +24,6 @@ const BASE_SECTION_SIZE = 14; // Initial section size
 const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
   title,
   movies,
-  type,
   onImageError,
   onMovieClick,
 }) => {
@@ -47,7 +46,14 @@ const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
       `[${title}] Movies length: ${movies.length} (padded to ${paddedMovies.length}) | SECTION_SIZE: ${sectionSize} | Total Pages: ${totalPages}`
     );
     console.log(`[${title}] Current Page: ${currentPage}`);
-  }, [movies.length, paddedMovies.length, currentPage, totalPages, title, sectionSize]);
+  }, [
+    movies.length,
+    paddedMovies.length,
+    currentPage,
+    totalPages,
+    title,
+    sectionSize,
+  ]);
 
   const canGoLeft = currentPage > 0;
   const canGoRight = currentPage < totalPages - 1;
@@ -55,7 +61,9 @@ const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
   const handlePrev = () => {
     if (canGoLeft) {
       const newPage = currentPage - 1;
-      console.log(`[${title}] Going left: Changing page from ${currentPage} to ${newPage}`);
+      console.log(
+        `[${title}] Going left: Changing page from ${currentPage} to ${newPage}`
+      );
       setCurrentPage(newPage);
     }
   };
@@ -63,15 +71,20 @@ const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
   const handleNext = () => {
     if (canGoRight) {
       const newPage = currentPage + 1;
-      console.log(`[${title}] Going right: Changing page from ${currentPage} to ${newPage}`);
+      console.log(
+        `[${title}] Going right: Changing page from ${currentPage} to ${newPage}`
+      );
       setCurrentPage(newPage);
       // Increase the section size by 7 when the user clicks next
-      setSectionSize(prevSize => prevSize + 7);
+      setSectionSize((prevSize) => prevSize + 7);
     }
   };
 
   const startIndex = currentPage * sectionSize;
-  const visibleMovies = paddedMovies.slice(startIndex, startIndex + sectionSize);
+  const visibleMovies = paddedMovies.slice(
+    startIndex,
+    startIndex + sectionSize
+  );
 
   return (
     <div className={styles.categorySection}>
@@ -91,7 +104,10 @@ const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
             }}
           >
             {visibleMovies.map((movie, index) => (
-              <div key={movie ? movie.id : `placeholder-${index}`} className={styles.cardWrapper}>
+              <div
+                key={movie ? movie.id : `placeholder-${index}`}
+                className={styles.cardWrapper}
+              >
                 {movie ? (
                   <MovieCard
                     movie={movie}

@@ -35,7 +35,7 @@ const AddMoviePage: React.FC = () => {
   });
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setMovieData((prev) => ({
@@ -62,9 +62,12 @@ const AddMoviePage: React.FC = () => {
 
   return (
     <div className={styles.addMoviePage}>
-      <Header selectedType={"Movie"} onTypeChange={function (type: "Movie" | "TV Show"): void {
-        throw new Error("Function not implemented.");
-      } } />
+      <Header
+        selectedType={"Movie"}
+        onTypeChange={function (_type: "Movie" | "TV Show"): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
 
       <main className={styles.mainContent}>
         <div className={styles.pageHeader}>
