@@ -4,11 +4,15 @@
   display: flex;
   flex-direction: column;
   color: #fff;
+  width: 100%;
 }
 
 .mainContent {
   padding: 40px 80px;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .pageHeader {
@@ -51,6 +55,9 @@
   border: 1px solid #262626;
   padding: 24px;
   margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .formWrapper {
@@ -236,4 +243,12 @@
     width: 100%;
     max-width: 300px;
   }
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }

@@ -8,8 +8,8 @@ interface FetchMoviesResponse {
 }
 
 const API_URL =
-  // "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
-   "https://localhost:5000/INTEX";
+  //   "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
+  "https://localhost:5000/INTEX";
 export const fetchMovies = async (
   pageSize: number,
   pageNum: number,
@@ -21,7 +21,7 @@ export const fetchMovies = async (
       .join("&");
 
     const response = await fetch(
-      `${API_URL}/GetAllMovies?pageHowMany=${pageSize}&pageNum=${pageNum}${selectedCategories.length ? `&${categoryParams}` : ""}`
+      `${API_URL}/GetAllMovies?pageSize=${pageSize}&pageNum=${pageNum}${selectedCategories.length ? `&${categoryParams}` : ""}`
     );
 
     if (!response.ok) {
