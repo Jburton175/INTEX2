@@ -3,6 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// builder.WebHost.ConfigureKestrel(options =>
+// {
+//     options.ListenLocalhost(4000); // HTTP listener
+//     options.ListenLocalhost(5000, listenOptions =>
+//     {
+//         listenOptions.UseHttps(); // HTTPS listener
+//     });
+// });
+
+
 // Add services to the container.
 
 
@@ -32,7 +42,22 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
     }));
 
+builder.Services.AddHttpsRedirection(options =>
+    {
+        options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+        options.HttpsPort = 5000; 
+    });
+
+
 var app = builder.Build();
+
+app.UseCors("Add");
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts(); // Adds the Strict-Transport-Security header
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -42,8 +67,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseCors("Add");
 
 app.UseAuthorization();
 
