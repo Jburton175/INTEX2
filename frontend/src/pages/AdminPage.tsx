@@ -5,9 +5,10 @@ import Header from "../components/homePage/Header";
 import Footer from "../components/homePage/Footer";
 import ResultsPerPageSelector from "../components/admin/ResultsPerPageSelector";
 import { Movies } from "../types/Movies";
-import { User } from "../types/Users";
+import { Users } from "../types/Users";
 import { deleteMovie, fetchMovies, fetchUsers, deleteUser } from "../api/API";
 import UpdateMoviePage from "./UpdateMoviePage";
+import Pagination from "../components/Pagination";
 
 const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -24,7 +25,7 @@ const AdminPage: React.FC = () => {
   const [totalMovies, setTotalMovies] = useState<number>(0);
   const [totalMoviePages, setTotalMoviePages] = useState<number>(0);
   const [editingMovies, setEditingMovies] = useState<Movies | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<Users[]>([]);
   const [userLoading, setUserLoading] = useState(true);
   const [userError, setUserError] = useState<string | null>(null);
 
@@ -60,12 +61,33 @@ const AdminPage: React.FC = () => {
     }
   }, [activeTab]);
 
+  // delete user
   const handleDeleteUser = async (id: number) => {
+    const confirmDeleteUser = window.confirm(
+      "Are you sure you want to delete this user?"
+    );
+    if (!confirmDeleteUser) return;
+
     try {
       await deleteUser(id);
       setUsers((prev) => prev.filter((u) => u.user_id !== id));
     } catch (err) {
       alert("Failed to delete user");
+    }
+  };
+
+  // delete movie
+  const handleDeleteMovie = async (show_id: string) => {
+    const confirmDeleteMovie = window.confirm(
+      "Are you sure you want to delete this book?"
+    );
+    if (!confirmDeleteMovie) return;
+
+    try {
+      await deleteMovie(show_id);
+      setMovies(Movies.filter((m) => m.show_id !== show_id));
+    } catch (error) {
+      alert("Failed to delete book. Please try again.");
     }
   };
 
@@ -310,9 +332,10 @@ const AdminPage: React.FC = () => {
                         className={styles.contentImage}
                         style={{
                           backgroundImage: `url(https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(
-                            (m.title || "default-title")
-                              .replace(/['’:\-.!?–]/g, "") // Remove : - ' ! .
-                              .replace(/[&()]/g, "") // Remove & ( and )
+                            (m.title || "default-title").replace(
+                              /['’:\-.!?–&()]/g,
+                              ""
+                            ) // Remove special characters
                           )}.jpg)`,
                           backgroundSize: "cover",
                           backgroundPosition: "center",
@@ -332,7 +355,7 @@ const AdminPage: React.FC = () => {
                         </button>
                         <button
                           className={styles.contentActionButton}
-                          onClick={() => handleMovieDelete(m.show_id)}
+                          onClick={() => handleDeleteMovie(m.show_id)}
                         >
                           Delete
                         </button>
@@ -342,19 +365,14 @@ const AdminPage: React.FC = () => {
                 ))}
               </div>
 
-              <div className={styles.pagination}>
-                <button className={styles.paginationButton}>Previous</button>
-                <div className={styles.pageNumbers}>
-                  <button
-                    className={`${styles.pageNumber} ${styles.activePage}`}
-                  >
-                    1
-                  </button>
-                  <button className={styles.pageNumber}>2</button>
-                  <button className={styles.pageNumber}>3</button>
-                </div>
-                <button className={styles.paginationButton}>Next</button>
-              </div>
+              <Pagination
+                currentPage={MoviePageNum}
+                totalPages={totalMoviePages}
+                rowNum={MoviePageSize}
+                multiplier={3}
+                onPageChange={setMoviePageNum}
+                onRowNumChange={setMoviePageSize}
+              />
             </div>
           )}
         </div>
