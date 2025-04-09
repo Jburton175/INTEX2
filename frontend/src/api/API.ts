@@ -7,9 +7,14 @@ interface FetchMoviesResponse {
   totalNumMovies: number;
 }
 
+interface FetchSingleMovieResponse {
+  movie: Movies | null;
+}
+
 const API_URL =
-  //   "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
-  "https://localhost:5000/INTEX";
+  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
+// "https://localhost:5000/INTEX";
+
 export const fetchMovies = async (
   pageSize: number,
   pageNum: number,
@@ -30,6 +35,22 @@ export const fetchMovies = async (
     return await response.json();
   } catch (error) {
     console.error("Error fetching movies: ", error);
+    throw error;
+  }
+};
+
+export const fetchOneMovie = async (
+  id: string
+): Promise<FetchSingleMovieResponse> => {
+  try {
+    const response = await fetch(`${API_URL}/GetOneMovie?show_id=${id}`);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch movie");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching movie: ", error);
     throw error;
   }
 };

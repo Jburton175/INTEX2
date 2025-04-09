@@ -15,9 +15,9 @@
 
         // movies
         IEnumerable<movies_titles> GetMovies();
-        movies_titles? GetMovieById(int movieId);
+        movies_titles? GetMovieById(string movieId);
         void AddMovie(movies_titles movie);
         void UpdateMovie(movies_titles movie);
-        void DeleteMovie(int movieId);
+        void DeleteMovie(string movieId);
     }
 }
