@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./ShowsPage.module.css";
 import { Clock, Play, Tv } from "lucide-react";
-import Header from "../components/homePage/Header";
+import Header from "../components/TopNavBar";
 import Footer from "../components/Footer";
 import ShowCategorySection from "../components/showsPage/ShowCategorySection";
 
@@ -362,7 +362,9 @@ const ShowsPage: React.FC = () => {
 
   return (
     <div className={styles.showsPage}>
-      <Header />
+      <Header selectedType={"Movie"} onTypeChange={function (type: "Movie" | "TV Show"): void {
+        throw new Error("Function not implemented.");
+      } } />
 
       <div className={styles.contentContainer}>
         <div className={styles.tabsContainer}>

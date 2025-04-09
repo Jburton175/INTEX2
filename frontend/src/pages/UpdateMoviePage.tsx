@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./UpdateMoviePage.module.css";
-import Header from "../components/homePage/Header";
+import Header from "../components/TopNavBar";
 import Footer from "../components/Footer";
 import { ArrowLeft } from "lucide-react";
 
@@ -81,7 +81,9 @@ const UpdateMoviePage: React.FC = () => {
 
   return (
     <div className={styles.updateMoviePage}>
-      <Header />
+      <Header selectedType={"Movie"} onTypeChange={function (type: "Movie" | "TV Show"): void {
+        throw new Error("Function not implemented.");
+      } } />
 
       {showDeleteConfirmation && (
         <div className={styles.modalOverlay}>

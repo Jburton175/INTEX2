@@ -2,17 +2,16 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styles from "./CookiePolicyPage.module.css";
 import { LogoIcon } from "../components/homePage/Icons";
+import Header from "../components/TopNavBar";
+import Footer from "../components/Footer";
 
 
 const CookiePolicyPage: React.FC = () => {
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <Link to="/" className={styles.brandContainer}>
-          <LogoIcon />
-          <h1 className={styles.brandName}>CineNiche</h1>
-        </Link>
-      </header>
+      <Header selectedType={"Movie"} onTypeChange={function (type: "Movie" | "TV Show"): void {
+        throw new Error("Function not implemented.");
+      } } />
 
       <main className={styles.mainContent}>
         <div className={styles.policyContainer}>
@@ -206,25 +205,7 @@ const CookiePolicyPage: React.FC = () => {
         </div>
       </main>
 
-      <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <hr className={styles.divider} />
-          <div className={styles.footerBottom}>
-            <p className={styles.copyright}>
-              @2025 CineNiche, All Rights Reserved
-            </p>
-            <div className={styles.policyLinks}>
-              <Link to="/privacy-policy" className={styles.policyLink}>
-                Privacy Policy
-              </Link>
-              <div className={styles.separator} />
-              <Link to="/cookie-policy" className={styles.policyLink}>
-                Cookie Policy
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

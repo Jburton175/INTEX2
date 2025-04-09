@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import styles from "./MoviesPage.module.css";
-import TopNavBar from "../components/TopNavBar";
+import Header from "../components/TopNavBar";
 import MovieCategorySection from "../components/moviesPage/MovieCategorySection";
 import CookieConsentBanner from "../components/CookieConsentBanner";
+import Footer from "../components/Footer";
 
 // --- Interfaces ---
 interface MovieFromApi {
@@ -269,7 +270,7 @@ const MoviesPage: React.FC = () => {
 
   return (
     <div className={styles.moviesPage}>
-      <TopNavBar selectedType={selectedType} onTypeChange={setSelectedType} />
+      <Header selectedType={selectedType} onTypeChange={setSelectedType} />
       <CookieConsentBanner />
       <div className={styles.mainContent}>
         {/* Hero Section: Only for Movies */}
@@ -326,22 +327,7 @@ const MoviesPage: React.FC = () => {
       </div>
       {/* Sentinel element for infinite scroll */}
       <div ref={sentinelRef} style={{ height: "1px" }} />
-      <footer className={styles.footer}>
-        <div className={styles.footerContainer}>
-          <div className={styles.footerDivider} />
-          <div className={styles.footerContent}>
-            <div className={styles.footerCopyright}>
-              @2023 streamvib, All Rights Reserved
-            </div>
-            <div className={styles.footerLinks}>
-              <div className={styles.footerDividerVertical} />
-              <div className={styles.footerLink}>Privacy Policy</div>
-              <div className={styles.footerDividerVertical} />
-              <div className={styles.footerLink}>Cookie Policy</div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
