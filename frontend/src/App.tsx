@@ -1,20 +1,3 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import './App.css'
-// import HomePage from './pages/HomePage'
-
-// function App() {
-//   const [count, setCount] = useState(0)
-
-//   return (
-//     <>
-//       <HomePage />
-//     </>
-//   )
-// }
-
-// export default App
 import "bootstrap/dist/css/bootstrap.min.css";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
@@ -26,7 +9,6 @@ import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import AdminPage from "./pages/AdminPage";
 import UpdateMovie from "./pages/UpdateMoviePage";
 import CookiePage from "./pages/CookiePolicyPage";
-import "./App.css";
 
 function App() {
   return (
