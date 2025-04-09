@@ -1,5 +1,5 @@
 import { Movies } from "../types/Movies";
-import { Users } from "../types/Users";
+import { User } from "../types/Users";
 
 // implement crud for movies
 interface FetchMoviesResponse {
@@ -94,13 +94,13 @@ export const deleteMovie = async (movieId: string): Promise<void> => {
   }
 };
 
-export const fetchUsers = async (): Promise<Users[]> => {
+export const fetchUsers = async (): Promise<User[]> => {
   const response = await fetch(`${API_URL}/GetAllUsers`);
   if (!response.ok) throw new Error("Failed to fetch users");
   return await response.json();
 };
 
-export const addUser = async (newUser: Users): Promise<Users> => {
+export const addUser = async (newUser: User): Promise<User> => {
   const response = await fetch(`${API_URL}/AddUser`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
