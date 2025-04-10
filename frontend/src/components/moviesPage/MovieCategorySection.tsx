@@ -9,11 +9,10 @@ interface Movie {
   title: string;
   image: string;
   duration: string;
-  rating: number;
+  rating: string;
   releaseDate: string;
   genres: string[]; // Added genres field
 }
-
 
 interface MovieCategorySectionProps {
   title: string;
@@ -74,7 +73,10 @@ const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
         </button>
         <div className={styles.carousel} ref={carouselRef}>
           {movies.map((movie) => (
-            <div key={`${categoryKey}-${movie.id}`} className={styles.movieCardWrapper}>
+            <div
+              key={`${categoryKey}-${movie.id}`}
+              className={styles.movieCardWrapper}
+            >
               <MovieCard movie={movie} onImageError={onImageError} />
             </div>
           ))}
@@ -84,7 +86,9 @@ const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
           &#9654;
         </button>
       </div>
-      {isLoading && <div className={styles.loadingText}>Loading more movies...</div>}
+      {isLoading && (
+        <div className={styles.loadingText}>Loading more movies...</div>
+      )}
     </div>
   );
 };

@@ -309,19 +309,18 @@ namespace INTEX.Controllers
                 return BadRequest("Query string cannot be empty.");
             }
 
-            // Case-insensitive search (SQL Server-friendly)
-            var matchedTitles = _repo.GetMovies() // IQueryable is still returned by GetMovies
-                .Where(m => m.title.ToLower().Contains(query.ToLower()))
-                .Select(m => m.title)
-                .Distinct()
-                .Take(50) // Limit to 20 results for performance
-                .ToList(); // Use ToList() instead of ToListAsync()
+            var matchedTitles = await _repo.GetMovies()
+                .AsQueryable()
+                .Where(m => m.title != null && m.title.Contains(query, StringComparison.OrdinalIgnoreCase))
+                .Select(m => new {
+                    title = m.title ?? string.Empty,  // Handle null title in projection
+                    m.show_id
+                })
+                .Take(50)
+                .ToListAsync();
 
             return Ok(matchedTitles);
         }
-
-
-
 
 
 

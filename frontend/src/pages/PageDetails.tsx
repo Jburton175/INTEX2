@@ -7,15 +7,51 @@ import { Movie } from "../components/moviesPage/MovieCard";
 
 interface MovieData {
   show_id: string;
-  type: string;
-  title: string;
-  director: string;
-  cast: string;
-  country: string;
-  release_year: number;
-  rating: string;
-  duration: string;
-  description: string;
+  type?: string;
+  title?: string;
+  director?: string;
+  cast?: string;
+  country?: string;
+  release_year?: number;
+  rating?: string;
+  duration?: string;
+  description?: string;
+
+  // Genres
+  Action?: number;
+  Adventure?: number;
+  AnimeSeriesInternationalTVShows?: number;
+  BritishTVShowsDocuseriesInternationalTVShows?: number;
+  Children?: number;
+  Comedies?: number;
+  ComediesDramasInternationalMovies?: number;
+  ComediesInternationalMovies?: number;
+  ComediesRomanticMovies?: number;
+  CrimeTVShowsDocuseries?: number;
+  Documentaries?: number;
+  DocumentariesInternationalMovies?: number;
+  Docuseries?: number;
+  Dramas?: number;
+  DramasInternationalMovies?: number;
+  DramasRomanticMovies?: number;
+  FamilyMovies?: number;
+  Fantasy?: number;
+  HorrorMovies?: number;
+  InternationalMoviesThrillers?: number;
+  InternationalTVShowsRomanticTVShowsTVDramas?: number;
+  KidsTV?: number;
+  LanguageTVShows?: number;
+  Musicals?: number;
+  NatureTV?: number;
+  RealityTV?: number;
+  Spirituality?: number;
+  TVAction?: number;
+  TVComedies?: number;
+  TVDramas?: number;
+  TalkShowsTVComedies?: number;
+  Thrillers?: number;
+  duration_minutes_movies?: number;
+  duration_in_seasons?: number;
 }
 
 interface Recommendation {
@@ -105,7 +141,9 @@ const PageDetails: React.FC = () => {
   // You can use a dedicated endpoint or pick one from your recommendations.
   const fetchReplacementMovie = async (): Promise<Movie | null> => {
     try {
-      const res = await fetch("http://localhost:5000/INTEX/GetRandomMovie");
+      const res = await fetch(
+        "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetRandomMovie"
+      );
       if (!res.ok) return null;
 
       const data = await res.json();
@@ -116,12 +154,12 @@ const PageDetails: React.FC = () => {
         show_id: movie.show_id,
         title: movie.title,
         duration: `${Math.floor((movie.duration_minutes_movies ?? 90) / 60)}h ${(movie.duration_minutes_movies ?? 90) % 60}min`,
-        rating: parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)),
+        rating: (Math.random() * 1.5 + 3.5).toFixed(1), // <-- now a string!
         image: `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(
           (movie.title || "default-title").replace(/['’:\-.!?–&()]/g, "")
         )}.jpg`,
         releaseDate: `April ${movie.release_year}`,
-        genres: [], // optional, adjust depending on where you're using this
+        genres: [], // optional
       };
     } catch (err) {
       console.error("Error fetching replacement movie:", err);
