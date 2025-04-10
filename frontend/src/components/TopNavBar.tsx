@@ -7,7 +7,6 @@ import "./TopNavBar.css";
 import "./ThemeToggle.css";
 import SearchBar from "./SearchBar";
 
-
 interface TopNavBarProps {
   selectedType: "Movie" | "TV Show";
   onTypeChange: (_type: "Movie" | "TV Show") => void;
@@ -19,7 +18,10 @@ const formatGenreLabel = (raw: string) => {
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
 };
 
-const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => {
+const TopNavBar: React.FC<TopNavBarProps> = ({
+  selectedType,
+  onTypeChange,
+}) => {
   const [isHidden, setIsHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
@@ -83,18 +85,20 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
         </Link>
       </div>
 
-
-
       <div className="nav-right">
         <div className="nav-right-left">
-          
-
           <div className="nav-search-container">
             <div className="nav-search-field">
-              <Search size={20} color="gray" className="nav-search-icon-inside" />
-              <SearchBar onSearch={function (query: string): void {
-                throw new Error("Function not implemented.");
-              } } />
+              <Search
+                size={20}
+                color="gray"
+                className="nav-search-icon-inside"
+              />
+              <SearchBar
+                onSearch={function (query: string): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </div>
             {searchResults.length > 0 && (
               <ul className="search-dropdown">
