@@ -2,8 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./SearchBar.module.css";
 
-// If you maintain a global base URL constant, you can import it,
-// otherwise define it here:
+// Use the same API_BASE as in MoviesPage (change this if needed)
 const API_BASE = "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
 
 interface SearchBarProps {
@@ -12,47 +11,49 @@ interface SearchBarProps {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ initialQuery = "", onSearch }) => {
-  // Local state for input, suggestions, and whether to show the suggestions dropdown.
   const [query, setQuery] = useState<string>(initialQuery);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLUListElement>(null);
 
-  // Handler for form submission (search button or ENTER)
+  // Handle form submission for search.
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("[SearchBar] Submitting search with query:", query);
     onSearch(query);
     setShowDropdown(false);
   };
 
-  // Fetch suggestions whenever the query changes.
+  // Fetch suggestions when the query changes.
   useEffect(() => {
-    // If the query is empty, clear suggestions.
     if (query.trim() === "") {
       setSuggestions([]);
       return;
     }
-    
-    // Fetch the search suggestions using your backend endpoint.
-    fetch(`${API_BASE}/INTEX/SearchTitles?query=${encodeURIComponent(query.trim())}`)
-      .then((res) => {
+
+    const fetchSuggestions = async () => {
+      try {
+        const url = `${API_BASE}/INTEX/SearchMovieTitles?query=${encodeURIComponent(query.trim())}`;
+        console.log("[SearchBar] Fetching suggestions from:", url);
+        const res = await fetch(url);
         if (!res.ok) {
           throw new Error(`HTTP error: ${res.status}`);
         }
-        return res.json();
-      })
-      .then((data: string[]) => {
+        const data: string[] = await res.json();
+        console.log("[SearchBar] Suggestions received:", data);
         setSuggestions(data);
         setShowDropdown(data.length > 0);
-      })
-      .catch((err) => {
-        console.error("Error fetching search suggestions:", err);
+      } catch (error) {
+        console.error("Error fetching search suggestions:", error);
         setSuggestions([]);
         setShowDropdown(false);
-      });
+      }
+    };
+
+    fetchSuggestions();
   }, [query]);
 
-  // Close dropdown when clicking outside.
+  // Hide dropdown when clicking outside.
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -61,29 +62,32 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialQuery = "", onSearch }) =>
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   // When a suggestion is clicked.
   const handleSuggestionClick = (suggestion: string) => {
     setQuery(suggestion);
+    console.log("[SearchBar] Suggestion clicked:", suggestion);
     onSearch(suggestion);
     setShowDropdown(false);
   };
 
   return (
-    <div className={styles.searchBarContainer}>
-      <form className={styles.searchBar} onSubmit={handleSearchSubmit}>
-        {/* Search icon – you can use any icon or an SVG */}
-        <span className={styles.searchIcon}>&#128269;</span>
+    <div className={styles.navSearchContainer}>
+      <form className={styles.navSearchForm} onSubmit={handleSearchSubmit}>
+        {/* Search icon – replace with your icon library if desired */}
+        <span className={styles.navSearchIcon}>&#128269;</span>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search movies..."
-          className={styles.searchInput}
+          className={styles.navSearchInput}
         />
-        <button type="submit" className={styles.searchButton}>
+        <button type="submit" className={styles.navSearchButton}>
           Search
         </button>
       </form>

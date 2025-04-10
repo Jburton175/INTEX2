@@ -310,17 +310,20 @@ namespace INTEX.Controllers
             }
 
             // Case-insensitive search (SQL Server-friendly)
-            var matchedTitles = _repo.GetMovies() // IQueryable is still returned by GetMovies
+            var matchedTitles = _repo.GetMovies()  // IQueryable returned by GetMovies
                 .Where(m => m.title.ToLower().Contains(query.ToLower()))
-                .Select(m => m.title)
-                .Distinct()
-                .Take(50) // Limit to 20 results for performance
-                .ToList(); // Use ToList() instead of ToListAsync()
+                .Select(m => new { m.title, m.show_id })
+                .Take(50)                        // Limit to 50 results for performance
+                .ToList();
+
+            // Optional: Logging the result to help debug
+            foreach (var item in matchedTitles)
+            {
+                Console.WriteLine($"Movie: {item.title}, show_id: {item.show_id}");
+            }
 
             return Ok(matchedTitles);
         }
-
-
 
 
 
