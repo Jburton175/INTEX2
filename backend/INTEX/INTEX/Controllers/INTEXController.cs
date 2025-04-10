@@ -327,7 +327,6 @@ namespace INTEX.Controllers
 
 
 
-
         // genre specific routes[HttpGet("GetActionMovies")]
         [HttpGet("GetActionMovies")]
         public IActionResult GetActionMovies()

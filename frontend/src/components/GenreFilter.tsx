@@ -3,7 +3,7 @@ import styles from "./GenreFilter.module.css";
 import { GENRE_KEYS, GENRE_LABELS } from "../types/genres";
 import SearchBar from "./SearchBar";
 
-interface GenreFilterProps {
+type GenreFilterProps = {
   selectedGenres: string[];
   setSelectedGenres: (genres: string[]) => void;
   searchQuery: string;

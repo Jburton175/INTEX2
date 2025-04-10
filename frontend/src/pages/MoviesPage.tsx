@@ -5,12 +5,14 @@ import Header from "../components/TopNavBar";
 import CookieConsentBanner from "../components/CookieConsentBanner";
 import Footer from "../components/Footer";
 import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
-import PageDetails from "./PageDetails";
+// import PageDetails from "./PageDetails";
 import GenreFilter from "../components/GenreFilter";
 import SearchBar from "../components/SearchBar";  // New search bar component
 import UserRecommendations from "../components/UserRecommendations";
 
 const PAGE_SIZE = 20;
+const API_BASE =
+  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
 const API_BASE =
   "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
 
@@ -75,7 +77,7 @@ const convertToMovie = (data: MovieFromApi): Movie => {
     title: data.title,
     image: getImageUrl(data.title),
     duration: data.duration,
-    rating: parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)),
+    rating: (Math.random() * 1.5 + 3.5).toFixed(1),
     releaseDate: `April ${data.release_year}`,
     genres: movieGenres,
   };
@@ -217,6 +219,8 @@ const MoviesPage: React.FC = () => {
       );
       const failedIds = results.filter((r) => !r.valid).map((r) => r.id);
       failedIds.forEach((id) => handleImageError(id));
+      const failedIds = results.filter((r) => !r.valid).map((r) => r.id);
+      failedIds.forEach((id) => handleImageError(id));
     };
     if (movies.length > 0) {
       validateAllMovies();
@@ -232,7 +236,23 @@ const MoviesPage: React.FC = () => {
         replacementTimeout.current = setTimeout(async () => {
           const idsToReplace = [...replacementQueue];
           setReplacementQueue([]);
+      if (!replacementTimeout.current) {
+        replacementTimeout.current = setTimeout(async () => {
+          const idsToReplace = [...replacementQueue];
+          setReplacementQueue([]);
 
+          try {
+            const res = await fetch(
+              `${API_BASE}/INTEX/GetAllMovies?page=1&pageSize=${idsToReplace.length * 5}`
+            );
+            const data = await res.json();
+            const candidates: MovieFromApi[] = Array.isArray(data)
+              ? data
+              : data?.movies || [];
+            const replacements = candidates
+              .map(convertToMovie)
+              .filter((m) => !movies.some((existing) => existing.id === m.id))
+              .slice(0, idsToReplace.length);
           try {
             const res = await fetch(
               `${API_BASE}/INTEX/GetAllMovies?page=1&pageSize=${idsToReplace.length * 5}`

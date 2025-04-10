@@ -15,7 +15,7 @@ interface TopNavBarProps {
 const TopNavBar: React.FC<TopNavBarProps> = () => {
   const [isHidden, setIsHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<string[]>([]);
   // const [genres, setGenres] = useState<string[]>([]);
   // const [isGenreOpen, setIsGenreOpen] = useState(false);
