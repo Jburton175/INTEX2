@@ -1,437 +1,398 @@
-/* === Theme Variables === */
+/* src/components/PageDetails.module.css */
+
+/* Default (Dark Mode) Variables */
 :root {
-  --bg-main: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --bg-accent: #e50000;
-  --text-main: #000000;
-  --text-secondary: #333333;
-  --border-color: #cccccc;
-  --card-bg: #f0f0f0;
-  --badge-bg: #eaeaea;
-  --footer-bg: #e6e6e6;
-  --bg-gradient: linear-gradient(to bottom, #ffffff, #f8f9fa); /* light mode default */
+  --primary-color: #e50914;
+  --hover-color: #f40612;
+  --background-overlay: rgba(0, 0, 0, 0.85);
+  --content-bg: #1e1e1e;
+  --text-color: #ffffff;
+  --shadow-light: 0px 2px 4px rgba(0, 0, 0, 0.7);
+  --border-radius: 8px;
+  --transition-speed: 0.3s;
 }
 
-[data-theme="dark"] {
-  --bg-main: #141414;
-  --bg-secondary: #0f0f0f;
-  --bg-accent: #e50000;
-  --text-main: #ffffff;
-  --text-secondary: #bfbfbf;
-  --border-color: #262626;
-  --card-bg: #1a1a1a;
-  --badge-bg: #141414;
-  --footer-bg: #0f0f0f;
-  --bg-gradient: linear-gradient(to bottom, #000000, #511d1d);
+/* Light Mode Overrides – set data-theme="light" on <html> or <body> */
+:root[data-theme="light"] {
+  --background-overlay: rgba(255, 255, 255, 0.85);
+  --content-bg: #ffffff;
+  --text-color: #141414;
+  --shadow-light: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* === Global === */
-.moviesPage {
-  background-color: var(--bg-main);
-  color: var(--text-main);
-  overflow: hidden;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding-top: 3.5rem;
+/* Reset common styling */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* === Navbar === */
-.navbarContainer {
-  display: flex;
-  align-items: stretch;
-  width: 100%;
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #141414;
+  color: var(--text-color);
 }
 
-.navbar {
-  position: relative;
-  display: flex;
-  width: 100%;
-  padding: 24px 80px;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 2006px;
-  margin: 0 auto;
+body[data-theme="light"] {
+  background-color: #ffffff;
 }
 
-.logo {
-  width: 166px;
-  object-fit: contain;
-  object-position: center;
-}
-
-.searchContainer {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.searchIcon {
-  width: 24px;
-  object-fit: contain;
-}
-
-.navButtons {
-  display: flex;
-  align-items: center;
-  border-radius: 10px;
-  border: 3px solid var(--border-color);
-  background-color: var(--bg-secondary);
-  position: absolute;
-  min-width: 240px;
-  padding: 8px 30px;
-  gap: 16px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.navButton {
-  color: var(--text-secondary);
-  font-weight: 400;
-  cursor: pointer;
-}
-
-.navButtonActive {
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  background-color: var(--card-bg);
-  color: var(--text-main);
-  font-weight: 500;
-  padding: 12px 16px;
-  cursor: pointer;
-}
-
-/* === Main Content === */
-.mainContent {
-  z-index: 10;
-  margin-top: 40px;
-  width: 100%;
-  padding: 0 80px;
-}
-
-/* === Hero Section === */
-.heroSection {
-  position: relative;
-  width: 75%; /* 25% narrower */
-  height: 550px; /* Adjust height as needed */
-  margin: 0 auto;
-  overflow: hidden;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease;
-  padding-top: 10px; /* ✅ Added padding */
-}
-
-
-.heroImage {
+/* --- Main Overlay --- */
+/* Adding extra top padding to push the content down beyond the navbar */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* Use separate paddings for top and sides */
+  padding: 6rem 1rem 1rem 1rem;
+  z-index: 100;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 25%; /* Shift focus to 25% down the image */
-  display: block;
-  border-radius: 12px;
+  background-color: var(--background-overlay);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
 }
 
-.heroOverlay {
+/* --- Content Section: Main Movie Details --- */
+.content {
+  display: flex;
+  flex-direction: row;
+  background-color: var(--content-bg);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  max-width: 80%;
+  width: 100%;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.content .poster {
+  width: 300px;
+  height: auto;
+  flex-shrink: 0;
+  object-fit: cover;
+  display: block;
+}
+
+.details {
+  padding: 20px;
+  flex: 1;
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Headings and paragraphs */
+.details h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  text-shadow: var(--shadow-light);
+}
+
+.details p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  text-shadow: var(--shadow-light);
+}
+
+/* List styling for details like cast, director, country, etc. */
+.details ul {
+  margin-bottom: 1rem;
+  padding-left: 1rem;
+}
+
+.details ul li {
+  margin-bottom: 0.5rem;
+  list-style: none;
+  text-shadow: var(--shadow-light);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.3rem;
+}
+
+/* Button styling */
+.details button {
+  background-color: var(--primary-color);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  margin-top: 1rem;
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color var(--transition-speed) ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.details button:hover {
+  background-color: var(--hover-color);
+}
+
+/* --- Recommendations Section --- */
+.recommendationsContainer {
+  width: 80%;
+  margin-bottom: 2rem;
+}
+
+.recommendationsContainer h2 {
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  text-shadow: var(--shadow-light);
+}
+
+.recommendationsList {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.recommendationItem {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  min-width: 150px;
+  transition: transform var(--transition-speed) ease;
+  border-radius: 4px;
+}
+
+.recommendationItem:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+.recommendationItem .poster {
+  width: 150px;
+  height: 225px;
+  object-fit: cover;
+  display: block;
+  border-radius: 4px;
+}
+
+.recommendationOverlay {
   position: absolute;
   bottom: 0;
   left: 0;
-  right: 0;
-  height: 100%;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-speed) ease;
+  padding: 0.5rem;
+}
+
+.recommendationOverlay p {
+  color: var(--text-color);
+  font-size: 1rem;
+  text-align: center;
+  margin: 0;
+  text-shadow: var(--shadow-light);
+}
+
+.recommendationItem:hover .recommendationOverlay {
+  opacity: 1;
+}
+
+/* --- MovieRating Container --- */
+.movieRatingContainer {
+  max-width: 400px;
+  margin-top: 2rem;  /* More margin to move the ratings down */
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
   padding: 1rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, transparent 65%);
-  color: white;
+  text-align: center;
+}
+
+/* Light mode override for rating container background */
+[data-theme="light"] .movieRatingContainer {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* --- Responsive Styles --- */
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    max-width: 90%;
+  }
+  
+  .content .poster {
+    width: 100%;
+    height: auto;
+  }
+  
+  .details {
+    padding: 1rem;
+    margin-left: 0;
+  }
+  
+  .recommendationsList {
+    justify-content: center;
+  }
+}
+
+
+/* src/pages/MoviesPage.module.css */
+/* src/pages/MoviesPage.module.css */
+.moviesPage {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  border-radius: 12px;
-  pointer-events: none;
-}
-
-.heroSection:hover .heroOverlay {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.heroTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.heroDescription {
-  font-size: 1rem;
-  margin: 0.2rem 0 0;
-  color: #ccc;
-}
-
-
-
-
-/* === Play Button === */
-.playButton {
-  display: flex;
-  align-items: center;
-  border-radius: 8px;
-  background-color: var(--bg-accent);
-  padding: 14px 20px;
-  gap: 4px;
+  min-height: 100vh;
+  background-color: #141414;
   color: #fff;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
 }
 
-.playIcon {
-  width: 24px;
-  object-fit: contain;
-}
-
-/* === Tabs === */
-.tabContainer {
-  margin-top: 40px;
-}
-
-.tabButtons {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-direction: row;
-  padding: 0 40px;
-}
-
-.tabButton {
-  padding: 0.5rem 1.2rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  background: transparent;
-  color: var(--text-main);
-}
-
-.activeTab {
-  background-color: var(--bg-accent);
-  color: white;
-}
-
-.inactiveTab {
-  background-color: white;
-  color: black;
-}
-
-[data-theme="dark"] .inactiveTab {
-  background-color: black;
-  color: white;
-}
-
-/* === Categories === */
-.categoriesContainer {
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  width: 100%;
-  padding: 40px;
-  margin-top: 20px;
-}
-
-.categorySection {
-  margin-top: 80px;
-}
-
-.categoryHeader {
-  font-size: 30px;
-  color: var(--text-main);
-  font-weight: 700;
-  margin-bottom: 40px;
-}
-
-.mustWatchGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.mustWatchCard {
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  background-color: var(--card-bg);
-  min-width: 240px;
-  min-height: 404px;
-  padding: 16px;
+/* Main content area styling */
+.mainContent {
   flex: 1;
-}
-
-.mustWatchImage {
-  width: 100%;
-  border-radius: 10px;
-  object-fit: contain;
-  aspect-ratio: 1;
-}
-
-.mustWatchDetails {
+  padding: 20px;
   display: flex;
-  margin-top: 16px;
-  justify-content: space-between;
-  gap: 40px;
-}
-
-.durationBadge,
-.ratingBadge {
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  border-radius: 51px;
-  border: 1px solid var(--border-color);
-  background-color: var(--badge-bg);
-  padding: 6px 10px;
-  font-size: 12px;
-  color: #999;
 }
 
-.clockIcon {
-  width: 20px;
+/* Page title */
+.pageTitle {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  text-align: center;
 }
 
-.starRating {
+/* Grid layout for movies */
+.moviesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 20px;
+  width: 100%;
+}
+
+/* Movie card styling */
+.movieCard {
+  position: relative;
+  background: #222;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.movieCard:hover {
+  transform: scale(1.05);
+}
+
+/* Movie poster image */
+.movieImage {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Overlay on hover: darkens the bottom half and shows the movie title */
+.movieOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
   display: flex;
-  gap: 1px;
+  align-items: flex-end;
+  justify-content: center;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.3s ease, height 0.3s ease;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
-.starIcon {
-  width: 14px;
-  object-fit: contain;
+.movieCard:hover .movieOverlay {
+  height: 30%;
+  opacity: 1;
 }
 
-/* === Footer === */
-.footer {
-  background-color: var(--footer-bg);
-  margin-top: auto;
-  padding: 80px 80px 40px;
-  font-size: 14px;
-  color: #999;
+/* Movie title styling inside overlay */
+.movieTitle {
+  margin: 0;
+  font-size: 1.2rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-.footerDivider,
-.footerDividerVertical {
-  background-color: var(--border-color);
-}
-
-.footerDivider {
+/* Sentinel for infinite scroll */
+.sentinel {
   height: 1px;
   width: 100%;
 }
 
-.footerDividerVertical {
-  width: 1px;
-  height: 21px;
-}
-
-.footerContent {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  margin-top: 20px;
-  gap: 100px;
-}
-
-.footerLinks {
+/* Loading indicator styling */
+.loading {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  margin: 20px 0;
+  font-size: 1.2rem;
 }
 
-/* === Responsive === */
-@media (max-width: 1200px) {
-  .navbar,
-  .mainContent,
-  .footer {
-    padding-left: 40px;
-    padding-right: 40px;
-  }
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+}
 
-  .mustWatchCard {
-    min-width: 200px;
-    flex-basis: calc(50% - 20px);
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .navbar,
-  .mainContent,
-  .footer {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .heroSection {
-    min-height: 500px;
-    padding-top: 350px;
-  }
-
-  .mustWatchCard {
-    flex-basis: 100%;
-  }
-
-  .footerContent {
-    flex-direction: column;
-    gap: 20px;
+  .moviesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 }
+/* MoviesPage.module.css */
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
 
-/* === Movie Card (Individual) === */
-/* Styles for individual movie cards, e.g. MovieCard component */
-.movieCard {
-  position: relative;
-  overflow: hidden;
+.typeToggle {
+  display: flex;
+  gap: 1rem;
+  background: var(--background-light);
   border-radius: 8px;
-  width: 224px;
-  height: 308px;
-  flex-shrink: 0;
-  background-color: var(--card-bg);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 0.5rem;
+}
+
+.typeToggle button {
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
+  background: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
-.movieCard:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+.typeToggle button.active {
+  background: var(--primary-color);
+  color: white;
 }
 
-.movieImage {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  border-radius: 8px;
-}
-
-.overlay {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 33%;
-  padding: 15px 10px;
-  /* Gradient: dark at the bottom (0%) fading to transparent at 100% of overlay height */
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, transparent 100%);
-  color: #fff;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.movieCard:hover .overlay {
-  opacity: 1;
-}
-
-.movieTitle {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #fff;
-  transform: translateY(-2px);
+.typeToggle button:hover:not(.active) {
+  background: var(--background-hover);
 }

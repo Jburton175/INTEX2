@@ -1,136 +1,90 @@
-import React, { useState, useEffect } from "react";
+// MovieCategorySection.tsx
+import React, { useRef, useEffect, useState } from "react";
+import MovieCard from "./MovieCard";
 import styles from "./MovieCategorySection.module.css";
-import MovieCard from "./MovieCard"; // Ensure import is correct
 
 interface Movie {
   id: string;
   show_id: string;
   title: string;
+  image: string;
   duration: string;
   rating: number;
-  image: string;
-  releaseDate?: string;
+  releaseDate: string;
+  genres: string[]; // Added genres field
 }
+
 
 interface MovieCategorySectionProps {
   title: string;
-  movies: (Movie | null)[];
-  type: string;
+  movies: Movie[];
   onImageError: (movieId: string) => void;
-  onMovieClick: (movieId: string) => void; // Add this prop for movie click handling
+  onLoadMore: () => Promise<void>;
+  categoryKey: string;
 }
 
-const BASE_SECTION_SIZE = 14; // Initial section size
 const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
   title,
   movies,
   onImageError,
-  onMovieClick,
+  onLoadMore,
+  categoryKey,
 }) => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [sectionSize, setSectionSize] = useState(BASE_SECTION_SIZE); // Dynamic section size
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Pad the movies array so it fits the current section size
-  const paddedMovies =
-    movies.length % sectionSize === 0
-      ? movies
-      : [
-          ...movies,
-          ...Array(sectionSize - (movies.length % sectionSize)).fill(null),
-        ];
-
-  const totalPages = Math.ceil(paddedMovies.length / sectionSize);
-
+  // Intersection Observer for infinite scroll
   useEffect(() => {
-    console.log(
-      `[${title}] Movies length: ${movies.length} (padded to ${paddedMovies.length}) | SECTION_SIZE: ${sectionSize} | Total Pages: ${totalPages}`
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        const firstEntry = entries[0];
+        if (firstEntry.isIntersecting && !isLoading) {
+          setIsLoading(true);
+          await onLoadMore();
+          setIsLoading(false);
+        }
+      },
+      { root: carouselRef.current, rootMargin: "100px" }
     );
-    console.log(`[${title}] Current Page: ${currentPage}`);
-  }, [
-    movies.length,
-    paddedMovies.length,
-    currentPage,
-    totalPages,
-    title,
-    sectionSize,
-  ]);
 
-  const canGoLeft = currentPage > 0;
-  const canGoRight = currentPage < totalPages - 1;
-
-  const handlePrev = () => {
-    if (canGoLeft) {
-      const newPage = currentPage - 1;
-      console.log(
-        `[${title}] Going left: Changing page from ${currentPage} to ${newPage}`
-      );
-      setCurrentPage(newPage);
+    if (sentinelRef.current) {
+      observer.observe(sentinelRef.current);
     }
+
+    return () => {
+      if (sentinelRef.current) observer.unobserve(sentinelRef.current);
+    };
+  }, [isLoading, onLoadMore]);
+
+  const scrollLeft = () => {
+    carouselRef.current?.scrollBy({ left: -1000, behavior: "smooth" });
   };
 
-  const handleNext = () => {
-    if (canGoRight) {
-      const newPage = currentPage + 1;
-      console.log(
-        `[${title}] Going right: Changing page from ${currentPage} to ${newPage}`
-      );
-      setCurrentPage(newPage);
-      // Increase the section size by 7 when the user clicks next
-      setSectionSize((prevSize) => prevSize + 7);
-    }
+  const scrollRight = () => {
+    carouselRef.current?.scrollBy({ left: 1000, behavior: "smooth" });
   };
-
-  const startIndex = currentPage * sectionSize;
-  const visibleMovies = paddedMovies.slice(
-    startIndex,
-    startIndex + sectionSize
-  );
 
   return (
-    <div className={styles.categorySection}>
-      <h2 className={styles.categoryTitle}>{title}</h2>
-      <div className={styles.carouselContainer}>
-        {canGoLeft && (
-          <div className={styles.arrowLeft} onClick={handlePrev}>
-            <span className={styles.arrowIcon}>‹</span>
-          </div>
-        )}
-        <div className={styles.carouselViewport}>
-          <div
-            className={styles.carouselInner}
-            style={{
-              transform: `translateX(-${currentPage * 100}%)`,
-              transition: "transform 0.5s ease-in-out",
-            }}
-          >
-            {visibleMovies.map((movie, index) => (
-              <div
-                key={movie ? movie.id : `placeholder-${index}`}
-                className={styles.cardWrapper}
-              >
-                {movie ? (
-                  <MovieCard
-                    movie={movie}
-                    onImageError={onImageError}
-                    onClick={() => onMovieClick(movie.id)} // Make sure to pass onClick here
-                  />
-                ) : (
-                  <div className={styles.cardPlaceholder}>
-                    <div className={styles.placeholder}>
-                      <div className={styles.spinner}></div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+    <div className={styles.carouselContainer}>
+      <h2 className={styles.sectionTitle}>{title}</h2>
+      <div className={styles.carouselWrapper}>
+        <button className={styles.carouselButton} onClick={scrollLeft}>
+          &#9664;
+        </button>
+        <div className={styles.carousel} ref={carouselRef}>
+          {movies.map((movie) => (
+            <div key={`${categoryKey}-${movie.id}`} className={styles.movieCardWrapper}>
+              <MovieCard movie={movie} onImageError={onImageError} />
+            </div>
+          ))}
+          <div ref={sentinelRef} className={styles.sentinel} />
         </div>
-        {canGoRight && (
-          <div className={styles.arrowRight} onClick={handleNext}>
-            <span className={styles.arrowIcon}>›</span>
-          </div>
-        )}
+        <button className={styles.carouselButton} onClick={scrollRight}>
+          &#9654;
+        </button>
       </div>
+      {isLoading && <div className={styles.loadingText}>Loading more movies...</div>}
     </div>
   );
 };

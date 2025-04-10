@@ -34,12 +34,11 @@ builder.Services.AddDbContext<INTEXContext>(options =>
 builder.Services.AddScoped<INTEXInterface, EFINTEX>();
 
 builder.Services.AddCors(options =>
-    options.AddPolicy("Add",
-    policy =>
+    options.AddPolicy("AllowLocalhost", policy =>
     {
-        policy.AllowAnyOrigin()//("http://localhost:3001", "")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     }));
 
 builder.Services.AddHttpsRedirection(options =>
@@ -51,7 +50,8 @@ builder.Services.AddHttpsRedirection(options =>
 
 var app = builder.Build();
 
-app.UseCors("Add");
+app.UseCors("AllowLocalhost");
+
 
 if (!app.Environment.IsDevelopment())
 {

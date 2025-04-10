@@ -10,6 +10,7 @@ import AdminPage from "./pages/AdminPage";
 import UpdateMovie from "./pages/UpdateMoviePage";
 import CookiePage from "./pages/CookiePolicyPage";
 import AddMovie from "./pages/AddMoviePage";
+import PageDetails from "./pages/PageDetails";
 
 function App() {
   return (
@@ -26,6 +27,8 @@ function App() {
           <Route path="/update-movie/:show_id" element={<UpdateMovie />} />
           <Route path="/cookie" element={<CookiePage />} />
           <Route path="/add-movie" element={<AddMovie />} />
+          <Route path="/movie/:show_id" element={<PageDetails />} />
+
           {/* Add more routes as needed */}
         </Routes>
       </div>

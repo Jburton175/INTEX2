@@ -1,47 +1,41 @@
-import React, { useState } from "react";
+// src/components/MovieCard.tsx
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./MovieCard.module.css";
 
-interface Movie {
+export interface Movie {
   id: string;
   show_id: string;
   title: string;
+  image: string;
   duration: string;
   rating: number;
-  image: string;
-  releaseDate?: string;
+  releaseDate: string;
+  genres: string[]; // Added genres field
 }
+
 
 interface MovieCardProps {
   movie: Movie;
   onImageError: (movieId: string) => void;
-  onClick: () => void; // Add onClick prop
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie, onImageError, onClick }) => {
-  const [loaded, setLoaded] = useState(false);
+const MovieCard: React.FC<MovieCardProps> = ({ movie, onImageError }) => {
+  const navigate = useNavigate();
 
   return (
-    <div className={styles.card} onClick={onClick}> {/* Make the whole card clickable */}
-      {/* Show a placeholder with spinner until image loads */}
-      {!loaded && (
-        <div className={styles.placeholder}>
-          <div className={styles.spinner}></div>
-        </div>
-      )}
+    <div 
+      className={styles.movieCard} 
+      onClick={() => navigate(`/movie/${movie.show_id}`)}
+    >
       <img
+        className={styles.poster}
         src={movie.image}
         alt={movie.title}
-        className={styles.image}
-        onLoad={() => setLoaded(true)}
-        onError={() => {
-          onImageError(movie.id);
-          setLoaded(true);
-        }}
-        style={{ display: loaded ? "block" : "none" }}
+        onError={() => onImageError(movie.show_id)}
       />
-      <div className={styles.info}>
-        <h3 className={styles.title}>{movie.title}</h3>
-        <p className={styles.duration}>{movie.duration}</p>
+      <div className={styles.movieCardOverlay}>
+        <p className={styles.movieTitle}>{movie.title}</p>
       </div>
     </div>
   );
