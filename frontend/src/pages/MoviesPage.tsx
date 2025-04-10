@@ -8,6 +8,7 @@ import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
 import PageDetails from "./PageDetails";
 import GenreFilter from "../components/GenreFilter";
 import SearchBar from "../components/SearchBar";  // New search bar component
+import UserRecommendations from "../components/UserRecommendations";
 
 const PAGE_SIZE = 20;
 const API_BASE =
@@ -293,7 +294,11 @@ const MoviesPage: React.FC = () => {
       } } />
       <div className={styles.mainContent}>
         <h2 className={styles.pageTitle}></h2>
+        {selectedGenres.length === 0 && <UserRecommendations />}
+        <h1>All Movies</h1>
+        <br />        <br />        <br />        <br />
         <div className={styles.moviesGrid}>
+
           {displayedMovies.map((movie) => (
             <div
               key={movie.id}
