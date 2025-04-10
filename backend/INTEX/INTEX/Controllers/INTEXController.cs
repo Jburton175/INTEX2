@@ -313,7 +313,6 @@ namespace INTEX.Controllers
             var matchedTitles = _repo.GetMovies()  // IQueryable returned by GetMovies
                 .Where(m => m.title.ToLower().Contains(query.ToLower()))
                 .Select(m => new { m.title, m.show_id })
-                .Take(50)                        // Limit to 50 results for performance
                 .ToList();
 
             // Optional: Logging the result to help debug
