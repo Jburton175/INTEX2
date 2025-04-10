@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import styles from "./MovieCategorySection.module.css";
+// MovieCategorySection.tsx
+import React, { useRef, useEffect, useState } from "react";
 import MovieCard from "./MovieCard";
+import styles from "./MovieCategorySection.module.css";
 
 interface Movie {
   id: string;
@@ -14,79 +15,74 @@ interface Movie {
 
 interface MovieCategorySectionProps {
   title: string;
-  movies: (Movie | null)[];
-  type: string; // for any custom logic or styling
+  movies: Movie[];
   onImageError: (movieId: string) => void;
-  onMovieClick: (show_id: string) => void;
+  onLoadMore: () => Promise<void>;
+  categoryKey: string;
 }
-
-const ITEMS_PER_PAGE = 7;
 
 const MovieCategorySection: React.FC<MovieCategorySectionProps> = ({
   title,
   movies,
-  type,
   onImageError,
-  onMovieClick,
+  onLoadMore,
+  categoryKey,
 }) => {
-  const [currentPage, setCurrentPage] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Filter out null movies
-  const validMovies = movies.filter((m) => m !== null) as Movie[];
-  const totalPages = Math.ceil(validMovies.length / ITEMS_PER_PAGE);
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        const firstEntry = entries[0];
+        if (firstEntry.isIntersecting && !isLoading) {
+          setIsLoading(true);
+          await onLoadMore();
+          setIsLoading(false);
+        }
+      },
+      { root: carouselRef.current, rootMargin: "100px" }
+    );
 
-  // Compute the slice of movies to display on the current page
-  const visibleMovies = validMovies.slice(
-    currentPage * ITEMS_PER_PAGE,
-    (currentPage + 1) * ITEMS_PER_PAGE
-  );
-
-  const handlePrev = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+    if (sentinelRef.current) {
+      observer.observe(sentinelRef.current);
     }
+
+    return () => {
+      if (sentinelRef.current) observer.unobserve(sentinelRef.current);
+    };
+  }, [isLoading, onLoadMore]);
+
+  const scrollLeft = () => {
+    carouselRef.current?.scrollBy({ left: -1000, behavior: "smooth" });
   };
 
-  const handleNext = () => {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage(currentPage + 1);
-    }
+  const scrollRight = () => {
+    carouselRef.current?.scrollBy({ left: 1000, behavior: "smooth" });
   };
 
   return (
-    <div className={styles.categorySection}>
-      <h2 className={styles.categoryTitle}>{title}</h2>
-      <div className={styles.carouselContainer}>
-        {/* Left Arrow */}
-        {currentPage > 0 && (
-          <button onClick={handlePrev} className={styles.arrowLeft}>
-            ‹
-          </button>
-        )}
-
-        <div className={styles.carouselViewport}>
-          <div className={styles.carouselInner}>
-            {visibleMovies.map((movie, index) => (
-              <div key={movie.id} className={styles.cardWrapper}>
-                {/* Wrap the MovieCard in a clickable container */}
-                <div
-                  onClick={() => onMovieClick(movie.show_id)}
-                  className={styles.cardContainer}
-                >
-                  <MovieCard movie={movie} onImageError={onImageError} />
-                </div>
-              </div>
-            ))}
-          </div>
+    <div className={styles.carouselContainer}>
+      <h2 className={styles.sectionTitle}>{title}</h2>
+      <div className={styles.carouselWrapper}>
+        <button className={styles.carouselButton} onClick={scrollLeft}>
+          &#9664;
+        </button>
+        <div className={styles.carousel} ref={carouselRef}>
+          {movies.map((movie) => (
+            <div key={`${categoryKey}-${movie.id}`} className={styles.movieCardWrapper}>
+              <MovieCard movie={movie} onImageError={onImageError} />
+            </div>
+          ))}
+          <div ref={sentinelRef} className={styles.sentinel} />
         </div>
-
-        {/* Right Arrow */}
-        {currentPage < totalPages - 1 && (
-          <button onClick={handleNext} className={styles.arrowRight}>
-            ›
-          </button>
-        )}
+        <button className={styles.carouselButton} onClick={scrollRight}>
+          &#9654;
+        </button>
       </div>
+      {isLoading && <div className={styles.loadingText}>Loading more movies...</div>}
     </div>
   );
 };

@@ -1,53 +1,245 @@
 /* src/components/PageDetails.module.css */
+
+/* Default (Dark Mode) Variables */
+:root {
+  --primary-color: #e50914;
+  --hover-color: #f40612;
+  --background-overlay: rgba(0, 0, 0, 0.85);
+  --content-bg: #1e1e1e;
+  --text-color: #ffffff;
+  --shadow-light: 0px 2px 4px rgba(0, 0, 0, 0.7);
+  --border-radius: 8px;
+  --transition-speed: 0.3s;
+}
+
+/* Light Mode Overrides – set data-theme="light" on <html> or <body> */
+:root[data-theme="light"] {
+  --background-overlay: rgba(255, 255, 255, 0.85);
+  --content-bg: #ffffff;
+  --text-color: #141414;
+  --shadow-light: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #141414;
+  color: var(--text-color);
+}
+
+body[data-theme="light"] {
+  background-color: #ffffff;
+}
+
+/* --- Main Overlay --- */
+/* Increased top padding to give more space from the top */
 .overlay {
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
+  padding-top: 6rem; /* Intended top padding */
   z-index: 100;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: var(--background-overlay);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   overflow-y: auto;
-  padding: 1rem;
+
 }
+
 
 .content {
   display: flex;
-  background-color: #1e1e1e;
-  border-radius: 8px;
+  flex-direction: row;
+  background-color: var(--content-bg);
+  border-radius: var(--border-radius);
   overflow: hidden;
   max-width: 80%;
   width: 100%;
-  color: white;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.content .poster {
+  width: 300px;
+  height: auto;
+  flex-shrink: 0;
+  object-fit: cover;
+  display: block;
+}
+/* Enhance the details area styling */
+.details {
+  padding: 2rem;
+  flex: 1;
+  margin-left: 2rem;
+  background-color: rgba(255, 255, 255, 0.05); /* Subtle contrast overlay */
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.details h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+  text-shadow: var(--shadow-light);
+}
+
+.details p {
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  text-shadow: var(--shadow-light);
+}
+
+/* Style the list of details (cast, country, etc.) */
+.details ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.details ul li {
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Use a bullet before each list item, colored with the primary color */
+.details ul li::before {
+  content: "•";
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+/* Optional: adjust button styling if needed */
+.details button {
+  background-color: var(--primary-color);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  margin-top: 1rem;
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color var(--transition-speed) ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+.details button:hover {
+  background-color: var(--hover-color);
+}
+
+
+
+/* Recommendations */
+.recommendationsContainer {
+  width: 80%;
   margin-bottom: 2rem;
 }
 
-.poster {
-  width: 300px;
-  height: auto;
+.recommendationsContainer h2 {
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  text-shadow: var(--shadow-light);
+}
+
+.recommendationsList {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.recommendationItem {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  min-width: 150px;
+  transition: transform var(--transition-speed) ease;
+  border-radius: 4px;
+}
+
+.recommendationItem:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+}
+
+.recommendationItem .poster {
+  width: 150px;
+  height: 225px;
   object-fit: cover;
+  display: block;
+  border-radius: 4px;
 }
 
-.details {
-  padding: 20px;
-  flex-grow: 1;
+.recommendationOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-speed) ease;
+  padding: 0.5rem;
 }
 
-/* Improve text readability with a subtle shadow */
-.details h1,
-.details p,
-.details button,
-h2,
-p {
-  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.7);
+.recommendationOverlay p {
+  color: var(--text-color);
+  font-size: 1rem;
+  text-align: center;
+  margin: 0;
+  text-shadow: var(--shadow-light);
 }
 
-/* Style recommendations text */
-.recommendation p {
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
+.recommendationItem:hover .recommendationOverlay {
+  opacity: 1;
+}
+
+/* MovieRating Container: slightly more styling, so the rating box stands out */
+.movieRatingContainer {
+  max-width: 400px;
+  margin-top: 1.5rem;
+  background: rgba(255, 255, 255, 0.05); /* Subtle background in dark mode */
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+/* Light mode override for rating container background */
+[data-theme="light"] .movieRatingContainer {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    max-width: 90%;
+  }
+
+  .content .poster {
+    width: 100%;
+    height: auto;
+  }
+
+  .details {
+    padding: 1rem;
+    margin-left: 0;
+  }
+
+  .recommendationsList {
+    justify-content: center;
+  }
 }
