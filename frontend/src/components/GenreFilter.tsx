@@ -1,4 +1,3 @@
-// src/components/GenreFilter.tsx
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./GenreFilter.module.css";
 import { GENRE_KEYS, GENRE_LABELS } from "../types/genres";
@@ -12,10 +11,11 @@ const GenreFilter: React.FC<GenreFilterProps> = ({
   selectedGenres,
   setSelectedGenres,
 }) => {
-  const [expanded, setExpanded] = useState(true);
+  // Sidebar is collapsed by default.
+  const [expanded, setExpanded] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // When mouse enters the sidebar, cancel the auto-retract timer and expand
+  // When the mouse enters, clear any timeout and show the sidebar.
   const handleMouseEnter = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -23,14 +23,14 @@ const GenreFilter: React.FC<GenreFilterProps> = ({
     setExpanded(true);
   };
 
-  // When mouse leaves, schedule a collapse after 3 seconds
+  // When the mouse leaves, collapse after 3 seconds.
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setExpanded(false);
     }, 3000);
   };
 
-  // Clear timeout on unmount
+  // Clear the timeout when the component unmounts.
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -39,41 +39,33 @@ const GenreFilter: React.FC<GenreFilterProps> = ({
     };
   }, []);
 
-  // Toggle genre selection, update the URL query parameters, and reload the page.
+  // Toggle the genre selection then update the URL (so that the filter persists on reload)
   const toggleGenre = (genre: string) => {
-    let updatedGenres: string[];
-    if (selectedGenres.includes(genre)) {
-      updatedGenres = selectedGenres.filter((g) => g !== genre);
-    } else {
-      updatedGenres = [...selectedGenres, genre];
-    }
+    const updatedGenres = selectedGenres.includes(genre)
+      ? selectedGenres.filter((g) => g !== genre)
+      : [...selectedGenres, genre];
 
-    // Update the filter state.
     setSelectedGenres(updatedGenres);
 
-    // Build query parameters.
     const searchParams = new URLSearchParams(window.location.search);
     if (updatedGenres.length > 0) {
       searchParams.set("genres", updatedGenres.join(","));
     } else {
       searchParams.delete("genres");
     }
-
-    // If there are any query parameters, prepend with '?'; otherwise, set query to empty.
     const query = searchParams.toString() ? `?${searchParams.toString()}` : "";
-
-    // Reload the page with the updated query parameters.
     window.location.href = `${window.location.pathname}${query}`;
   };
 
   return (
-    <>
-      {/* When the sidebar is collapsed, show a tab to allow the user to expand it */}
+    <div className={styles.container}>
+      {/* When the sidebar is collapsed, show the tab */}
       {!expanded && (
         <div className={styles.tab} onClick={() => setExpanded(true)}>
-          Genres
+          ☰ Genres
         </div>
       )}
+
       <aside
         className={`${styles.genreFilterSidebar} ${!expanded ? styles.collapsed : ""}`}
         onMouseEnter={handleMouseEnter}
@@ -94,8 +86,9 @@ const GenreFilter: React.FC<GenreFilterProps> = ({
           ))}
         </div>
       </aside>
-    </>
+    </div>
   );
 };
 
 export default GenreFilter;
+

@@ -82,59 +82,11 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
         </Link>
       </div>
 
-      <div className="nav-center">
-        <button
-          className={`type-toggle ${selectedType === "Movie" ? "active" : ""}`}
-          onClick={() => onTypeChange("Movie")}
-        >
-          Movies
-        </button>
-        <button
-          className={`type-toggle ${selectedType === "TV Show" ? "active" : ""}`}
-          onClick={() => onTypeChange("TV Show")}
-        >
-          TV Shows
-        </button>
-      </div>
+
 
       <div className="nav-right">
         <div className="nav-right-left">
-          <div
-            className="nav-genre-dropdown-container"
-            onMouseEnter={() => {
-              if (genreTimeoutRef.current) clearTimeout(genreTimeoutRef.current);
-              setIsGenreOpen(true);
-            }}
-            onMouseLeave={() => {
-              genreTimeoutRef.current = setTimeout(() => {
-                setIsGenreOpen(false);
-              }, 600);
-            }}
-          >
-            <button className="nav-genre-button">Genres</button>
-            {isGenreOpen && (
-              <ul
-                className="nav-genre-dropdown"
-                onMouseEnter={() => {
-                  if (genreTimeoutRef.current) clearTimeout(genreTimeoutRef.current);
-                  setIsGenreOpen(true);
-                }}
-                onMouseLeave={() => {
-                  genreTimeoutRef.current = setTimeout(() => {
-                    setIsGenreOpen(false);
-                  }, 600);
-                }}
-              >
-                {genres.map((genre) => (
-                  <li key={genre}>
-                    <button className="genre-option">
-                      {formatGenreLabel(genre)}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          
 
           <div className="nav-search-container">
             <div className="nav-search-field">
