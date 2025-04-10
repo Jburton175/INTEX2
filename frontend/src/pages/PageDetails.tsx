@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "./PageDetails.module.css";
-import MovieRating from '../components/MovieRating';
+import MovieRating from "../components/MovieRating";
 import TopNavBar from "../components/TopNavBar";
 import { Movie } from "../components/moviesPage/MovieCard";
 
@@ -33,18 +33,21 @@ const PageDetails: React.FC = () => {
 
   // Generate image URL based on title.
   const getImageUrl = (title: string | undefined) => {
-    const safeTitle = (title && title.trim() ? title : "myDefaultImage")
-      .replace(/['’:\-.!?–&()]/g, "");
+    const safeTitle = (
+      title && title.trim() ? title : "myDefaultImage"
+    ).replace(/['’:\-.!?–&()]/g, "");
     return `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(safeTitle)}.jpg`;
   };
 
   // onError: fallback to a local image if blob not found.
-  const handleImageError = async (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+  const handleImageError = async (
+    e: React.SyntheticEvent<HTMLImageElement, Event>
+  ) => {
     const imgElement = e.currentTarget as HTMLImageElement;
     const imageUrl = imgElement.src;
     try {
       // Check if the blob image exists by performing a HEAD request.
-      const headRes = await fetch(imageUrl, { method: 'HEAD' });
+      const headRes = await fetch(imageUrl, { method: "HEAD" });
       if (!headRes.ok) {
         // The blob link is invalid—fetch a replacement movie.
         const replacement = await fetchReplacementMovie();
@@ -62,12 +65,13 @@ const PageDetails: React.FC = () => {
       imgElement.src = "/default.jpg";
     }
   };
-  
-  
+
   useEffect(() => {
     if (show_id) {
       // Fetch main movie data.
-      fetch(`https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovie?show_id=${show_id}`)
+      fetch(
+        `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovie?show_id=${show_id}`
+      )
         .then((res) => res.json())
         .then((data) => {
           setMovie(data);
@@ -79,7 +83,9 @@ const PageDetails: React.FC = () => {
         });
 
       // Fetch recommendations.
-      fetch(`https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovieRecommendation?show_id=${show_id}`)
+      fetch(
+        `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovieRecommendation?show_id=${show_id}`
+      )
         .then((res) => res.json())
         .then((data) => {
           setRecommendations(data);
@@ -96,41 +102,41 @@ const PageDetails: React.FC = () => {
   if (!movie) return <div>No movie data found.</div>;
 
   // This function attempts to fetch a replacement movie.
-// You can use a dedicated endpoint or pick one from your recommendations.
-const fetchReplacementMovie = async (): Promise<Movie | null> => {
-  try {
-    const res = await fetch("http://localhost:5000/INTEX/GetRandomMovie");
-    if (!res.ok) return null;
+  // You can use a dedicated endpoint or pick one from your recommendations.
+  const fetchReplacementMovie = async (): Promise<Movie | null> => {
+    try {
+      const res = await fetch("http://localhost:5000/INTEX/GetRandomMovie");
+      if (!res.ok) return null;
 
-    const data = await res.json();
-    const movie = Array.isArray(data) ? data[0] : data;
+      const data = await res.json();
+      const movie = Array.isArray(data) ? data[0] : data;
 
-    return {
-      id: movie.show_id,
-      show_id: movie.show_id,
-      title: movie.title,
-      duration: `${Math.floor((movie.duration_minutes_movies ?? 90) / 60)}h ${(movie.duration_minutes_movies ?? 90) % 60}min`,
-      rating: parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)),
-      image: `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(
-        (movie.title || "default-title").replace(/['’:\-.!?–&()]/g, "")
-      )}.jpg`,
-      releaseDate: `April ${movie.release_year}`,
-      genres: [], // optional, adjust depending on where you're using this
-    };
-  } catch (err) {
-    console.error("Error fetching replacement movie:", err);
-    return null;
-  }
-};
-
-
+      return {
+        id: movie.show_id,
+        show_id: movie.show_id,
+        title: movie.title,
+        duration: `${Math.floor((movie.duration_minutes_movies ?? 90) / 60)}h ${(movie.duration_minutes_movies ?? 90) % 60}min`,
+        rating: parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)),
+        image: `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(
+          (movie.title || "default-title").replace(/['’:\-.!?–&()]/g, "")
+        )}.jpg`,
+        releaseDate: `April ${movie.release_year}`,
+        genres: [], // optional, adjust depending on where you're using this
+      };
+    } catch (err) {
+      console.error("Error fetching replacement movie:", err);
+      return null;
+    }
+  };
 
   return (
-
     <div className={styles.overlay}>
-          <TopNavBar selectedType={"Movie"} onTypeChange={function (_type: "Movie" | "TV Show"): void {
-        throw new Error("Function not implemented.");
-      } } />
+      <TopNavBar
+        selectedType={"Movie"}
+        onTypeChange={function (_type: "Movie" | "TV Show"): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
       {/* Main Content: Poster and movie details */}
       <div className={styles.content}>
         <img
@@ -165,15 +171,17 @@ const fetchReplacementMovie = async (): Promise<Movie | null> => {
           <button onClick={() => navigate("/movies")}>Back to Home</button>
         </div>
         <MovieRating
-                  show_id={movie.show_id}
-                  movieId={movie.show_id}
-                  initialUserRating={0}       // Change if you have real data
-                  initialAverageRating={0}    // Change if you have real data
-                  onRatingUpdate={(newRating) => {
-                    // Update local state if desired
-                    setMovie(prev => prev ? { ...prev, user_rating: newRating } : null);
-                  }}
-                />
+          show_id={movie.show_id}
+          movieId={movie.show_id}
+          initialUserRating={0} // Change if you have real data
+          initialAverageRating={0} // Change if you have real data
+          onRatingUpdate={(newRating) => {
+            // Update local state if desired
+            setMovie((prev) =>
+              prev ? { ...prev, user_rating: newRating } : null
+            );
+          }}
+        />
       </div>
 
       {/* Recommendations Section and MovieRating */}
@@ -189,7 +197,9 @@ const fetchReplacementMovie = async (): Promise<Movie | null> => {
                   <div
                     key={`${rec.recommended_show_id}-${idx}`}
                     className={styles.recommendationItem}
-                    onClick={() => navigate(`/movie/${rec.recommended_show_id}`)}
+                    onClick={() =>
+                      navigate(`/movie/${rec.recommended_show_id}`)
+                    }
                   >
                     <img
                       className={styles.poster}
@@ -205,9 +215,7 @@ const fetchReplacementMovie = async (): Promise<Movie | null> => {
                 ))}
               </div>
               {/* Wrap MovieRating inside its own container */}
-              <div className={styles.movieRatingContainer}>
-
-              </div>
+              <div className={styles.movieRatingContainer}></div>
             </>
           ) : (
             <p>No recommendations available.</p>
