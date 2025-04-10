@@ -1,0 +1,82 @@
+/* src/components/GenreFilter.module.css */
+
+/* Wrapper for the entire filter sidebar */
+.genreFilterSidebar {
+  position: fixed;
+  top: 50px;       /* move closer to the top */
+  left: 10px;      /* pinned to the far left */
+  width: 220px;    /* width of the sidebar */
+  max-height: 70vh;/* so it doesn't take the entire screen height */
+  
+  margin-left: 0;
+  padding: 1rem;
+  
+  background-color: #8a8484; /* or #ffffffdd for slight transparency */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  
+  z-index: 1000;
+  overflow-y: auto; /* enable scrolling if the genres exceed max-height */
+  
+  /* Optional transition if you want a subtle hover effect */
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.genreFilterSidebar:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Title inside the sidebar (e.g., “Genres”) */
+.sidebarTitle {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* The scrollable box for the list of genre checkboxes */
+.genreList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Optional custom scrollbar styling */
+.genreList::-webkit-scrollbar {
+  width: 6px;
+}
+.genreList::-webkit-scrollbar-track {
+  background: transparent;
+}
+.genreList::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+/* Each checkbox label container */
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f7f7f7;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.checkboxLabel:hover {
+  background-color: #e0e0e0;
+}
+
+/* Checkbox input styling */
+.checkboxLabel input {
+  cursor: pointer;
+  accent-color: #e50914; /* Netflix-red style for the checkboxes (optional) */
+  transform: scale(1.1);
+}

@@ -1,182 +1,3 @@
-
-// import React, { useState, useEffect } from "react";
-// import styles from "./MoviesPage.module.css";
-// import Header from "../components/TopNavBar";
-// import MovieCategorySection from "../components/moviesPage/MovieCategorySection";
-// import CookieConsentBanner from "../components/CookieConsentBanner";
-// import Footer from "../components/Footer";
-// import PageDetails from "./PageDetails";
-
-// interface MovieFromApi {
-//   show_id: string;
-//   title: string;
-//   duration: string;
-//   release_year: number;
-//   [key: string]: any; // For genre flags and possible other keys
-// }
-
-// export interface Movie {
-//   id: string;
-//   show_id: string;
-//   title: string;
-//   image: string;
-//   duration: string;
-//   rating: number;
-//   releaseDate: string;
-// }
-
-// const PAGE_SIZE = 1000;
-// const API_BASE = "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
-
-// const getGenresFromMovie = (movie: MovieFromApi): string[] => {
-//   return Object.keys(movie).filter(
-//     key =>
-//       movie[key] === 1 &&
-//       key !== "show_id" &&
-//       key !== "type" &&
-//       !key.startsWith("duration") &&
-//       !key.startsWith("ratings")
-//   );
-// };
-
-// const convertToMovie = (data: MovieFromApi): Movie => ({
-//   id: data.show_id,
-//   show_id: data.show_id,
-//   title: data.title,
-//   image: `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(
-//     data.title
-//   )}.jpg`,
-//   duration: data.duration,
-//   rating: parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)),
-//   releaseDate: `April ${data.release_year}`
-// });
-
-// const MoviesPage: React.FC = () => {
-//   const [selectedType, setSelectedType] = useState<"Movie" | "TV Show">("Movie");
-//   const [genreMovies, setGenreMovies] = useState<Record<string, Movie[]>>({});
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const [loading, setLoading] = useState(false);
-//   const [hasMore, setHasMore] = useState(true);
-//   const [selectedMovieId, setSelectedMovieId] = useState<string | null>(null);
-
-//   const loadMovies = async (page: number) => {
-//     try {
-//       setLoading(true);
-//       const res = await fetch(
-//         `${API_BASE}/INTEX/GetAllMovies?page=${page}&pageSize=${PAGE_SIZE}`
-//       );
-//       if (!res.ok) {
-//         console.error(
-//           `Error fetching movies: ${res.status} - ${res.statusText}`
-//         );
-//         return;
-//       }
-//       const data = await res.json();
-
-//       // Extract movies array from the response.
-//       let moviesArray: MovieFromApi[] = [];
-//       if (Array.isArray(data)) {
-//         moviesArray = data;
-//       } else if (data && Array.isArray(data.movies)) {
-//         moviesArray = data.movies;
-//       } else {
-//         console.error("Expected an array for movies, but got:", data);
-//         return;
-//       }
-
-//       const newGenreMap: Record<string, Movie[]> = { ...genreMovies };
-
-//       moviesArray.forEach((movieData: MovieFromApi) => {
-//         const movie = convertToMovie(movieData);
-//         const genres = getGenresFromMovie(movieData);
-//         genres.forEach(genre => {
-//           if (!newGenreMap[genre]) {
-//             newGenreMap[genre] = [];
-//           }
-//           if (!newGenreMap[genre].some(m => m.id === movie.id)) {
-//             newGenreMap[genre].push(movie);
-//           }
-//         });
-//       });
-
-//       setGenreMovies(newGenreMap);
-//       setHasMore(moviesArray.length === PAGE_SIZE);
-//     } catch (error) {
-//       console.error("Error loading movies:", error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     loadMovies(currentPage);
-//   }, [currentPage]);
-
-//   // Handler to remove a movie if its image fails to load.
-//   const handleImageError = (failedMovieId: string) => {
-//     setGenreMovies(prevGenres => {
-//       const newGenres = { ...prevGenres };
-//       Object.keys(newGenres).forEach(genre => {
-//         newGenres[genre] = newGenres[genre].filter(
-//           movie => movie.id !== failedMovieId
-//         );
-//       });
-//       return newGenres;
-//     });
-//   };
-
-//   const handleLoadMore = async () => {
-//     if (!loading && hasMore) {
-//       setCurrentPage(prev => prev + 1);
-//     }
-//   };
-
-//   return (
-//     <div className={styles.moviesPage}>
-//       <Header selectedType={selectedType} onTypeChange={setSelectedType} />
-//       <CookieConsentBanner />
-
-//       <div className={styles.mainContent}>
-//         <div className={styles.categoriesContainer}>
-//           {Object.entries(genreMovies).map(([genre, movies]) => (
-//             <MovieCategorySection
-//               key={genre}
-//               title={genre}
-//               movies={movies}
-//               categoryKey={genre}
-//               onLoadMore={handleLoadMore}
-//               onImageError={handleImageError}
-//             />
-//           ))}
-//         </div>
-//         {loading && (
-//           <div className={styles.loading}>Loading more movies...</div>
-//         )}
-//       </div>
-
-//       {selectedMovieId && (
-//         <PageDetails
-//           showId={selectedMovieId}
-//           onClose={() => setSelectedMovieId(null)}
-//         />
-//       )}
-//       <Footer />
-//     </div>
-//   );
-// };
-
-// export default MoviesPage;
-
-
-
-
-
-
-
-
-
-
-
 // src/pages/MoviesPage.tsx
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./MoviesPage.module.css";
@@ -185,12 +6,13 @@ import CookieConsentBanner from "../components/CookieConsentBanner";
 import Footer from "../components/Footer";
 import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
 import PageDetails from "./PageDetails";
+import GenreFilter from "../components/GenreFilter";  // Import your genre filter
 
 const PAGE_SIZE = 20;
 const API_BASE =
   "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
 
-// Build the blob image URL from the movie's title.
+// Function to safely build an image URL from movie title.
 const getImageUrl = (title: string | undefined): string => {
   const safeTitle = (title && title.trim() ? title : "default-title")
     .replace(/['’:\-.!?–&()]/g, "");
@@ -205,19 +27,62 @@ interface MovieFromApi {
   title: string;
   duration: string;
   release_year: number;
+  // Other properties including genre flags...
   [key: string]: any;
 }
 
-// Convert API movie into our Movie object.
-const convertToMovie = (data: MovieFromApi): Movie => ({
-  id: data.show_id,
-  show_id: data.show_id,
-  title: data.title,
-  image: getImageUrl(data.title),
-  duration: data.duration,
-  rating: parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)),
-  releaseDate: `April ${data.release_year}`,
-});
+// List of keys that represent genres.
+const GENRE_KEYS = [
+  "action",
+  "adventure",
+  "animeSeriesInternationalTVShows",
+  "britishTVShowsDocuseriesInternationalTVShows",
+  "children",
+  "comedies",
+  "comediesDramasInternationalMovies",
+  "comediesInternationalMovies",
+  "comediesRomanticMovies",
+  "crimeTVShowsDocuseries",
+  "documentaries",
+  "documentariesInternationalMovies",
+  "docuseries",
+  "dramas",
+  "dramasInternationalMovies",
+  "dramasRomanticMovies",
+  "familyMovies",
+  "fantasy",
+  "horrorMovies",
+  "internationalMoviesThrillers",
+  "internationalTVShowsRomanticTVShowsTVDramas",
+  "kidsTV",
+  "languageTVShows",
+  "musicals",
+  "natureTV",
+  "realityTV",
+  "spirituality",
+  "tvAction",
+  "tvComedies",
+  "tvDramas",
+  "talkShowsTVComedies",
+  "thrillers"
+];
+
+// Convert API movie into our Movie object, extracting genres.
+const convertToMovie = (data: MovieFromApi): Movie => {
+  // Filter out genre keys where the value is truthy and greater than 0.
+  const movieGenres = GENRE_KEYS.filter((key) => data[key] && data[key] > 0);
+
+  return {
+    id: data.show_id,
+    show_id: data.show_id,
+    title: data.title,
+    image: getImageUrl(data.title),
+    duration: data.duration,
+    rating: parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)),
+    releaseDate: `April ${data.release_year}`,
+    genres: movieGenres
+  };
+};
 
 const MoviesPage: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -227,6 +92,9 @@ const MoviesPage: React.FC = () => {
   const [replacementQueue, setReplacementQueue] = useState<string[]>([]);
   const replacementTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [selectedMovieId, setSelectedMovieId] = useState<string | null>(null);
+
+  // Added state for genres.
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
 
   // Sentinel for infinite scroll
   const observer = useRef<IntersectionObserver | null>(null);
@@ -247,8 +115,11 @@ const MoviesPage: React.FC = () => {
   const fetchMovies = useCallback(async (page: number) => {
     try {
       setLoading(true);
+      // Option 1: If your backend supports filtering by genres, add a query parameter:
+      const genreParams = selectedGenres.length > 0 ? `&genres=${selectedGenres.join(",")}` : "";
+      
       const res = await fetch(
-        `${API_BASE}/INTEX/GetAllMovies?page=${page}&pageSize=${PAGE_SIZE}`
+        `${API_BASE}/INTEX/GetAllMovies?page=${page}&pageSize=${PAGE_SIZE}${genreParams}`
       );
       if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
       const data = await res.json();
@@ -260,10 +131,7 @@ const MoviesPage: React.FC = () => {
       // Append new movies and deduplicate by movie ID.
       setMovies((prev) => {
         const combined = [...prev, ...newMovies];
-        const uniqueMovies = Array.from(
-          new Map(combined.map((m) => [m.id, m])).values()
-        );
-        return uniqueMovies;
+        return Array.from(new Map(combined.map((m) => [m.id, m])).values());
       });
       setHasMore(moviesArray.length === PAGE_SIZE);
     } catch (error) {
@@ -271,10 +139,35 @@ const MoviesPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedGenres]);
 
-  // Replacement mechanism: When an image fails, add its movie ID to a queue
-  // and then fetch a batch of replacement movies from page 1.
+  // Infinite scroll setup.
+  useEffect(() => {
+    if (!sentinelRef.current || !hasMore) return;
+    observer.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading) {
+          setCurrentPage((prev) => prev + 1);
+        }
+      },
+      { rootMargin: "500px" }
+    );
+    observer.current.observe(sentinelRef.current);
+    return () => observer.current?.disconnect();
+  }, [loading, hasMore]);
+
+  // Fetch movies whenever currentPage or selectedGenres changes.
+  useEffect(() => {
+    // Reset page and movies if the filter changes (if you want to perform server filtering).
+    setMovies([]);
+    setCurrentPage(1);
+  }, [selectedGenres]);
+
+  useEffect(() => {
+    fetchMovies(currentPage);
+  }, [currentPage, fetchMovies]);
+
+  // Image replacement mechanism.
   const handleImageError = useCallback((failedMovieId: string) => {
     setReplacementQueue((prev) => [...prev, failedMovieId]);
 
@@ -310,26 +203,6 @@ const MoviesPage: React.FC = () => {
     }
   }, [replacementQueue, movies]);
 
-  // Setup infinite scrolling via IntersectionObserver.
-  useEffect(() => {
-    if (!sentinelRef.current || !hasMore) return;
-    observer.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !loading) {
-          setCurrentPage((prev) => prev + 1);
-        }
-      },
-      { rootMargin: "500px" }
-    );
-    observer.current.observe(sentinelRef.current);
-    return () => observer.current?.disconnect();
-  }, [loading, hasMore]);
-
-  // Fetch movies whenever currentPage changes.
-  useEffect(() => {
-    fetchMovies(currentPage);
-  }, [currentPage, fetchMovies]);
-
   // Validate images of all movies (and trigger replacements if needed).
   useEffect(() => {
     const validateAllMovies = async () => {
@@ -347,6 +220,12 @@ const MoviesPage: React.FC = () => {
     }
   }, [movies, handleImageError]);
 
+  // Option 2 (client-side filtering):  
+  // If your API does not support genre filtering, you can filter the movies here.
+  const filteredMovies = selectedGenres.length > 0
+    ? movies.filter(movie => movie.genres && selectedGenres.every(g => movie.genres.includes(g)))
+    : movies;
+
   // When a movie card is clicked, show the PageDetails modal.
   const handleCardClick = (movieId: string) => {
     setSelectedMovieId(movieId);
@@ -356,10 +235,16 @@ const MoviesPage: React.FC = () => {
     <div className={styles.moviesPage}>
       <Header selectedType="Movie" onTypeChange={() => {}} />
       <CookieConsentBanner />
+
       <div className={styles.mainContent}>
         <h2 className={styles.pageTitle}>All Movies</h2>
+        
+        {/* Render the GenreFilter */}
+        <GenreFilter selectedGenres={selectedGenres} setSelectedGenres={setSelectedGenres} />
+
+        {/* Display filtered movies */}
         <div className={styles.moviesGrid}>
-          {movies.map((movie) => (
+          {filteredMovies.map((movie) => (
             <div
               key={movie.id}
               onClick={() => handleCardClick(movie.id)}

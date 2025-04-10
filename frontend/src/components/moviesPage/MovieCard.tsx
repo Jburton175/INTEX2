@@ -7,11 +7,13 @@ export interface Movie {
   id: string;
   show_id: string;
   title: string;
+  image: string;
   duration: string;
   rating: number;
-  image: string;
-  releaseDate?: string;
+  releaseDate: string;
+  genres: string[]; // Added genres field
 }
+
 
 interface MovieCardProps {
   movie: Movie;
