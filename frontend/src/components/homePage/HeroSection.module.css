@@ -57,6 +57,7 @@
 .ctaButton {
   cursor: pointer;
   background-color: #e50000;
+  text-decoration: none;
   border: none;
   border-radius: 8px;
   align-items: center;

@@ -47,8 +47,12 @@
   border: 1px solid #262626;
   background-color: #1a1a1a;
   text-align: left;
+  margin: 0 auto; /* ✅ This line centers the container */
 }
-
+.policyContainer,
+.policyContainer * {
+  color: #fff !important;
+}
 .policyContent {
   display: flex;
   flex-direction: column;

@@ -1,18 +1,22 @@
 import React from "react";
 import styles from "./PrivacyPolicyPage.module.css";
-import Header from "../components/TopNavBar";
+import ExternalNavBar from "../components/ExternalNavBar";
 import Footer from "../components/Footer";
+
 
 const PrivacyPolicyPage: React.FC = () => {
   return (
     <div className={styles.container}>
-      <Header
+      {/* <Header
         selectedType={"Movie"}
         onTypeChange={function (_type: "Movie" | "TV Show"): void {
           throw new Error("Function not implemented.");
         }}
-      />
-
+      /> */}
+      <ExternalNavBar />
+      <br />
+      <br />
+      <br />
       <main className={styles.mainContent}>
         <div className={styles.policyContainer}>
           <div className={styles.policyContent}>
