@@ -32,9 +32,9 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h3 className={styles.sectionTitle}>
-                1. 🔍 What Data We Collect
-              </h3>
+              <h2 className={styles.sectionTitle}>
+                What Data We Collect
+              </h2>
               <div className={styles.sectionContent}>
                 <p className={styles.sectionIntro}>
                   We collect the following types of information:
@@ -97,9 +97,9 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h3 className={styles.sectionTitle}>
-                2. 🧠 How We Use Your Data
-              </h3>
+              <h2 className={styles.sectionTitle}>
+                How We Use Your Data
+              </h2>
               <div className={styles.sectionContent}>
                 <p>We use your information to:</p>
                 <ul className={styles.categoryList}>
@@ -126,9 +126,9 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h3 className={styles.sectionTitle}>
-                3. 👥 Who Has Access to Your Data
-              </h3>
+              <h2 className={styles.sectionTitle}>
+                Who Has Access to Your Data
+              </h2>
               <div className={styles.sectionContent}>
                 <p>Your personal data is accessible only to:</p>
                 <ul className={styles.categoryList}>
@@ -149,9 +149,9 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h3 className={styles.sectionTitle}>
-                4. 🍪 Cookies &amp; Tracking Technologies
-              </h3>
+              <h2 className={styles.sectionTitle}>
+                Cookies &amp; Tracking Technologies
+              </h2>
               <div className={styles.sectionContent}>
                 <p>We use cookies to:</p>
                 <ul className={styles.categoryList}>
@@ -174,7 +174,7 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h3 className={styles.sectionTitle}>5. 🔐 Security Measures</h3>
+              <h2 className={styles.sectionTitle}>Security Measures</h2>
               <div className={styles.sectionContent}>
                 <p>We take appropriate steps to protect your data:</p>
                 <ul className={styles.categoryList}>
@@ -204,9 +204,9 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h3 className={styles.sectionTitle}>
-                6. 🌍 Your Rights Under GDPR
-              </h3>
+              <h2 className={styles.sectionTitle}>
+                Your Rights Under GDPR
+              </h2>
               <div className={styles.sectionContent}>
                 <p>You have the right to:</p>
                 <ul className={styles.categoryList}>
@@ -226,9 +226,9 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h3 className={styles.sectionTitle}>
-                7. 📦 Data Storage &amp; Retention
-              </h3>
+              <h2 className={styles.sectionTitle}>
+               Data Storage &amp; Retention
+              </h2>
               <div className={styles.sectionContent}>
                 <p>
                   All user data is stored securely in a cloud-hosted database.
@@ -239,9 +239,9 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h3 className={styles.sectionTitle}>
-                8. 📲 Third-Party Integrations
-              </h3>
+              <h2 className={styles.sectionTitle}>
+                Third-Party Integrations
+              </h2>
               <div className={styles.sectionContent}>
                 <p>
                   Our platform may optionally support third-party authentication
@@ -253,9 +253,9 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h3 className={styles.sectionTitle}>
-                9. 🔄 Changes to This Policy
-              </h3>
+              <h2 className={styles.sectionTitle}>
+              Changes to This Policy
+              </h2>
               <div className={styles.sectionContent}>
                 <p>
                   We may update this Privacy Policy as needed. If changes are

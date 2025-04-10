@@ -8,6 +8,7 @@ import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
 import PageDetails from "./PageDetails";
 import GenreFilter from "../components/GenreFilter";
 import SearchBar from "../components/SearchBar";  // New search bar component
+import UserRecommendations from "../components/UserRecommendations";
 
 const PAGE_SIZE = 20;
 const API_BASE =
@@ -288,10 +289,16 @@ const MoviesPage: React.FC = () => {
       {/* Render the search bar */}
       
       {/* Render GenreFilter with selected genres state */}
-      <GenreFilter selectedGenres={selectedGenres} setSelectedGenres={setSelectedGenres} />
+      <GenreFilter selectedGenres={selectedGenres} setSelectedGenres={setSelectedGenres} searchQuery={""} setSearchQuery={function (query: string): void {
+        throw new Error("Function not implemented.");
+      } } />
       <div className={styles.mainContent}>
         <h2 className={styles.pageTitle}></h2>
+        {selectedGenres.length === 0 && <UserRecommendations />}
+        <h1>All Movies</h1>
+        <br />        <br />        <br />        <br />
         <div className={styles.moviesGrid}>
+
           {displayedMovies.map((movie) => (
             <div
               key={movie.id}
@@ -312,9 +319,7 @@ const MoviesPage: React.FC = () => {
         )}
       </div>
       <Footer />
-      {selectedMovieId && (
-        <PageDetails showId={selectedMovieId} onClose={() => setSelectedMovieId(null)} />
-      )}
+
     </div>
   );
 };

@@ -237,15 +237,16 @@ body[data-theme="light"] {
 }
 
 
-/* src/pages/MoviesPage.module.css */
-/* src/pages/MoviesPage.module.css */
 .moviesPage {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   background-color: #141414;
   color: #fff;
+
+  padding-top: 100px; /* ⬅️ Adjust this value to your liking */
 }
+
 
 /* Main content area styling */
 .mainContent {
