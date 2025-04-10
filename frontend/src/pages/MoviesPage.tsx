@@ -288,7 +288,9 @@ const MoviesPage: React.FC = () => {
       {/* Render the search bar */}
       
       {/* Render GenreFilter with selected genres state */}
-      <GenreFilter selectedGenres={selectedGenres} setSelectedGenres={setSelectedGenres} />
+      <GenreFilter selectedGenres={selectedGenres} setSelectedGenres={setSelectedGenres} searchQuery={""} setSearchQuery={function (query: string): void {
+        throw new Error("Function not implemented.");
+      } } />
       <div className={styles.mainContent}>
         <h2 className={styles.pageTitle}></h2>
         <div className={styles.moviesGrid}>
@@ -312,9 +314,7 @@ const MoviesPage: React.FC = () => {
         )}
       </div>
       <Footer />
-      {selectedMovieId && (
-        <PageDetails showId={selectedMovieId} onClose={() => setSelectedMovieId(null)} />
-      )}
+
     </div>
   );
 };

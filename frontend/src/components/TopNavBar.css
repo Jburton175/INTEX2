@@ -261,3 +261,27 @@
   margin-left: 1rem;
   margin-top: 12px; /* Adjust the value as needed */
 }
+.movieButton {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #cc0000; /* Maroon */
+  color: #ffffff !important; /* Force white text */
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none !important; /* Remove underline */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.movieButton:hover {
+  background-color: #800000; /* Red on hover */
+  color: #ffffff !important; /* Ensure text stays white on hover */
+  text-decoration: none !important;
+  transform: scale(1.05);
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}

@@ -81,6 +81,13 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
         <Link to="/" className="brand-logo">
           <LogoIcon />
         </Link>
+
+        <div className={"movieButton"}>
+        <Link to="/movies" className="nav-button">
+          Movies
+        </Link>
+        </div>
+
       </div>
   
       <div className="nav-center">
