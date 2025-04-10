@@ -53,9 +53,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("App", policy =>
     {
         policy.WithOrigins("http://localhost:3000", "https://delightful-bay-0ff08bf1e.6.azurestaticapps.net")
-              .AllowCredentials() // allows cookies
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials(); // allows cookies
+
     }));
 
 builder.Services.AddHttpsRedirection(options =>
