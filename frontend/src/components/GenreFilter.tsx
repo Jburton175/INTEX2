@@ -7,7 +7,7 @@ import SearchBar from "./SearchBar";
 type GenreFilterProps = {
   selectedGenres: string[];
   setSelectedGenres: React.Dispatch<React.SetStateAction<string[]>>;
-  onSearch: (query: string) => void; // Add this line
+  onSearch: (query: string) => void;
 };
 
 const GenreFilter: React.FC<GenreFilterProps> = ({
