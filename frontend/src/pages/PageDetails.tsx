@@ -15,9 +15,6 @@ interface MovieData {
   rating: string;
   duration: string;
   description: string;
-  // You can add properties for ratings if available
-  // user_rating?: number;
-  // average_rating?: number;
 }
 
 interface Recommendation {

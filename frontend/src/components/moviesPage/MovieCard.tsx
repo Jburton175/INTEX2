@@ -1,8 +1,9 @@
+// src/components/MovieCard.tsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./MovieCard.module.css"; // or import from a dedicated MovieCard module if preferred
+import styles from "./MovieCard.module.css";
 
-interface Movie {
+export interface Movie {
   id: string;
   show_id: string;
   title: string;
@@ -20,12 +21,11 @@ interface MovieCardProps {
 const MovieCard: React.FC<MovieCardProps> = ({ movie, onImageError }) => {
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate(`/movie/${movie.show_id}`);
-  };
-
   return (
-    <div className={styles.movieCard} onClick={handleClick}>
+    <div 
+      className={styles.movieCard} 
+      onClick={() => navigate(`/movie/${movie.show_id}`)}
+    >
       <img
         className={styles.poster}
         src={movie.image}
@@ -33,7 +33,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onImageError }) => {
         onError={() => onImageError(movie.show_id)}
       />
       <div className={styles.movieCardOverlay}>
-        <p>{movie.title}</p>
+        <p className={styles.movieTitle}>{movie.title}</p>
       </div>
     </div>
   );

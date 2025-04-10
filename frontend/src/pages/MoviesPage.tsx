@@ -177,37 +177,14 @@
 
 
 
-
-
-
-
-
-
 // src/pages/MoviesPage.tsx
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./MoviesPage.module.css";
 import Header from "../components/TopNavBar";
 import CookieConsentBanner from "../components/CookieConsentBanner";
 import Footer from "../components/Footer";
-
-// Define a Movie interface for our app.
-export interface Movie {
-  id: string;
-  show_id: string;
-  title: string;
-  image: string;
-  duration: string;
-  rating: number;
-  releaseDate: string;
-}
-
-interface MovieFromApi {
-  show_id: string;
-  title: string;
-  duration: string;
-  release_year: number;
-  [key: string]: any;
-}
+import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
+import PageDetails from "./PageDetails";
 
 const PAGE_SIZE = 20;
 const API_BASE =
@@ -221,6 +198,15 @@ const getImageUrl = (title: string | undefined): string => {
     safeTitle
   )}.jpg`;
 };
+
+// Define API movie shape.
+interface MovieFromApi {
+  show_id: string;
+  title: string;
+  duration: string;
+  release_year: number;
+  [key: string]: any;
+}
 
 // Convert API movie into our Movie object.
 const convertToMovie = (data: MovieFromApi): Movie => ({
@@ -238,12 +224,11 @@ const MoviesPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
-
-  // A queue for movie IDs that need to be replaced because their images failed validation.
   const [replacementQueue, setReplacementQueue] = useState<string[]>([]);
-  const replacementTimeout = useRef<NodeJS.Timeout | null>(null);
+  const replacementTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [selectedMovieId, setSelectedMovieId] = useState<string | null>(null);
 
-  // Set up an intersection observer for infinite scrolling.
+  // Sentinel for infinite scroll
   const observer = useRef<IntersectionObserver | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -258,7 +243,7 @@ const MoviesPage: React.FC = () => {
     }
   };
 
-  // Fetch movies from the API.
+  // Fetch movies from the API and add them to our state.
   const fetchMovies = useCallback(async (page: number) => {
     try {
       setLoading(true);
@@ -272,7 +257,7 @@ const MoviesPage: React.FC = () => {
         : data?.movies || [];
       const newMovies = moviesArray.map(convertToMovie);
 
-      // Append and deduplicate movies
+      // Append new movies and deduplicate by movie ID.
       setMovies((prev) => {
         const combined = [...prev, ...newMovies];
         const uniqueMovies = Array.from(
@@ -288,7 +273,8 @@ const MoviesPage: React.FC = () => {
     }
   }, []);
 
-  // When an image fails, add its movie id to the replacement queue.
+  // Replacement mechanism: When an image fails, add its movie ID to a queue
+  // and then fetch a batch of replacement movies from page 1.
   const handleImageError = useCallback((failedMovieId: string) => {
     setReplacementQueue((prev) => [...prev, failedMovieId]);
 
@@ -298,7 +284,7 @@ const MoviesPage: React.FC = () => {
         setReplacementQueue([]);
 
         try {
-          // Fetch a larger batch from page 1 as potential replacements.
+          // Fetch a larger batch from page 1 as potential replacement candidates.
           const res = await fetch(
             `${API_BASE}/INTEX/GetAllMovies?page=1&pageSize=${idsToReplace.length * 5}`
           );
@@ -308,7 +294,7 @@ const MoviesPage: React.FC = () => {
             : data?.movies || [];
           const replacements = candidates
             .map(convertToMovie)
-            // Filter out movies already in our list
+            // Exclude movies already in our list.
             .filter((m) => !movies.some((existing) => existing.id === m.id))
             .slice(0, idsToReplace.length);
 
@@ -324,10 +310,9 @@ const MoviesPage: React.FC = () => {
     }
   }, [replacementQueue, movies]);
 
-  // Set up infinite scrolling using an IntersectionObserver.
+  // Setup infinite scrolling via IntersectionObserver.
   useEffect(() => {
     if (!sentinelRef.current || !hasMore) return;
-
     observer.current = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !loading) {
@@ -340,12 +325,12 @@ const MoviesPage: React.FC = () => {
     return () => observer.current?.disconnect();
   }, [loading, hasMore]);
 
-  // Fetch movies when the current page changes.
+  // Fetch movies whenever currentPage changes.
   useEffect(() => {
     fetchMovies(currentPage);
   }, [currentPage, fetchMovies]);
 
-  // Validate images after movies are loaded.
+  // Validate images of all movies (and trigger replacements if needed).
   useEffect(() => {
     const validateAllMovies = async () => {
       const results = await Promise.all(
@@ -357,11 +342,15 @@ const MoviesPage: React.FC = () => {
       const failedIds = results.filter((r) => !r.valid).map((r) => r.id);
       failedIds.forEach((id) => handleImageError(id));
     };
-
     if (movies.length > 0) {
       validateAllMovies();
     }
   }, [movies, handleImageError]);
+
+  // When a movie card is clicked, show the PageDetails modal.
+  const handleCardClick = (movieId: string) => {
+    setSelectedMovieId(movieId);
+  };
 
   return (
     <div className={styles.moviesPage}>
@@ -371,19 +360,12 @@ const MoviesPage: React.FC = () => {
         <h2 className={styles.pageTitle}>All Movies</h2>
         <div className={styles.moviesGrid}>
           {movies.map((movie) => (
-            <div key={movie.id} className={styles.movieCard}>
-              <img
-                src={movie.image}
-                alt={movie.title}
-                onError={() => handleImageError(movie.id)}
-                className={styles.movieImage}
-              />
-              <div className={styles.movieInfo}>
-                <h3 className={styles.movieTitle}>{movie.title}</h3>
-                <p className={styles.movieDetails}>
-                  {movie.duration} | {movie.rating} | {movie.releaseDate}
-                </p>
-              </div>
+            <div
+              key={movie.id}
+              onClick={() => handleCardClick(movie.id)}
+              className={styles.movieCardWrapper}
+            >
+              <MovieCard movie={movie} onImageError={handleImageError} />
             </div>
           ))}
         </div>
@@ -396,6 +378,12 @@ const MoviesPage: React.FC = () => {
         )}
       </div>
       <Footer />
+      {selectedMovieId && (
+        <PageDetails
+          showId={selectedMovieId}
+          onClose={() => setSelectedMovieId(null)}
+        />
+      )}
     </div>
   );
 };
