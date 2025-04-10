@@ -66,6 +66,19 @@ builder.Services.AddHttpsRedirection(options =>
 });
 
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.Name = ".AspNetCore.Identity.Application";
+    options.LoginPath = "/login";
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+}
+
+);
+
+
 
 var app = builder.Build();
 
@@ -87,14 +100,15 @@ app.UseHttpsRedirection();
 app.Use(async (context, next) =>
 {
     context.Response.Headers.Append("Content-Security-Policy",
-        "default-src 'self'; " +
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com; " +
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
-        "img-src 'self' data: https://blobintex.blob.core.windows.net https://cdn.builder.io; " +
-        "font-src 'self' https://fonts.gstatic.com; " +
-        "connect-src 'self' https://localhost:5000 http://localhost:4000 https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net; " +
-        "frame-src 'self';"
-    );
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
+    "img-src 'self' data: https://blobintex.blob.core.windows.net https://cdn.builder.io; " +
+    "font-src 'self' https://fonts.gstatic.com; " +
+    "connect-src 'self' https://localhost:5000 http://localhost:4000 https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net; " +
+    "frame-src 'self';"
+);
+
     await next();
 });
 
@@ -110,10 +124,15 @@ app.MapIdentityApi<IdentityUser>();
 app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> signInManager) =>
 {
     await signInManager.SignOutAsync();
+    context.Response.Cookies.Delete(".AspNetCore.Identity.Application", new CookieOptions
+    {
+        HttpOnly = true,
+        Secure = true,
+        SameSite = SameSiteMode.None
+    });
 
-    // Ensure authentication cookie is removed
-    context.Response.Cookies.Delete(".AspNetCore.Identity.Application");
     return Results.Ok(new { message = "Logout successful" });
+
 }).RequireAuthorization();
 
 

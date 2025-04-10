@@ -4,6 +4,8 @@ import styles from "./PageDetails.module.css";
 import MovieRating from "../components/MovieRating";
 import TopNavBar from "../components/TopNavBar";
 import { Movie } from "../components/moviesPage/MovieCard";
+import AuthorizeView from "../components/AuthorizeView";
+import ShareMovieButton from "../components/ShareMovieButton";
 
 interface MovieData {
   show_id: string;
@@ -168,6 +170,7 @@ const PageDetails: React.FC = () => {
   };
 
   return (
+    <AuthorizeView>
     <div className={styles.overlay}>
       <TopNavBar
         selectedType={"Movie"}
@@ -220,6 +223,9 @@ const PageDetails: React.FC = () => {
             );
           }}
         />
+        {movie?.title && <ShareMovieButton title={movie.title} />}
+
+
       </div>
 
       {/* Recommendations Section and MovieRating */}
@@ -261,6 +267,7 @@ const PageDetails: React.FC = () => {
         </div>
       </div>
     </div>
+    </AuthorizeView>
   );
 };
 

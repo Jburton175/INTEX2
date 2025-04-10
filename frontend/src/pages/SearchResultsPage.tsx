@@ -6,6 +6,7 @@ import Header from "../components/TopNavBar";
 import CookieConsentBanner from "../components/CookieConsentBanner";
 import Footer from "../components/Footer";
 import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
+import AuthorizeView from "../components/AuthorizeView";
 
 const API_BASE =
   "https://https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net:5000";
@@ -87,6 +88,7 @@ const SearchResultsPage: React.FC = () => {
   };
 
   return (
+    <AuthorizeView>
     <div className={styles.moviesPage}>
       <Header selectedType="Movie" onTypeChange={() => {}} />
       <CookieConsentBanner />
@@ -124,6 +126,7 @@ const SearchResultsPage: React.FC = () => {
 
       <Footer />
     </div>
+    </AuthorizeView>
   );
 };
 

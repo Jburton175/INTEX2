@@ -5,6 +5,7 @@ import Header from "../components/TopNavBar";
 import Footer from "../components/Footer";
 import { ArrowLeft } from "lucide-react";
 import { addMovie } from "../api/API";
+import AuthorizeView from "../components/AuthorizeView";
 
 type MovieData = {
   // Basic info
@@ -159,6 +160,7 @@ const AddMoviePage: React.FC = () => {
   };
 
   return (
+    <AuthorizeView>
     <div className={styles.addMoviePage}>
       <Header
         selectedType={"Movie"}
@@ -823,6 +825,7 @@ const AddMoviePage: React.FC = () => {
 
       <Footer />
     </div>
+    </AuthorizeView>
   );
 };
 

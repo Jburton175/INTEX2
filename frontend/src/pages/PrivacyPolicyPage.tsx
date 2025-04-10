@@ -2,10 +2,12 @@ import React from "react";
 import styles from "./PrivacyPolicyPage.module.css";
 import ExternalNavBar from "../components/ExternalNavBar";
 import Footer from "../components/Footer";
+import AuthorizeView from "../components/AuthorizeView";
 
 
 const PrivacyPolicyPage: React.FC = () => {
   return (
+    <AuthorizeView>
     <div className={styles.container}>
       {/* <Header
         selectedType={"Movie"}
@@ -270,6 +272,7 @@ const PrivacyPolicyPage: React.FC = () => {
 
       <Footer />
     </div>
+    </AuthorizeView>
   );
 };
 
