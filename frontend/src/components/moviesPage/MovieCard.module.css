@@ -1,25 +1,91 @@
-.card {
+.categorySection {
   position: relative;
-  background-color: #ddd;
-  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.categoryTitle {
+  margin-left: 16px;
+  margin-bottom: 10px;
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.carouselContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Provide horizontal padding so arrows don’t cover content */
+.carouselViewport {
   overflow: hidden;
   width: 100%;
-  height: 100%;
-  transition: transform 0.3s ease;
+  padding: 0 50px;
+}
+
+.carouselInner {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+
+/* Each card takes up roughly 1/7th of available width, minus margins */
+.cardWrapper {
+  flex: 0 0 calc((100% - 60px) / 7);
+  margin-right: 10px;
+  box-sizing: border-box;
+}
+
+/* Every 7th card has no right margin */
+.cardWrapper:nth-child(7n) {
+  margin-right: 0;
+}
+
+/* ---------- Arrow Styles ---------- */
+.arrowLeft,
+.arrowRight {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;       /* fixed height for visibility */
+  background-color: rgba(0, 0, 0, 0.8);  /* solid, dark background */
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  z-index: 2;
+  transition: background-color 0.3s ease;
 }
 
-.card:hover {
-  transform: scale(1.05);
+.arrowLeft {
+  left: 10px;
 }
 
+.arrowRight {
+  right: 10px;
+}
+
+.arrowLeft:hover,
+.arrowRight:hover {
+  background-color: rgba(0, 0, 0, 1);
+}
+
+.arrowIcon {
+  font-size: 1.8rem;
+}
+
+/* ---------- Placeholder & Spinner ---------- */
 .placeholder {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: #666;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,45 +102,6 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.3s ease;
-}
-
-.info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 50%;
-  padding: 0.5rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-  color: white;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.card:hover .info {
-  opacity: 1;
-}
-
-.title {
-  font-size: 1rem;
-  margin: 0;
-}
-
-.duration {
-  font-size: 0.8rem;
-  margin: 0;
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

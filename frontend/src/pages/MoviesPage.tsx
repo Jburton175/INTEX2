@@ -29,7 +29,7 @@ export interface Movie {
 }
 
 // --- Constants ---
-const PAGE_SIZE = 800;    // for data loading/infinite scroll
+const PAGE_SIZE = 1800;    // for data loading/infinite scroll
 const SECTION_SIZE = 14;  // each section must display 7 movies per carousel page
 
 const MOVIES_CACHE_KEY = "cachedMovies";
@@ -131,10 +131,6 @@ const MoviesPage: React.FC = () => {
     };
     fetchGenres();
   }, []);
-
-
-
-
 
 
 
