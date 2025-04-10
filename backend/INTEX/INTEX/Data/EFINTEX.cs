@@ -79,7 +79,11 @@ namespace INTEX.Data
             _context.SaveChanges();
         }
 
-        public void UpdateMovie(movies_titles movie)
+        public void 
+            
+            
+            
+            UpdateMovie(movies_titles movie)
         {
             _context.movies_titles.Update(movie);
             _context.SaveChanges();
