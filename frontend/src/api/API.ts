@@ -1,3 +1,4 @@
+import { addMovies } from "../types/addMovies";
 import { Movies } from "../types/Movies";
 import { Users } from "../types/Users";
 
@@ -12,8 +13,8 @@ interface FetchSingleMovieResponse {
 }
 
 const API_URL =
-  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
-// "https://localhost:5000/INTEX";
+  // "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
+  "https://localhost:5000/INTEX";
 
 export const fetchMovies = async (
   pageSize: number,
@@ -55,7 +56,7 @@ export const fetchOneMovie = async (
   }
 };
 
-export const addMovie = async (newMovie: Movies): Promise<Movies> => {
+export const addMovie = async (newMovie: addMovies): Promise<addMovies> => {
   try {
     const response = await fetch(`${API_URL}/AddMovie`, {
       method: "POST",

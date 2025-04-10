@@ -243,6 +243,72 @@
     width: 100%;
     max-width: 300px;
   }
+
+  /* Genres Section */
+  .genresSection {
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 24px;
+    margin: 20px 0;
+    border: 1px solid #262626;
+  }
+
+  .sectionTitle {
+    color: #fff;
+    font-family:
+      Manrope,
+      -apple-system,
+      Roboto,
+      Helvetica,
+      sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .genresGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .genreItem {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+  }
+
+  .genreCheckbox {
+    margin-right: 12px;
+    width: 18px;
+    height: 18px;
+    accent-color: #32ade6;
+    cursor: pointer;
+  }
+
+  .genreLabel {
+    color: #fff;
+    font-family:
+      Inter,
+      -apple-system,
+      Roboto,
+      Helvetica,
+      sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .genresGrid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .genreLabel {
+      font-size: 0.85rem;
+    }
+  }
 }
 
 html,
