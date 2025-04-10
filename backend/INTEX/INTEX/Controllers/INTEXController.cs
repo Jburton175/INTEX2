@@ -87,10 +87,66 @@ namespace INTEX.Controllers
 
 
         [HttpPost("AddMovie")]
-        public IActionResult AddMovie([FromBody] movies_titles newMovie)
+        public IActionResult AddMovie([FromBody] movies_titles movieData)
         {
-            _repo.AddMovie(newMovie);
-            return Ok(newMovie);
+            try
+            {
+                // Map from MovieData to movies_titles
+                var movie = new movies_titles
+                {
+                    // show_id will be generated automatically
+                    type = movieData.type,
+                    title = movieData.title,
+                    director = movieData.director,
+                    cast = movieData.cast,
+                    country = movieData.country,
+                    release_year = movieData.release_year,
+                    rating = movieData.rating,
+                    duration = movieData.duration,
+                    description = movieData.description,
+                    Action = movieData.Action,
+                    Adventure = movieData.Adventure,
+                    AnimeSeriesInternationalTVShows = movieData.AnimeSeriesInternationalTVShows,
+                    BritishTVShowsDocuseriesInternationalTVShows = movieData.BritishTVShowsDocuseriesInternationalTVShows,
+                    Children = movieData.Children,
+                    Comedies = movieData.Comedies,
+                    ComediesDramasInternationalMovies = movieData.ComediesDramasInternationalMovies,
+                    ComediesInternationalMovies = movieData.ComediesInternationalMovies,
+                    ComediesRomanticMovies = movieData.ComediesRomanticMovies,
+                    CrimeTVShowsDocuseries = movieData.CrimeTVShowsDocuseries,
+                    Documentaries = movieData.Documentaries,
+                    DocumentariesInternationalMovies = movieData.DocumentariesInternationalMovies,
+                    Docuseries = movieData.Docuseries,
+                    Dramas = movieData.Dramas,
+                    DramasInternationalMovies = movieData.DramasInternationalMovies,
+                    DramasRomanticMovies = movieData.DramasRomanticMovies,
+                    FamilyMovies = movieData.FamilyMovies,
+                    Fantasy = movieData.Fantasy,
+                    HorrorMovies = movieData.HorrorMovies,
+                    InternationalMoviesThrillers = movieData.InternationalMoviesThrillers,
+                    InternationalTVShowsRomanticTVShowsTVDramas = movieData.InternationalTVShowsRomanticTVShowsTVDramas,
+                    KidsTV = movieData.KidsTV,
+                    LanguageTVShows = movieData.LanguageTVShows,
+                    Musicals = movieData.Musicals,
+                    NatureTV = movieData.NatureTV,
+                    RealityTV = movieData.RealityTV,
+                    Spirituality = movieData.Spirituality,
+                    TVAction = movieData.TVAction,
+                    TVComedies = movieData.TVComedies,
+                    TVDramas = movieData.TVDramas,
+                    TalkShowsTVComedies = movieData.TalkShowsTVComedies,
+                    Thrillers = movieData.Thrillers,
+                    duration_minutes_movies = movieData.duration_minutes_movies,
+                    duration_in_seasons = movieData.duration_in_seasons,
+                };
+
+                _repo.AddMovie(movie);
+                return Ok(movie); // Return the created movie with generated ID
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error adding movie: {ex.Message}");
+            }
         }
 
         [HttpPut("UpdateMovie/{show_id}")]
@@ -640,6 +696,21 @@ namespace INTEX.Controllers
                 return NotFound();
 
             return Ok(movie);
+        }
+
+
+        [HttpGet("GetMaxShowIdNumber")]
+        public IActionResult GetMaxShowIdNumber()
+        {
+            try
+            {
+                var maxIdNumber = _repo.GetMaxShowIdNumber();
+                return Ok(new { MaxShowIdNumber = maxIdNumber });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error retrieving max show ID number: {ex.Message}");
+            }
         }
 
     }

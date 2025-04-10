@@ -71,11 +71,19 @@ namespace INTEX.Data
 
         public void AddMovie(movies_titles movie)
         {
+            // Generate show_id
+            var maxId = GetMaxShowIdNumber();
+            movie.show_id = $"s{maxId + 1}";
+
             _context.movies_titles.Add(movie);
             _context.SaveChanges();
         }
 
-        public void UpdateMovie(movies_titles movie)
+        public void 
+            
+            
+            
+            UpdateMovie(movies_titles movie)
         {
             _context.movies_titles.Update(movie);
             _context.SaveChanges();
@@ -114,5 +122,20 @@ namespace INTEX.Data
                            .ToList();
         }
 
+
+        public int GetMaxShowIdNumber()
+        {
+            // First get all show_ids that start with 's'
+            var showIds = _context.movies_titles
+                .Where(m => m.show_id != null && m.show_id.StartsWith("s"))
+                .Select(m => m.show_id)
+                .ToList(); // Execute query and bring to memory
+
+            // Then parse and find max on client side
+            return showIds
+                .Select(id => int.Parse(id.Substring(1)))
+                .DefaultIfEmpty(0)
+                .Max();
+        }
     }
 }

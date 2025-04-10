@@ -26,8 +26,7 @@
         //home recommendations
         IEnumerable<movie_recommendations> GetMovieRecommendations();
         IEnumerable<movie_recommendations> GetMovieRecommendationsByID(string movieId);
-
-
+        int GetMaxShowIdNumber();
 
     }
 }

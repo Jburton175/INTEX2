@@ -1,0 +1,47 @@
+export interface addMovies {
+  type?: string;
+  title?: string;
+  director?: string;
+  cast?: string;
+  country?: string;
+  release_year?: number;
+  rating?: string;
+  duration?: string;
+  description?: string;
+
+  // Genres
+  Action?: number;
+  Adventure?: number;
+  AnimeSeriesInternationalTVShows?: number;
+  BritishTVShowsDocuseriesInternationalTVShows?: number;
+  Children?: number;
+  Comedies?: number;
+  ComediesDramasInternationalMovies?: number;
+  ComediesInternationalMovies?: number;
+  ComediesRomanticMovies?: number;
+  CrimeTVShowsDocuseries?: number;
+  Documentaries?: number;
+  DocumentariesInternationalMovies?: number;
+  Docuseries?: number;
+  Dramas?: number;
+  DramasInternationalMovies?: number;
+  DramasRomanticMovies?: number;
+  FamilyMovies?: number;
+  Fantasy?: number;
+  HorrorMovies?: number;
+  InternationalMoviesThrillers?: number;
+  InternationalTVShowsRomanticTVShowsTVDramas?: number;
+  KidsTV?: number;
+  LanguageTVShows?: number;
+  Musicals?: number;
+  NatureTV?: number;
+  RealityTV?: number;
+  Spirituality?: number;
+  TVAction?: number;
+  TVComedies?: number;
+  TVDramas?: number;
+  TalkShowsTVComedies?: number;
+  Thrillers?: number;
+  duration_minutes_movies?: number;
+  duration_in_seasons?: number;
+}
