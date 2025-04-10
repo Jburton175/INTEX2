@@ -80,7 +80,7 @@
 /* This tab is positioned to the right edge of where the sidebar normally is */
 .tab {
   position: absolute;
-  top: 3%;              /* Centers the tab vertically relative to the sidebar container */
+  top: 8%;              /* Centers the tab vertically relative to the sidebar container */
   right: 140px;          /* Adjust this to control how far the tab sticks out horizontally */
   transform: translateY(-50%);
   background-color: #e50914;  /* Accent color */

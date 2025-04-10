@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import styles from "./PageDetails.module.css";
 import MovieRating from '../components/MovieRating';
 import TopNavBar from "../components/TopNavBar";
+import { Movie } from "../components/moviesPage/MovieCard";
 
 interface MovieData {
   show_id: string;
@@ -96,22 +97,32 @@ const PageDetails: React.FC = () => {
 
   // This function attempts to fetch a replacement movie.
 // You can use a dedicated endpoint or pick one from your recommendations.
-const fetchReplacementMovie = async (): Promise<MovieData | null> => {
+const fetchReplacementMovie = async (): Promise<Movie | null> => {
   try {
-    // Example using a GetRandomMovie endpoint – adjust as appropriate.
-    const res = await fetch(
-      "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetRandomMovie"
-    );
-    if (res.ok) {
-      const data = await res.json();
-      return data;
-    }
-    return null;
+    const res = await fetch("http://localhost:5000/INTEX/GetRandomMovie");
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const movie = Array.isArray(data) ? data[0] : data;
+
+    return {
+      id: movie.show_id,
+      show_id: movie.show_id,
+      title: movie.title,
+      duration: `${Math.floor((movie.duration_minutes_movies ?? 90) / 60)}h ${(movie.duration_minutes_movies ?? 90) % 60}min`,
+      rating: parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)),
+      image: `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(
+        (movie.title || "default-title").replace(/['’:\-.!?–&()]/g, "")
+      )}.jpg`,
+      releaseDate: `April ${movie.release_year}`,
+      genres: [], // optional, adjust depending on where you're using this
+    };
   } catch (err) {
     console.error("Error fetching replacement movie:", err);
     return null;
   }
 };
+
 
 
   return (
