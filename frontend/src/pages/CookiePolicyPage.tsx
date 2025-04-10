@@ -1,17 +1,15 @@
 import React from "react";
 import styles from "./CookiePolicyPage.module.css";
-import Header from "../components/TopNavBar";
+import ExternalNavBar from "../components/ExternalNavBar";
 import Footer from "../components/Footer";
 
 const CookiePolicyPage: React.FC = () => {
   return (
     <div className={styles.container}>
-      <Header
-        selectedType={"Movie"}
-        onTypeChange={function (_type: "Movie" | "TV Show"): void {
-          throw new Error("Function not implemented.");
-        }}
-      />
+      <ExternalNavBar />
+      <br />
+      <br />
+      <br />
 
       <main className={styles.mainContent}>
         <div className={styles.policyContainer}>

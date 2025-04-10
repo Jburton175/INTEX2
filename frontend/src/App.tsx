@@ -11,6 +11,7 @@ import UpdateMovie from "./pages/UpdateMoviePage";
 import CookiePage from "./pages/CookiePolicyPage";
 import AddMovie from "./pages/AddMoviePage";
 import PageDetails from "./pages/PageDetails";
+import SearchResultsPage from "./pages/SearchResultsPage";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/cookie" element={<CookiePage />} />
           <Route path="/add-movie" element={<AddMovie />} />
           <Route path="/movie/:show_id" element={<PageDetails />} />
+          <Route path="/search" element={<SearchResultsPage />} />
 
           {/* Add more routes as needed */}
         </Routes>

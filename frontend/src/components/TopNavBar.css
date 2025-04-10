@@ -33,7 +33,7 @@
   box-shadow: none;
 }
 
-/* === Left === */
+/* === Left: Brand Logo === */
 .nav-left {
   display: flex;
   align-items: center;
@@ -50,35 +50,44 @@
   object-fit: contain;
 }
 
-/* === Center (Search + Genres aligned closer to right) === */
-
-
-.nav-links {
+/* === Center: Theme Toggle === */
+/* Remove absolute positioning so it stays in the normal flex flow */
+.nav-center {
   display: flex;
   align-items: center;
-  gap: 1.75rem;
-  width: 100%;
-  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* === Right: Search and Genre === */
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Container for search bar and genre dropdown */
+/* Removed margin-right to allow the search bar to shift further left */
+.nav-right-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 /* === Search === */
-/* --- Search Container --- */
 .nav-search-container {
   position: relative;
   display: flex;
   align-items: center;
+  margin-right: -150rem; /* pushes it left inside flex row */
+
 }
 
-/* Container for search icon and input */
 .nav-search-field {
-  position: relative;
-  width: 200px;  /* Adjust width as desired */
+  width: 700px;  /* Adjust width as desired */
 }
 
-/* Search Input: Add left padding to fit the icon */
 .nav-search-input {
   width: 100%;
-  padding: 0.5rem 1rem 0.5rem 2.5rem;  /* Left padding for the icon */
+  padding: 0.5rem 1rem 0.5rem 2.5rem;  /* Left padding for icon */
   border: 1px solid var(--text);
   border-radius: 25px;
   font-size: 1rem;
@@ -87,32 +96,15 @@
   transition: all 0.3s ease;
 }
 
-/* Absolutely position the search icon inside the input */
 .nav-search-icon-inside {
   position: absolute;
   left: 0.75rem;  /* Adjust spacing */
   top: 50%;
   transform: translateY(-50%);
-  pointer-events: none; /* So clicks go to the input */
+  pointer-events: none;
 }
 
-/* Optional: Style the search dropdown if needed */
-.search-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: var(--bg);
-  border: 1px solid #ccc;
-  width: 100%;
-  z-index: 999;
-  list-style: none;
-  margin: 0.5rem 0 0;
-  padding: 0;
-  border-radius: 4px;
-}
-
-
-/* === Genre === */
+/* === Genre Button and Dropdown === */
 .nav-genre-dropdown-container {
   position: relative;
 }
@@ -128,18 +120,11 @@
   transition: all 0.3s ease;
 }
 
-
-
 .nav-genre-dropdown-container:hover .nav-genre-dropdown,
 .nav-genre-dropdown:hover {
   opacity: 1;
   visibility: visible;
 }
-
-
-/* === Right === */
-
-
 
 /* === Dark Theme Adjustments === */
 [data-theme="dark"] .nav-search-input,
@@ -170,8 +155,6 @@
     display: block;
   }
 
-
-
   .nav-links {
     flex-direction: column;
     gap: 1rem;
@@ -186,14 +169,14 @@
     left: 0;
     right: auto;
   }
-
-
 }
+
+/* === Search Dropdown (Optional) === */
 .search-dropdown {
   position: absolute;
   top: 100%;
   left: 0;
-  background: var(--background);
+  background: var(--bg);
   border: 1px solid #ccc;
   width: 200px;
   z-index: 999;
@@ -217,109 +200,7 @@
   background-color: var(--hover);
 }
 
-
-
-
-/* Center the toggle container */
-.nav-center {
-  position: absolute;      /* Remove from normal flex flow */
-  left: 50%;               /* Position at half the navbar width */
-  transform: translateX(-50%); /* Center it by shifting left by 50% of its width */
-  display: flex;
-  align-items: center;
-  gap: 1rem;               /* Optional gap between toggles */
-}
-
-/* Style the toggle buttons */
-.type-toggle {
-  background: #ccc;             /* Gray background */
-  border: none;                 /* Remove the box (border) */
-  padding: 0.5rem 1rem;
-  margin: 0 0.5rem;
-  border-radius: 6px;
-  font-weight: bold;
-  color: #333;                  /* Default text color */
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Center the toggle container */
-.nav-center {
-  display: flex;
-  justify-content: center;  /* Center content horizontally */
-  align-items: center;
-  width: 100%;
-  margin: 0 auto;
-}
-
-/* Toggle buttons as simple text */
-.type-toggle {
-  background: none;      /* No background */
-  border: none;          /* No border or box */
-  padding: 0.5rem 1rem;   /* Adjust spacing as needed */
-  margin: 0 0.5rem;
-  font-weight: bold;
-  color: gray;           /* Default gray text */
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-/* Hover and active state: white text */
-.type-toggle:hover,
-.type-toggle.active {
-  color: white;
-}
-
-/* Ensure the right side is flex container */
-.nav-right {
-  display: flex;
-  align-items: center;
-}
-
-/* New container for search and genre group */
-.nav-right-left {
-  display: flex;
-  align-items: center;
-  margin-right: 5rem;  /* Adjust this value as needed to separate them from the ThemeToggle */
-  gap: 1rem;           /* Optional: adds space between search and genre */
-}
-
-/* --- Genre Dropdown Container with 4 columns --- */
-/* Multi-column Genre Dropdown, centered with equal left/right space */
-.nav-genre-dropdown {
-  position: absolute;
-  top: 120%;
-  left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  padding: 1rem 2rem;               /* 1rem vertical, 2rem horizontal for equal space */
-  background-color: var(--bg);
-  border: 1px solid var(--text);
-  border-radius: 10px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-  z-index: 9999;
-  
-  display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));  /* 4 columns */
-  gap: 0.75rem;
-
-  list-style: none;    /* Remove bullet points */
-  margin: 0;
-  
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-}
-
-/* Show dropdown on container hover */
-.nav-genre-dropdown-container:hover .nav-genre-dropdown,
-.nav-genre-dropdown:hover {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-}
-
-/* Remove bullet points from list items */
-/* Centered multi-column Genre Dropdown */
+/* === Genre Dropdown with Multiple Columns === */
 .nav-genre-dropdown {
   position: absolute;
   top: 120%;
@@ -331,14 +212,11 @@
   border-radius: 10px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
   z-index: 9999;
-  
   display: grid;
-  grid-template-columns: repeat(4, minmax(100px, 1fr)); /* 4 columns, slightly reduced min width */
-  gap: 0.5rem;  /* Closer gap between items */
-  
+  grid-template-columns: repeat(4, minmax(100px, 1fr)); /* Four columns */
+  gap: 0.5rem;
   list-style: none;
   margin: 0;
-  
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
@@ -357,15 +235,14 @@
   padding: 0;
 }
 
-/* Genre Option: closer spacing and pop-up hover effect */
 .genre-option {
   background: none;
   border: none;
   text-align: center;
-  padding: 0.4rem 0.5rem; /* Reduced padding */
+  padding: 0.4rem 0.5rem;
   border-radius: 6px;
   color: #ccc;
-  font-size: 0.9rem;  /* Slightly smaller text */
+  font-size: 0.9rem;
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
@@ -374,4 +251,37 @@
   background-color: rgba(255, 255, 255, 0.15);
   color: white;
   transform: scale(1.05);
+}
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text);
+  cursor: pointer;
+  margin-left: 1rem;
+  margin-top: 12px; /* Adjust the value as needed */
+}
+.movieButton {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #cc0000; /* Maroon */
+  color: #ffffff !important; /* Force white text */
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none !important; /* Remove underline */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.movieButton:hover {
+  background-color: #800000; /* Red on hover */
+  color: #ffffff !important; /* Ensure text stays white on hover */
+  text-decoration: none !important;
+  transform: scale(1.05);
+}
+a {
+  text-decoration: none;
+  color: inherit;
 }

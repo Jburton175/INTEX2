@@ -57,43 +57,46 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
         <Link to="/" className="brand-logo">
           <LogoIcon />
         </Link>
-      </div>
 
+        <div className={"movieButton"}>
+        <Link to="/movies" className="nav-button">
+          Movies
+        </Link>
+        </div>
+
+      </div>
+  
+      <div className="nav-center">
+        <div className="nav-search-container">
+          <div className="nav-search-field">
+
+            <SearchBar onSearch={(query: string) => { /* handle search */ }} />
+          </div>
+          {searchResults.length > 0 && (
+            <ul className="search-dropdown">
+              {searchResults.map((title) => (
+                <li key={title}>
+                  <Link
+                    to={`/movies/${encodeURIComponent(title)}`}
+                    className="search-result"
+                  >
+                    {title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+  
       <div className="nav-right">
         <div className="nav-right-left">
-          <div className="nav-search-container">
-            <div className="nav-search-field">
-              <Search
-                size={20}
-                color="gray"
-                className="nav-search-icon-inside"
-              />
-              <SearchBar
-                onSearch={function (_query: string): void {
-                  throw new Error("Function not implemented.");
-                }}
-              />
-            </div>
-            {searchResults.length > 0 && (
-              <ul className="search-dropdown">
-                {searchResults.map((title) => (
-                  <li key={title}>
-                    <Link
-                      to={`/movies/${encodeURIComponent(title)}`}
-                      className="search-result"
-                    >
-                      {title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {/* You can reposition ThemeToggle by moving it within or outside this container */}
+          <ThemeToggle />
         </div>
-        <ThemeToggle />
       </div>
     </nav>
   );
-};
+};  
 
 export default TopNavBar;

@@ -35,9 +35,10 @@
 .mainContent {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center; /* ✅ Center content */
   padding: 40px 80px;
 }
+
 
 .policyContainer {
   width: 100%;
@@ -54,6 +55,12 @@
   flex-direction: column;
   gap: 40px;
 }
+
+.policyContainer,
+.policyContainer * {
+  color: #fff !important;
+}
+
 
 .introSection {
   display: flex;

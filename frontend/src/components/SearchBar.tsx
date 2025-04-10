@@ -1,39 +1,39 @@
-// src/components/SearchBar.tsx
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./SearchBar.module.css";
 
-// Use the same API_BASE as in MoviesPage (change this if needed)
-const API_BASE = "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
+const API_BASE = "https://localhost:5000"
+
+// "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
 
 interface SearchBarProps {
   initialQuery?: string;
-  onSearch: (query: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ initialQuery = "", onSearch }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ initialQuery = "" }) => {
+  const navigate = useNavigate();
   const [query, setQuery] = useState<string>(initialQuery);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLUListElement>(null);
 
-  // Handle form submission for search.
+  // Handle form submission when the user clicks the button or presses Enter.
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("[SearchBar] Submitting search with query:", query);
-    onSearch(query);
+    navigate(`/search?query=${encodeURIComponent(query.trim())}`);
     setShowDropdown(false);
   };
 
-  // Fetch suggestions when the query changes.
+  // Fetch search suggestions with debouncing.
   useEffect(() => {
-    if (query.trim() === "") {
-      setSuggestions([]);
-      return;
-    }
-
     const fetchSuggestions = async () => {
+      if (query.trim() === "") {
+        setSuggestions([]);
+        return;
+      }
       try {
-        const url = `${API_BASE}/INTEX/SearchMovieTitles?query=${encodeURIComponent(query.trim())}`;
+        const url = `${API_BASE}/INTEX/SearchSuggestions?query=${encodeURIComponent(query.trim())}`;
         console.log("[SearchBar] Fetching suggestions from:", url);
         const res = await fetch(url);
         if (!res.ok) {
@@ -50,10 +50,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialQuery = "", onSearch }) =>
       }
     };
 
-    fetchSuggestions();
+    const debounce = setTimeout(() => {
+      fetchSuggestions();
+    }, 300);
+
+    return () => clearTimeout(debounce);
   }, [query]);
 
-  // Hide dropdown when clicking outside.
+  // Hide suggestions dropdown when clicking outside.
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -62,24 +66,22 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialQuery = "", onSearch }) =>
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // When a suggestion is clicked.
+  // When a suggestion is clicked, update the query and navigate.
   const handleSuggestionClick = (suggestion: string) => {
-    setQuery(suggestion);
     console.log("[SearchBar] Suggestion clicked:", suggestion);
-    onSearch(suggestion);
+    setQuery(suggestion);
+    navigate(`/search?query=${encodeURIComponent(suggestion)}`);
     setShowDropdown(false);
   };
 
   return (
     <div className={styles.navSearchContainer}>
       <form className={styles.navSearchForm} onSubmit={handleSearchSubmit}>
-        {/* Search icon – replace with your icon library if desired */}
-        <span className={styles.navSearchIcon}>&#128269;</span>
+        {/* Search icon – you may replace this with an SVG or an icon library if desired */}
+
         <input
           type="text"
           value={query}
@@ -88,6 +90,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialQuery = "", onSearch }) =>
           className={styles.navSearchInput}
         />
         <button type="submit" className={styles.navSearchButton}>
+            
           Search
         </button>
       </form>
