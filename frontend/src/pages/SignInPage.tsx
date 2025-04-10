@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./SignInPage.module.css";
 import ExternalNavBar from "../components/ExternalNavBar";
+import AuthorizeView from "../components/AuthorizeView";
 
 const SignInPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ const SignInPage: React.FC = () => {
   };
 
   return (
+    <AuthorizeView>
     <div className={styles.container}>
       <ExternalNavBar />
         <br/><br/><br/><br/><br/><br/><br/><br/>  
@@ -80,6 +82,7 @@ const SignInPage: React.FC = () => {
         </div>
       </footer>
     </div>
+        </AuthorizeView>
   );
 };
 

@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import { ArrowLeft } from "lucide-react";
 import { fetchOneMovie, UpdateMovie } from "../api/API";
 import { Movies } from "../types/Movies";
+import AuthorizeView from "../components/AuthorizeView";
 
 interface MovieData {
   show_id: string;
@@ -134,6 +135,7 @@ const UpdateMoviePage: React.FC = () => {
   }
 
   return (
+    <AuthorizeView>
     <div className={styles.updateMoviePage}>
       <Header
         selectedType={"Movie"}
@@ -296,6 +298,7 @@ const UpdateMoviePage: React.FC = () => {
 
       <Footer />
     </div>
+    </AuthorizeView>
   );
 };
 
