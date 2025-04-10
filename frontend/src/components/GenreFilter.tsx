@@ -4,10 +4,11 @@ import styles from "./GenreFilter.module.css";
 import { GENRE_KEYS, GENRE_LABELS } from "../types/genres";
 import SearchBar from "./SearchBar";
 
-interface GenreFilterProps {
+type GenreFilterProps = {
   selectedGenres: string[];
-  setSelectedGenres: (genres: string[]) => void;
-}
+  setSelectedGenres: React.Dispatch<React.SetStateAction<string[]>>;
+  onSearch: (query: string) => void; // Add this line
+};
 
 const GenreFilter: React.FC<GenreFilterProps> = ({
   selectedGenres,
@@ -67,18 +68,18 @@ const GenreFilter: React.FC<GenreFilterProps> = ({
     <>
       {/* When the sidebar is collapsed, show a tab so user can click to expand */}
       {!expanded && (
-        <div className={styles.tab} onClick={() => setExpanded(true)}>
-        
-        </div>
+        <div className={styles.tab} onClick={() => setExpanded(true)}></div>
       )}
       <aside
         className={`${styles.genreFilterSidebar} ${!expanded ? styles.collapsed : ""}`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <SearchBar onSearch={function (query: string): void {
-                  throw new Error("Function not implemented.");
-              } } />
+        <SearchBar
+          onSearch={function (_query: string): void {
+            throw new Error("Function not implemented.");
+          }}
+        />
         <div className={styles.genreList}>
           {GENRE_KEYS.map((key) => (
             <label key={key} className={styles.checkboxLabel}>

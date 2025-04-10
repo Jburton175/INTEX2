@@ -8,7 +8,7 @@ export interface Movie {
   title: string;
   image: string;
   duration: string;
-  rating: number;
+  rating: string;
   releaseDate: string;
   genres: string[];
 }
@@ -28,7 +28,10 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, onImageError }) => {
   };
 
   return (
-    <div className={styles.movieCard} onClick={() => navigate(`/movie/${movie.show_id}`)}>
+    <div
+      className={styles.movieCard}
+      onClick={() => navigate(`/movie/${movie.show_id}`)}
+    >
       {!imageError ? (
         <img
           className={styles.poster}

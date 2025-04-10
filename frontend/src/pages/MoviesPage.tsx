@@ -121,7 +121,7 @@
 //     }
 //   };
 
-//   // --- Fetch movies ---  
+//   // --- Fetch movies ---
 //   // When a search query is provided, include it in the query parameters for GetAllMovies.
 //   const fetchMovies = useCallback(
 //     async (page: number) => {
@@ -286,7 +286,7 @@
 //       <Header selectedType="Movie" onTypeChange={() => {}} />
 //       <CookieConsentBanner />
 //       {/* Render the search bar */}
-      
+
 //       {/* Render GenreFilter with selected genres state */}
 //       <GenreFilter selectedGenres={selectedGenres} setSelectedGenres={setSelectedGenres} />
 //       <div className={styles.mainContent}>
@@ -321,11 +321,6 @@
 
 // export default MoviesPage;
 
-
-
-
-
-
 // src/pages/MoviesPage.tsx
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./MoviesPage.module.css";
@@ -333,15 +328,18 @@ import Header from "../components/TopNavBar";
 import CookieConsentBanner from "../components/CookieConsentBanner";
 import Footer from "../components/Footer";
 import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
-import PageDetails from "./PageDetails";
+// import PageDetails from "./PageDetails";
 import GenreFilter from "../components/GenreFilter";
 
 const PAGE_SIZE = 20;
-const API_BASE = "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
+const API_BASE =
+  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
 
 const getImageUrl = (title: string | undefined): string => {
-  const safeTitle = (title && title.trim() ? title : "default-title")
-    .replace(/['’:\-.!?–&()]/g, "");
+  const safeTitle = (title && title.trim() ? title : "default-title").replace(
+    /['’:\-.!?–&()]/g,
+    ""
+  );
   return `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(safeTitle)}.jpg`;
 };
 
@@ -353,38 +351,39 @@ interface MovieFromApi {
   [key: string]: any;
 }
 
-
-  const API_ROUTES: { [key: string]: string } = {
-    action: "/INTEX/GetActionMovies",
-    adventure: "/INTEX/GetAdventureMovies",
-    animeSeriesInternationalTVShows: "/INTEX/GetAnimeSeriesInternationalTVShows",
-    britishTVShowsDocuseriesInternationalTVShows: "/INTEX/GetBritishTVShowsDocuseriesInternationalTVShows",
-    children: "/INTEX/GetChildrenMovies",
-    comedies: "/INTEX/GetComediesMovies",
-    comediesDramasInternationalMovies: "/INTEX/GetComediesDramasInternationalMovies",
-    comediesInternationalMovies: "/INTEX/GetComediesInternationalMovies",
-    comediesRomanticMovies: "/INTEX/GetComediesRomanticMovies",
-    crimeTVShowsDocuseries: "/INTEX/GetCrimeTVShowsDocuseries",
-    documentaries: "/INTEX/GetDocumentariesMovies",
-    dramas: "/INTEX/GetDramasMovies",
-    familyMovies: "/INTEX/GetFamilyMovies",
-    fantasy: "/INTEX/GetFantasyMovies",
-    horrorMovies: "/INTEX/GetHorrorMovies",
-    spirituality: "/INTEX/GetSpiritualityMovies",
-    internationalMoviesThrillers: "/INTEX/GetInternationalMoviesThrillers",
-    internationalTVShowsRomanticTVShowsTVDramas: "/INTEX/GetInternationalTVShowsRomanticTVShowsTVDramas",
-    kidsTV: "/INTEX/GetKidsTV",
-    languageTVShows: "/INTEX/GetLanguageTVShows",
-    musicals: "/INTEX/GetMusicalsMovies",
-    natureTV: "/INTEX/GetNatureTV",
-    realityTV: "/INTEX/GetRealityTV",
-    tvAction: "/INTEX/GetTVActionMovies",
-    tvComedies: "/INTEX/GetTVComediesMovies",
-    tvDramas: "/INTEX/GetTVDramasMovies",
-    talkShowsTVComedies: "/INTEX/GetTalkShowsTVComedies",
-    thrillers: "/INTEX/GetThrillersMovies",
-  };
-
+const API_ROUTES: { [key: string]: string } = {
+  action: "/INTEX/GetActionMovies",
+  adventure: "/INTEX/GetAdventureMovies",
+  animeSeriesInternationalTVShows: "/INTEX/GetAnimeSeriesInternationalTVShows",
+  britishTVShowsDocuseriesInternationalTVShows:
+    "/INTEX/GetBritishTVShowsDocuseriesInternationalTVShows",
+  children: "/INTEX/GetChildrenMovies",
+  comedies: "/INTEX/GetComediesMovies",
+  comediesDramasInternationalMovies:
+    "/INTEX/GetComediesDramasInternationalMovies",
+  comediesInternationalMovies: "/INTEX/GetComediesInternationalMovies",
+  comediesRomanticMovies: "/INTEX/GetComediesRomanticMovies",
+  crimeTVShowsDocuseries: "/INTEX/GetCrimeTVShowsDocuseries",
+  documentaries: "/INTEX/GetDocumentariesMovies",
+  dramas: "/INTEX/GetDramasMovies",
+  familyMovies: "/INTEX/GetFamilyMovies",
+  fantasy: "/INTEX/GetFantasyMovies",
+  horrorMovies: "/INTEX/GetHorrorMovies",
+  spirituality: "/INTEX/GetSpiritualityMovies",
+  internationalMoviesThrillers: "/INTEX/GetInternationalMoviesThrillers",
+  internationalTVShowsRomanticTVShowsTVDramas:
+    "/INTEX/GetInternationalTVShowsRomanticTVShowsTVDramas",
+  kidsTV: "/INTEX/GetKidsTV",
+  languageTVShows: "/INTEX/GetLanguageTVShows",
+  musicals: "/INTEX/GetMusicalsMovies",
+  natureTV: "/INTEX/GetNatureTV",
+  realityTV: "/INTEX/GetRealityTV",
+  tvAction: "/INTEX/GetTVActionMovies",
+  tvComedies: "/INTEX/GetTVComediesMovies",
+  tvDramas: "/INTEX/GetTVDramasMovies",
+  talkShowsTVComedies: "/INTEX/GetTalkShowsTVComedies",
+  thrillers: "/INTEX/GetThrillersMovies",
+};
 
 const GENRE_KEYS = Object.keys(API_ROUTES);
 
@@ -396,7 +395,7 @@ const convertToMovie = (data: MovieFromApi): Movie => {
     title: data.title,
     image: getImageUrl(data.title),
     duration: data.duration,
-    rating: parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)),
+    rating: (Math.random() * 1.5 + 3.5).toFixed(1),
     releaseDate: `April ${data.release_year}`,
     genres: movieGenres,
   };
@@ -412,7 +411,8 @@ const getSearchQueryFromURL = (): string => {
 };
 
 const MoviesPage: React.FC = () => {
-  const [selectedGenres, setSelectedGenres] = useState<string[]>(getGenresFromQuery);
+  const [selectedGenres, setSelectedGenres] =
+    useState<string[]>(getGenresFromQuery);
   const [searchQuery, setSearchQuery] = useState<string>(getSearchQueryFromURL);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -455,15 +455,17 @@ const MoviesPage: React.FC = () => {
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
         const data = await res.json();
-        const moviesArray: MovieFromApi[] = Array.isArray(data) ? data : data?.movies || [];
+        const moviesArray: MovieFromApi[] = Array.isArray(data)
+          ? data
+          : data?.movies || [];
         const newMovies = moviesArray.map(convertToMovie);
 
-        setMovies(prev => {
+        setMovies((prev) => {
           if (page === 1 || searchQuery.trim()) return newMovies;
           const combined = [...prev, ...newMovies];
-          return Array.from(new Map(combined.map(m => [m.id, m])).values());
+          return Array.from(new Map(combined.map((m) => [m.id, m])).values());
         });
-        
+
         setHasMore(moviesArray.length === PAGE_SIZE && !searchQuery.trim());
       } catch (error) {
         console.error("Error loading movies:", error);
@@ -477,9 +479,10 @@ const MoviesPage: React.FC = () => {
   useEffect(() => {
     if (!sentinelRef.current || !hasMore) return;
     observer.current = new IntersectionObserver(
-      entries => {
+      (entries) => {
         if (entries[0].isIntersecting && !loading && !searchQuery.trim()) {
-          setCurrentPage(prev => prev + 1);
+          setCurrentPage((prev) => prev + 1);
+          console.log(currentPage);
         }
       },
       { rootMargin: "500px" }
@@ -496,44 +499,52 @@ const MoviesPage: React.FC = () => {
   useEffect(() => {
     const validateAllMovies = async () => {
       const results = await Promise.all(
-        movies.map(async movie => ({
+        movies.map(async (movie) => ({
           id: movie.id,
-          valid: await validateMovieImage(movie)
+          valid: await validateMovieImage(movie),
         }))
       );
-      const failedIds = results.filter(r => !r.valid).map(r => r.id);
-      failedIds.forEach(id => handleImageError(id));
+      const failedIds = results.filter((r) => !r.valid).map((r) => r.id);
+      failedIds.forEach((id) => handleImageError(id));
     };
     movies.length > 0 && validateAllMovies();
   }, [movies]);
 
-  const handleImageError = useCallback((failedMovieId: string) => {
-    setReplacementQueue(prev => [...prev, failedMovieId]);
+  const handleImageError = useCallback(
+    (failedMovieId: string) => {
+      setReplacementQueue((prev) => [...prev, failedMovieId]);
 
-    if (!replacementTimeout.current) {
-      replacementTimeout.current = setTimeout(async () => {
-        const idsToReplace = [...replacementQueue];
-        setReplacementQueue([]);
+      if (!replacementTimeout.current) {
+        replacementTimeout.current = setTimeout(async () => {
+          const idsToReplace = [...replacementQueue];
+          setReplacementQueue([]);
 
-        try {
-          const res = await fetch(
-            `${API_BASE}/INTEX/GetAllMovies?page=1&pageSize=${idsToReplace.length * 5}`
-          );
-          const data = await res.json();
-          const candidates: MovieFromApi[] = Array.isArray(data) ? data : data?.movies || [];
-          const replacements = candidates
-            .map(convertToMovie)
-            .filter(m => !movies.some(existing => existing.id === m.id))
-            .slice(0, idsToReplace.length);
+          try {
+            const res = await fetch(
+              `${API_BASE}/INTEX/GetAllMovies?page=1&pageSize=${idsToReplace.length * 5}`
+            );
+            const data = await res.json();
+            const candidates: MovieFromApi[] = Array.isArray(data)
+              ? data
+              : data?.movies || [];
+            const replacements = candidates
+              .map(convertToMovie)
+              .filter((m) => !movies.some((existing) => existing.id === m.id))
+              .slice(0, idsToReplace.length);
 
-          setMovies(prev => [...prev.filter(m => !idsToReplace.includes(m.id)), ...replacements]);
-        } catch (error) {
-          console.error("Error fetching replacements:", error);
-        }
-        replacementTimeout.current = null;
-      }, 2000);
-    }
-  }, [replacementQueue, movies]);
+            setMovies((prev) => [
+              ...prev.filter((m) => !idsToReplace.includes(m.id)),
+              ...replacements,
+            ]);
+          } catch (error) {
+            console.error("Error fetching replacements:", error);
+          }
+          replacementTimeout.current = null;
+        }, 2000);
+      }
+    },
+    [replacementQueue, movies]
+  );
 
   const handleSearch = (query: string) => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -551,7 +562,7 @@ const MoviesPage: React.FC = () => {
     <div className={styles.moviesPage}>
       <Header selectedType="Movie" onTypeChange={() => {}} />
       <CookieConsentBanner />
-      <GenreFilter 
+      <GenreFilter
         selectedGenres={selectedGenres}
         setSelectedGenres={setSelectedGenres}
         onSearch={handleSearch}
@@ -561,10 +572,12 @@ const MoviesPage: React.FC = () => {
           {searchQuery ? `Search results for "${searchQuery}"` : "All Movies"}
         </h2>
         <div className={styles.moviesGrid}>
-          {movies.map(movie => (
+          {movies.map((movie) => (
             <div
               key={movie.id}
-              onClick={() => setSelectedMovieId(movie.id)}
+              onClick={() => {
+                setSelectedMovieId(movie.id), console.log(selectedMovieId);
+              }}
               className={styles.movieCardWrapper}
             >
               <MovieCard movie={movie} onImageError={handleImageError} />
@@ -580,12 +593,6 @@ const MoviesPage: React.FC = () => {
         )}
       </div>
       <Footer />
-      {selectedMovieId && (
-        <PageDetails
-          showId={selectedMovieId}
-          onClose={() => setSelectedMovieId(null)}
-        />
-      )}
     </div>
   );
 };
