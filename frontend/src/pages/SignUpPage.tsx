@@ -10,19 +10,35 @@ const SignUpPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Basic validation
+  
+    // Updated regex for at least one lowercase, one uppercase, and one digit
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{15,}$/;
+  
     if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match");
+      setPasswordError("❌ Passwords do not match");
       return;
     }
-
-    // Clear any previous errors
+  
+    if (!passwordRegex.test(password)) {
+      setPasswordError(
+        "❌ Password must be at least 15 characters long and include at least one uppercase letter, one lowercase letter, and one number"
+      );
+      return;
+    }
+  
+    // Check for 3 unique characters
+    const uniqueChars = new Set(password.split(""));
+    if (uniqueChars.size < 3) {
+      setPasswordError("❌ Password must contain at least 3 unique characters");
+      return;
+    }
+  
     setPasswordError("");
-
-    // Handle sign up logic here
+  
+    // Proceed with actual sign-up logic here (e.g., API call)
     console.log("Sign up attempt with:", email, password);
   };
+  
 
   return (
     <div className={styles.container}>
