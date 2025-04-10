@@ -1,10 +1,4 @@
-/* Container that wraps the sidebar and tab */
-.container {
-  position: fixed;
-  top: 10.5vh;     /* Adjust this to control how far down the sidebar starts */
-  left: 10px;      /* Horizontal position */
-  z-index: 1000;
-}
+
 
 /* Sidebar styles */
 .genreFilterSidebar {
@@ -100,7 +94,7 @@
 /* Positions the sidebar in the upper left with a fixed position */
 .genreFilterSidebar {
   position: fixed;
-  top: 20px;       /* adjust vertical spacing */
+  top: 120px;       /* adjust vertical spacing */
   left: 10px;      /* adjust horizontal spacing */
   width: 220px;
   max-height: 70vh; /* so only part of the genres are visible at once */
@@ -159,23 +153,78 @@
 }
 
 /* Tab styling, which appears when the sidebar is collapsed */
+/* Tab styling, which appears when the sidebar is collapsed */
+/* Container that holds the tab (and the sidebar when expanded) */
+.container {
+  position: fixed;
+  top: 80px;    /* Adjust this value to control the vertical starting position */
+  left: 10px;   /* Horizontal offset from the left edge */
+  z-index: 1000;
+}
+
+/* Tab styling for when the sidebar is collapsed */
 .tab {
   position: fixed;
-  top: 20px;
-  left: 10px;
-  width: 30px;
-  height: 40px;
-  background-color: #e50914;
-  color: #fff;
+  top: 150px;                /* Vertical placement from the top */
+  left: 0;                   /* Align to the very left edge */
+  width: 80px;               /* Extended width for better visibility */
+  height: 40px;              /* Reduced height */
+  background-color: #e50914; /* Accent color */
+  color: #fff;               /* White text for contrast */
   display: flex;
   align-items: center;
   justify-content: center;
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
+  border-top-right-radius: 6px; /* Rounded top-right corner */
+  border-bottom-right-radius: 6px; /* Rounded bottom-right corner */
   cursor: pointer;
   z-index: 1100;
-  font-size: 12px;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  user-select: none;
+  font-size: 14px;           /* Font size */
+  user-select: none;         /* Prevent text selection */
+}
+
+
+
+
+/* Tab for search bar */
+.searchTab {
+  position: relative;
+  background-color: #e50914;  /* Accent color */
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.searchTab:hover {
+  background-color: #c20810;
+}
+
+/* Search Bar Wrapper */
+.searchWrapper {
+  margin-top: 10px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #e50914; /* Accent color */
+}
+
+.searchInput::placeholder {
+  color: #bbb;
 }
