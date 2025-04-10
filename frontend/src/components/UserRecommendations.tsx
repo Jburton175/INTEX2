@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./UserRecommendations.module.css";
 import MovieCard from "../components/moviesPage/MovieCard";
-// import Slider from "react-slick"; // Make sure you have react-slick and slick-carousel installed
+import Slider from "react-slick"; // Make sure you have react-slick and slick-carousel installed
 // import "slick-carousel/slick/slick.css";
 // import "slick-carousel/slick/slick-theme.css";
 
