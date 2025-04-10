@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using INTEX.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using INTEX.Services;
@@ -23,16 +22,20 @@ builder.Services.AddDbContext<INTEXContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("IntexConnection")));
 
 // Add Identity with strong password settings
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
 {
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
     options.Password.RequiredLength = 15;
     options.Password.RequiredUniqueChars = 3;
+
+    options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
+    options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Email; // Ensure email is stored in claims
 })
 .AddRoles<IdentityRole>()
-.AddEntityFrameworkStores<INTEXContext>();
+.AddEntityFrameworkStores<AuthDBContext>();
+
 
 // db for authorization
 builder.Services.AddDbContext<AuthDBContext>(options =>
@@ -40,15 +43,6 @@ builder.Services.AddDbContext<AuthDBContext>(options =>
 
 //changes for authorization
 builder.Services.AddAuthorization();
-
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
-    .AddEntityFrameworkStores<AuthDBContext>();
-
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
-    options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Email; // Ensure email is stored in claims
-});
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
 
@@ -102,6 +96,8 @@ app.Use(async (context, next) =>
     );
     await next();
 });
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
