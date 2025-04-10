@@ -8,6 +8,7 @@ import { Movies } from "../types/Movies";
 import { Users } from "../types/Users";
 import { deleteMovie, fetchMovies, fetchUsers, deleteUser } from "../api/API";
 import Pagination from "../components/Pagination";
+import AuthorizeView from "../components/AuthorizeView";
 
 const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -93,6 +94,7 @@ const AdminPage: React.FC = () => {
   if (movieError) return <p className="text-red-500">Error: {movieError}</p>;
 
   return (
+    <AuthorizeView>
     <div className={styles.adminPage}>
       {/* {editingMovies && (
         <UpdateMoviePage
@@ -406,6 +408,7 @@ const AdminPage: React.FC = () => {
       </main>
       <Footer />
     </div>
+    </AuthorizeView>
   );
 };
 
