@@ -1,6 +1,8 @@
 using INTEX.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,7 +64,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ✅ CSP Headers Middleware
 app.Use(async (context, next) =>
 {
     context.Response.Headers.Add("Content-Security-Policy",
