@@ -1,23 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./GenreFilter.module.css";
 import { GENRE_KEYS, GENRE_LABELS } from "../types/genres";
-import SearchBar from "./SearchBar";
 
 type GenreFilterProps = {
   selectedGenres: string[];
   setSelectedGenres: (genres: string[]) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-}
+};
 
 const GenreFilter: React.FC<GenreFilterProps> = ({
   selectedGenres,
   setSelectedGenres,
-  searchQuery,
-  setSearchQuery,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const [searchExpanded, setSearchExpanded] = useState(false); // New state for search bar expansion
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // When the mouse enters, clear any timeout and show the sidebar.
@@ -62,32 +58,14 @@ const GenreFilter: React.FC<GenreFilterProps> = ({
     window.location.href = `${window.location.pathname}${query}`;
   };
 
-  // Handle the search query change and update the URL
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const query = event.target.value;
-    setSearchQuery(query);
-
-    const searchParams = new URLSearchParams(window.location.search);
-    if (query) {
-      searchParams.set("search", query);
-    } else {
-      searchParams.delete("search");
-    }
-    const queryString = searchParams.toString() ? `?${searchParams.toString()}` : "";
-    window.location.href = `${window.location.pathname}${queryString}`;
-  };
-
   // Handle the search tab click to toggle search bar visibility
-  const toggleSearchTab = () => {
-    setSearchExpanded((prev) => !prev);
-  };
 
   return (
     <div className={styles.container}>
       {/* When the sidebar is collapsed, show the tab */}
       {!expanded && (
         <div className={styles.tab} onClick={() => setExpanded(true)}>
-            Filters
+          Filters
         </div>
       )}
 
@@ -96,10 +74,6 @@ const GenreFilter: React.FC<GenreFilterProps> = ({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-
-
-        
-
         <div className={styles.genreList}>
           {GENRE_KEYS.map((key) => (
             <label key={key} className={styles.checkboxLabel}>

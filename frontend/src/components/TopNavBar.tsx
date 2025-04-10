@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
 import { LogoIcon } from "./homePage/Icons";
-import { Search } from "lucide-react";
 import "./TopNavBar.css";
 import "./ThemeToggle.css";
-import SearchBar from "./SearchBar";
 
 interface TopNavBarProps {
   selectedType: "Movie" | "TV Show";
@@ -59,19 +57,15 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
         </Link>
 
         <div className={"movieButton"}>
-        <Link to="/movies" className="nav-button">
-          Movies
-        </Link>
+          <Link to="/movies" className="nav-button">
+            Movies
+          </Link>
         </div>
-
       </div>
-  
+
       <div className="nav-center">
         <div className="nav-search-container">
-          <div className="nav-search-field">
-
-            <SearchBar onSearch={(query: string) => { /* handle search */ }} />
-          </div>
+          <div className="nav-search-field"></div>
           {searchResults.length > 0 && (
             <ul className="search-dropdown">
               {searchResults.map((title) => (
@@ -88,7 +82,7 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
           )}
         </div>
       </div>
-  
+
       <div className="nav-right">
         <div className="nav-right-left">
           {/* You can reposition ThemeToggle by moving it within or outside this container */}
@@ -97,6 +91,6 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
       </div>
     </nav>
   );
-};  
+};
 
 export default TopNavBar;

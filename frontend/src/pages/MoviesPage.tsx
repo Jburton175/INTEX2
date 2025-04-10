@@ -7,19 +7,18 @@ import Footer from "../components/Footer";
 import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
 // import PageDetails from "./PageDetails";
 import GenreFilter from "../components/GenreFilter";
-import SearchBar from "../components/SearchBar";  // New search bar component
 import UserRecommendations from "../components/UserRecommendations";
 
 const PAGE_SIZE = 20;
 const API_BASE =
   "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
-const API_BASE =
-  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
 
 // --- Utility: Build image URL from movie title ---
 const getImageUrl = (title: string | undefined): string => {
-  const safeTitle = (title && title.trim() ? title : "default-title")
-    .replace(/['’:\-.!?–&()]/g, "");
+  const safeTitle = (title && title.trim() ? title : "default-title").replace(
+    /['’:\-.!?–&()]/g,
+    ""
+  );
   return `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(
     safeTitle
   )}.jpg`;
@@ -40,10 +39,12 @@ const API_ROUTES: { [key: string]: string } = {
   action: "/INTEX/GetActionMovies",
   adventure: "/INTEX/GetAdventureMovies",
   animeSeriesInternationalTVShows: "/INTEX/GetAnimeSeriesInternationalTVShows",
-  britishTVShowsDocuseriesInternationalTVShows: "/INTEX/GetBritishTVShowsDocuseriesInternationalTVShows",
+  britishTVShowsDocuseriesInternationalTVShows:
+    "/INTEX/GetBritishTVShowsDocuseriesInternationalTVShows",
   children: "/INTEX/GetChildrenMovies",
   comedies: "/INTEX/GetComediesMovies",
-  comediesDramasInternationalMovies: "/INTEX/GetComediesDramasInternationalMovies",
+  comediesDramasInternationalMovies:
+    "/INTEX/GetComediesDramasInternationalMovies",
   comediesInternationalMovies: "/INTEX/GetComediesInternationalMovies",
   comediesRomanticMovies: "/INTEX/GetComediesRomanticMovies",
   crimeTVShowsDocuseries: "/INTEX/GetCrimeTVShowsDocuseries",
@@ -54,7 +55,8 @@ const API_ROUTES: { [key: string]: string } = {
   horrorMovies: "/INTEX/GetHorrorMovies",
   spirituality: "/INTEX/GetSpiritualityMovies",
   internationalMoviesThrillers: "/INTEX/GetInternationalMoviesThrillers",
-  internationalTVShowsRomanticTVShowsTVDramas: "/INTEX/GetInternationalTVShowsRomanticTVShowsTVDramas",
+  internationalTVShowsRomanticTVShowsTVDramas:
+    "/INTEX/GetInternationalTVShowsRomanticTVShowsTVDramas",
   kidsTV: "/INTEX/GetKidsTV",
   languageTVShows: "/INTEX/GetLanguageTVShows",
   musicals: "/INTEX/GetMusicalsMovies",
@@ -100,7 +102,7 @@ const MoviesPage: React.FC = () => {
   const [selectedGenres, setSelectedGenres] = useState<string[]>(() =>
     getGenresFromQuery()
   );
-  const [searchQuery, setSearchQuery] = useState<string>(() => getSearchQueryFromURL());
+  const [searchQuery] = useState<string>(() => getSearchQueryFromURL());
   const [movies, setMovies] = useState<Movie[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
@@ -124,7 +126,7 @@ const MoviesPage: React.FC = () => {
     }
   };
 
-  // --- Fetch movies ---  
+  // --- Fetch movies ---
   // When a search query is provided, include it in the query parameters for GetAllMovies.
   const fetchMovies = useCallback(
     async (page: number) => {
@@ -133,7 +135,10 @@ const MoviesPage: React.FC = () => {
         let url = "";
         if (searchQuery.trim() !== "") {
           // Use the search parameter; adjust this endpoint if needed.
-          const genreParams = selectedGenres.length > 0 ? `&genres=${selectedGenres.join(",")}` : "";
+          const genreParams =
+            selectedGenres.length > 0
+              ? `&genres=${selectedGenres.join(",")}`
+              : "";
           url = `${API_BASE}/INTEX/GetAllMovies?page=${page}&pageSize=${PAGE_SIZE}&search=${encodeURIComponent(
             searchQuery
           )}${genreParams}`;
@@ -148,7 +153,10 @@ const MoviesPage: React.FC = () => {
               return;
             }
           } else {
-            const genreParams = selectedGenres.length > 0 ? `&genres=${selectedGenres.join(",")}` : "";
+            const genreParams =
+              selectedGenres.length > 0
+                ? `&genres=${selectedGenres.join(",")}`
+                : "";
             url = `${API_BASE}/INTEX/GetAllMovies?page=${page}&pageSize=${PAGE_SIZE}${genreParams}`;
           }
         }
@@ -219,14 +227,13 @@ const MoviesPage: React.FC = () => {
       );
       const failedIds = results.filter((r) => !r.valid).map((r) => r.id);
       failedIds.forEach((id) => handleImageError(id));
-      const failedIds = results.filter((r) => !r.valid).map((r) => r.id);
-      failedIds.forEach((id) => handleImageError(id));
     };
     if (movies.length > 0) {
       validateAllMovies();
     }
   }, [movies]);
 
+  // --- Replacement mechanism for broken images ---
   // --- Replacement mechanism for broken images ---
   const handleImageError = useCallback(
     (failedMovieId: string) => {
@@ -236,23 +243,7 @@ const MoviesPage: React.FC = () => {
         replacementTimeout.current = setTimeout(async () => {
           const idsToReplace = [...replacementQueue];
           setReplacementQueue([]);
-      if (!replacementTimeout.current) {
-        replacementTimeout.current = setTimeout(async () => {
-          const idsToReplace = [...replacementQueue];
-          setReplacementQueue([]);
 
-          try {
-            const res = await fetch(
-              `${API_BASE}/INTEX/GetAllMovies?page=1&pageSize=${idsToReplace.length * 5}`
-            );
-            const data = await res.json();
-            const candidates: MovieFromApi[] = Array.isArray(data)
-              ? data
-              : data?.movies || [];
-            const replacements = candidates
-              .map(convertToMovie)
-              .filter((m) => !movies.some((existing) => existing.id === m.id))
-              .slice(0, idsToReplace.length);
           try {
             const res = await fetch(
               `${API_BASE}/INTEX/GetAllMovies?page=1&pageSize=${idsToReplace.length * 5}`
@@ -272,8 +263,9 @@ const MoviesPage: React.FC = () => {
             });
           } catch (error) {
             console.error("Error fetching replacements:", error);
+          } finally {
+            replacementTimeout.current = null;
           }
-          replacementTimeout.current = null;
         }, 2000);
       }
     },
@@ -283,22 +275,10 @@ const MoviesPage: React.FC = () => {
   // --- Handler for when a movie card is clicked ---
   const handleCardClick = (movieId: string) => {
     setSelectedMovieId(movieId);
+    console.log(selectedMovieId);
   };
 
   // --- Handler for processing search submissions via the SearchBar ---
-  const handleSearch = (query: string) => {
-    const searchParams = new URLSearchParams(window.location.search);
-    if (query.trim() !== "") {
-      searchParams.set("search", query);
-    } else {
-      searchParams.delete("search");
-    }
-    const queryStr = searchParams.toString() ? `?${searchParams.toString()}` : "";
-    window.history.replaceState(null, "", `${window.location.pathname}${queryStr}`);
-    setSearchQuery(query);
-    setMovies([]);
-    setCurrentPage(1);
-  };
 
   const displayedMovies = movies; // For both search and non-search modes
 
@@ -307,18 +287,22 @@ const MoviesPage: React.FC = () => {
       <Header selectedType="Movie" onTypeChange={() => {}} />
       <CookieConsentBanner />
       {/* Render the search bar */}
-      
+
       {/* Render GenreFilter with selected genres state */}
-      <GenreFilter selectedGenres={selectedGenres} setSelectedGenres={setSelectedGenres} searchQuery={""} setSearchQuery={function (query: string): void {
-        throw new Error("Function not implemented.");
-      } } />
+      <GenreFilter
+        selectedGenres={selectedGenres}
+        setSelectedGenres={setSelectedGenres}
+        searchQuery={""}
+        setSearchQuery={function (_query: string): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
       <div className={styles.mainContent}>
         <h2 className={styles.pageTitle}></h2>
         {selectedGenres.length === 0 && <UserRecommendations />}
         <h1>All Movies</h1>
-        <br />        <br />        <br />        <br />
+        <br /> <br /> <br /> <br />
         <div className={styles.moviesGrid}>
-
           {displayedMovies.map((movie) => (
             <div
               key={movie.id}
@@ -328,7 +312,6 @@ const MoviesPage: React.FC = () => {
               <MovieCard movie={movie} onImageError={handleImageError} />
             </div>
           ))}
-
         </div>
         <div ref={sentinelRef} className={styles.sentinel} />
         {loading && (
@@ -339,13 +322,8 @@ const MoviesPage: React.FC = () => {
         )}
       </div>
       <Footer />
-
     </div>
   );
 };
 
 export default MoviesPage;
-
-
-
-

@@ -302,24 +302,20 @@ namespace INTEX.Controllers
 
 
         [HttpGet("SearchMovieTitles")]
-        public async Task<IActionResult> SearchMovieTitles([FromQuery] string query)
+        public IActionResult SearchMovieTitles([FromQuery] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
             {
                 return BadRequest("Query string cannot be empty.");
             }
 
-            // Case-insensitive search (SQL Server-friendly)
-            var matchedTitles = _repo.GetMovies()  // IQueryable returned by GetMovies
-                .Where(m => m.title.ToLower().Contains(query.ToLower()))
-                .Select(m => new { m.title, m.show_id })
+            var matchedTitles = _repo.GetMovies()
+                .Where(m => m.title != null && m.title.Contains(query, StringComparison.OrdinalIgnoreCase))
+                .Select(m => new {
+                    title = m.title ?? string.Empty,
+                    m.show_id
+                })
                 .ToList();
-
-            // Optional: Logging the result to help debug
-            foreach (var item in matchedTitles)
-            {
-                Console.WriteLine($"Movie: {item.title}, show_id: {item.show_id}");
-            }
 
             return Ok(matchedTitles);
         }
