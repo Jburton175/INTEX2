@@ -301,24 +301,25 @@ namespace INTEX.Controllers
         }
 
 
-        [HttpGet("SearchTitles")]
-        public async Task<IActionResult> SearchTitles([FromQuery] string query)
+        [HttpGet("SearchMovieTitles")]
+        public async Task<IActionResult> SearchMovieTitles([FromQuery] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
             {
-                return Ok(new List<string>());
+                return BadRequest("Query string cannot be empty.");
             }
 
-            var titles = await _repo.GetMovies()
-                .AsQueryable() // Convert to IQueryable if necessary
-                .Where(m => EF.Functions.Like(m.title, $"%{query}%"))
+            // Case-insensitive search (SQL Server-friendly)
+            var matchedTitles = _repo.GetMovies() // IQueryable is still returned by GetMovies
+                .Where(m => m.title.ToLower().Contains(query.ToLower()))
                 .Select(m => m.title)
                 .Distinct()
-                .Take(10)
-                .ToListAsync();
+                .Take(50) // Limit to 20 results for performance
+                .ToList(); // Use ToList() instead of ToListAsync()
 
-            return Ok(titles);
+            return Ok(matchedTitles);
         }
+
 
 
 

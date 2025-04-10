@@ -1,7 +1,3 @@
-
-
-
-
 // src/pages/MoviesPage.tsx
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./MoviesPage.module.css";
@@ -11,15 +7,19 @@ import Footer from "../components/Footer";
 import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
 import PageDetails from "./PageDetails";
 import GenreFilter from "../components/GenreFilter";
+import SearchBar from "../components/SearchBar";  // New search bar component
 
 const PAGE_SIZE = 20;
-const API_BASE = "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
+const API_BASE =
+  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
 
 // --- Utility: Build image URL from movie title ---
 const getImageUrl = (title: string | undefined): string => {
   const safeTitle = (title && title.trim() ? title : "default-title")
     .replace(/['’:\-.!?–&()]/g, "");
-  return `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(safeTitle)}.jpg`;
+  return `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(
+    safeTitle
+  )}.jpg`;
 };
 
 // --- API movie shape ---
@@ -28,12 +28,11 @@ interface MovieFromApi {
   title: string;
   duration: string;
   release_year: number;
-  // Other properties (such as genre flags) are present.
   [key: string]: any;
 }
 
 // --- Mapping from genre key to route ---
-// Modify these routes if necessary to match your API.
+// Modify these if needed
 const API_ROUTES: { [key: string]: string } = {
   action: "/INTEX/GetActionMovies",
   adventure: "/INTEX/GetAdventureMovies",
@@ -65,11 +64,9 @@ const API_ROUTES: { [key: string]: string } = {
   thrillers: "/INTEX/GetThrillersMovies",
 };
 
-// --- Convert API movie into our Movie object, extracting genres if available ---
-const GENRE_KEYS = Object.keys(API_ROUTES); // use the keys from our mapping
-
+// --- Convert API movie into our Movie object ---
+const GENRE_KEYS = Object.keys(API_ROUTES);
 const convertToMovie = (data: MovieFromApi): Movie => {
-  // For the "all movies" endpoint, extract genres from flags:
   const movieGenres = GENRE_KEYS.filter((key) => data[key] && data[key] > 0);
   return {
     id: data.show_id,
@@ -83,16 +80,24 @@ const convertToMovie = (data: MovieFromApi): Movie => {
   };
 };
 
-// --- Helper: Get selected genres from URL query (if any) ---
+// --- Helpers to extract query parameters from the URL ---
 const getGenresFromQuery = (): string[] => {
   const params = new URLSearchParams(window.location.search);
   const genresParam = params.get("genres");
   return genresParam ? genresParam.split(",") : [];
 };
 
+const getSearchQueryFromURL = (): string => {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("search") || "";
+};
+
 const MoviesPage: React.FC = () => {
-  // Avoid redeclaration by using the URL-provided genres as the initial state.
-  const [selectedGenres, setSelectedGenres] = useState<string[]>(() => getGenresFromQuery());
+  // Use URL queries as initial state.
+  const [selectedGenres, setSelectedGenres] = useState<string[]>(() =>
+    getGenresFromQuery()
+  );
+  const [searchQuery, setSearchQuery] = useState<string>(() => getSearchQueryFromURL());
   const [movies, setMovies] = useState<Movie[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
@@ -116,50 +121,49 @@ const MoviesPage: React.FC = () => {
     }
   };
 
-  // --- Fetch movies: if exactly one genre is selected, use its route (non-paginated)
-  // Otherwise, use the "GetAllMovies" endpoint with pagination.
+  // --- Fetch movies ---  
+  // When a search query is provided, include it in the query parameters for GetAllMovies.
   const fetchMovies = useCallback(
     async (page: number) => {
       try {
         setLoading(true);
         let url = "";
-        // If exactly one genre is selected, use the genre-specific API.
-        if (selectedGenres.length === 1) {
-          // For lazy loading in this mode, only fetch once (page 1).
-          if (page === 1) {
-            const genre = selectedGenres[0];
-            url = `${API_BASE}${API_ROUTES[genre]}`;
-          } else {
-            // Do not re-fetch since we have all movies.
-            setLoading(false);
-            return;
-          }
-        } else {
-          // If no filter (or multiple filters), use the AllMovies endpoint.
-          // Optionally pass any filter query if your API supports it.
+        if (searchQuery.trim() !== "") {
+          // Use the search parameter; adjust this endpoint if needed.
           const genreParams = selectedGenres.length > 0 ? `&genres=${selectedGenres.join(",")}` : "";
-          url = `${API_BASE}/INTEX/GetAllMovies?page=${page}&pageSize=${PAGE_SIZE}${genreParams}`;
+          url = `${API_BASE}/INTEX/GetAllMovies?page=${page}&pageSize=${PAGE_SIZE}&search=${encodeURIComponent(
+            searchQuery
+          )}${genreParams}`;
+        } else {
+          // No search query: use genre filtering if exactly one genre is selected.
+          if (selectedGenres.length === 1) {
+            if (page === 1) {
+              const genre = selectedGenres[0];
+              url = `${API_BASE}${API_ROUTES[genre]}`;
+            } else {
+              setLoading(false);
+              return;
+            }
+          } else {
+            const genreParams = selectedGenres.length > 0 ? `&genres=${selectedGenres.join(",")}` : "";
+            url = `${API_BASE}/INTEX/GetAllMovies?page=${page}&pageSize=${PAGE_SIZE}${genreParams}`;
+          }
         }
 
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
         const data = await res.json();
-        let moviesArray: MovieFromApi[];
-        if (selectedGenres.length === 1) {
-          // Assume the genre-specific API returns an array.
-          moviesArray = Array.isArray(data) ? data : data?.movies || [];
-        } else {
-          moviesArray = Array.isArray(data) ? data : data?.movies || [];
-        }
+        let moviesArray: MovieFromApi[] = Array.isArray(data)
+          ? data
+          : data?.movies || [];
         const newMovies = moviesArray.map(convertToMovie);
 
-        if (selectedGenres.length === 1) {
-          // In filtered mode, store the full list.
+        if (selectedGenres.length === 1 && searchQuery.trim() === "") {
+          // For a single genre filter (non-search mode), store the full list.
           setMovies(newMovies);
-          // Determine if there are more items to show on the client.
           setHasMore(newMovies.length > currentPage * PAGE_SIZE);
         } else {
-          // For all movies mode, append new movies while deduplicating.
+          // Append new movies (deduplicated) when in "all movies" or search mode.
           setMovies((prev) => {
             const combined = [...prev, ...newMovies];
             return Array.from(new Map(combined.map((m) => [m.id, m])).values());
@@ -172,10 +176,10 @@ const MoviesPage: React.FC = () => {
         setLoading(false);
       }
     },
-    [selectedGenres, currentPage]
+    [selectedGenres, searchQuery, currentPage]
   );
 
-  // --- Infinite scroll: if more movies exist, increment currentPage when the sentinel is visible.
+  // --- Infinite scroll setup ---
   useEffect(() => {
     if (!sentinelRef.current || !hasMore) return;
     observer.current = new IntersectionObserver(
@@ -190,18 +194,18 @@ const MoviesPage: React.FC = () => {
     return () => observer.current?.disconnect();
   }, [loading, hasMore]);
 
-  // --- When selectedGenres changes, reset movies and page.
+  // --- Reset movies and page when filters or search query changes ---
   useEffect(() => {
     setMovies([]);
     setCurrentPage(1);
-  }, [selectedGenres]);
+  }, [selectedGenres, searchQuery]);
 
-  // --- Fetch movies when currentPage changes.
+  // --- Fetch movies when currentPage changes ---
   useEffect(() => {
     fetchMovies(currentPage);
   }, [currentPage, fetchMovies]);
 
-  // --- Validate images and trigger replacement mechanism if needed.
+  // --- Validate images and trigger replacement if needed ---
   useEffect(() => {
     const validateAllMovies = async () => {
       const results = await Promise.all(
@@ -218,7 +222,7 @@ const MoviesPage: React.FC = () => {
     }
   }, [movies]);
 
-  // --- Replacement mechanism for broken images.
+  // --- Replacement mechanism for broken images ---
   const handleImageError = useCallback(
     (failedMovieId: string) => {
       setReplacementQueue((prev) => [...prev, failedMovieId]);
@@ -229,7 +233,6 @@ const MoviesPage: React.FC = () => {
           setReplacementQueue([]);
 
           try {
-            // Fetch a larger batch from page 1 as replacement candidates.
             const res = await fetch(
               `${API_BASE}/INTEX/GetAllMovies?page=1&pageSize=${idsToReplace.length * 5}`
             );
@@ -239,7 +242,6 @@ const MoviesPage: React.FC = () => {
               : data?.movies || [];
             const replacements = candidates
               .map(convertToMovie)
-              // Exclude movies already in our list.
               .filter((m) => !movies.some((existing) => existing.id === m.id))
               .slice(0, idsToReplace.length);
 
@@ -257,23 +259,38 @@ const MoviesPage: React.FC = () => {
     [replacementQueue, movies]
   );
 
-  // --- If exactly one genre is selected, use client-side slicing for lazy display.
-  const displayedMovies =
-    selectedGenres.length === 1 ? movies.slice(0, currentPage * PAGE_SIZE) : movies;
-
-  // --- When a movie card is clicked, open the PageDetails modal.
+  // --- Handler for when a movie card is clicked ---
   const handleCardClick = (movieId: string) => {
     setSelectedMovieId(movieId);
   };
+
+  // --- Handler for processing search submissions via the SearchBar ---
+  const handleSearch = (query: string) => {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (query.trim() !== "") {
+      searchParams.set("search", query);
+    } else {
+      searchParams.delete("search");
+    }
+    const queryStr = searchParams.toString() ? `?${searchParams.toString()}` : "";
+    window.history.replaceState(null, "", `${window.location.pathname}${queryStr}`);
+    setSearchQuery(query);
+    setMovies([]);
+    setCurrentPage(1);
+  };
+
+  const displayedMovies = movies; // For both search and non-search modes
 
   return (
     <div className={styles.moviesPage}>
       <Header selectedType="Movie" onTypeChange={() => {}} />
       <CookieConsentBanner />
-      {/* Render GenreFilter and pass the selected state */}
+      {/* Render the search bar */}
+      <SearchBar initialQuery={searchQuery} onSearch={handleSearch} />
+      {/* Render GenreFilter with selected genres state */}
       <GenreFilter selectedGenres={selectedGenres} setSelectedGenres={setSelectedGenres} />
       <div className={styles.mainContent}>
-        <h2 className={styles.pageTitle}>All Movies</h2>
+        <h2 className={styles.pageTitle}></h2>
         <div className={styles.moviesGrid}>
           {displayedMovies.map((movie) => (
             <div
@@ -302,6 +319,3 @@ const MoviesPage: React.FC = () => {
 };
 
 export default MoviesPage;
-
-
-

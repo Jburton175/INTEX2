@@ -45,3 +45,21 @@
 .movieCard:hover .movieCardOverlay {
   opacity: 1;
 }
+.imageFallback {
+  width: 100%;
+  height: 100%;
+  background-color: #555;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.fallbackTitle {
+  font-size: 0.9rem;
+  line-height: 1.2;
+}

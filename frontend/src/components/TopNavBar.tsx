@@ -5,6 +5,7 @@ import { LogoIcon } from "./homePage/Icons";
 import { Search } from "lucide-react";
 import "./TopNavBar.css";
 import "./ThemeToggle.css";
+import SearchBar from "./SearchBar";
 
 
 interface TopNavBarProps {
@@ -91,13 +92,9 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ selectedType, onTypeChange }) => 
           <div className="nav-search-container">
             <div className="nav-search-field">
               <Search size={20} color="gray" className="nav-search-icon-inside" />
-              <input
-                type="text"
-                className="nav-search-input"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+              <SearchBar onSearch={function (query: string): void {
+                throw new Error("Function not implemented.");
+              } } />
             </div>
             {searchResults.length > 0 && (
               <ul className="search-dropdown">
