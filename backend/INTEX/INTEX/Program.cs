@@ -1,7 +1,10 @@
+using System.Security.Claims;
 using INTEX.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using INTEX.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,12 +34,32 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<INTEXContext>();
 
+// db for authorization
+builder.Services.AddDbContext<AuthDBContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("AuthConnection")));
+
+//changes for authorization
+builder.Services.AddAuthorization();
+
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+    .AddEntityFrameworkStores<AuthDBContext>();
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
+    options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Email; // Ensure email is stored in claims
+});
+
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
+
+
 builder.Services.AddScoped<INTEXInterface, EFINTEX>();
 
 builder.Services.AddCors(options =>
-    options.AddPolicy("AllowLocalhost", policy =>
+    options.AddPolicy("App", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        policy.WithOrigins("http://localhost:3000", "https://delightful-bay-0ff08bf1e.6.azurestaticapps.net")
+              .AllowCredentials() // allows cookies
               .AllowAnyMethod()
               .AllowAnyHeader();
     }));
@@ -47,9 +70,11 @@ builder.Services.AddHttpsRedirection(options =>
     options.HttpsPort = 5000;
 });
 
+
+
 var app = builder.Build();
 
-app.UseCors("AllowLocalhost");
+app.UseCors("App");
 
 if (!app.Environment.IsDevelopment())
 {
@@ -81,5 +106,29 @@ app.Use(async (context, next) =>
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+app.MapIdentityApi<IdentityUser>();
+
+app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> signInManager) =>
+{
+    await signInManager.SignOutAsync();
+
+    // Ensure authentication cookie is removed
+    context.Response.Cookies.Delete(".AspNetCore.Identity.Application");
+    return Results.Ok(new { message = "Logout successful" });
+}).RequireAuthorization();
+
+
+app.MapGet("/pingauth", (ClaimsPrincipal user) =>
+{
+    if (!user.Identity?.IsAuthenticated ?? false)
+    {
+        return Results.Unauthorized();
+    }
+    var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com"; // Ensure it's never null
+    return Results.Json(new { email = email }); // Return as JSON
+}).RequireAuthorization();
+
 
 app.Run();
