@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.General;
 
-namespace INTEX.Data
+public class AuthDBContext : IdentityDbContext<IdentityUser>
 {
-    public class AuthDBContext : IdentityDbContext<IdentityUser>
+    // Add "public" to the constructor
+    public AuthDBContext(DbContextOptions<AuthDBContext> options)
+        : base(options)
     {
-
-        AuthDBContext(DbContextOptions<AuthDBContext> options):
-            base(options)
     }
 }

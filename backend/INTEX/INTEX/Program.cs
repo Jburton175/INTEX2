@@ -1,4 +1,5 @@
 using INTEX.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +32,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<INTEXContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("IntexConnection")));
 
+// db for authorization
+builder.Services.AddDbContext<AuthDBContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("AuthConnection")));
+
 builder.Services.AddScoped<INTEXInterface, EFINTEX>();
 
 builder.Services.AddCors(options =>
@@ -47,6 +52,12 @@ builder.Services.AddHttpsRedirection(options =>
         options.HttpsPort = 5000; 
     });
 
+
+//changes for authorization
+builder.Services.AddAuthorization();
+
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+    .AddEntityFrameworkStores<AuthDBContext>();
 
 var app = builder.Build();
 
@@ -71,5 +82,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapIdentityApi<IdentityUser>();
 
 app.Run();
