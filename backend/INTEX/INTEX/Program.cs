@@ -52,10 +52,10 @@ builder.Services.AddScoped<INTEXInterface, EFINTEX>();
 builder.Services.AddCors(options =>
     options.AddPolicy("App", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "https://delightful-bay-0ff08bf1e.6.azurestaticapps.net")
-              .AllowCredentials() // allows cookies
+        policy.WithOrigins("http://localhost:3000", "https://delightful-bay-0ff08bf1e.6.azurestaticapps.net") // allows cookies
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials() ;
     }));
 
 builder.Services.AddHttpsRedirection(options =>
