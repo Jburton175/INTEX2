@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/INTEX.csproj": {}
+    "C:\\Users\\jburt\\OneDrive\\Documents\\Winter_2025_Classes\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\INTEX.csproj": {}
   },
   "projects": {
-    "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/INTEX.csproj": {
+    "C:\\Users\\jburt\\OneDrive\\Documents\\Winter_2025_Classes\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\INTEX.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/INTEX.csproj",
+        "projectUniqueName": "C:\\Users\\jburt\\OneDrive\\Documents\\Winter_2025_Classes\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\INTEX.csproj",
         "projectName": "INTEX",
-        "projectPath": "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/INTEX.csproj",
-        "packagesPath": "/Users/michaelbackman/.nuget/packages/",
-        "outputPath": "/Users/michaelbackman/Desktop/INTEX2/backend/INTEX/INTEX/obj/",
+        "projectPath": "C:\\Users\\jburt\\OneDrive\\Documents\\Winter_2025_Classes\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\INTEX.csproj",
+        "packagesPath": "C:\\Users\\jburt\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jburt\\OneDrive\\Documents\\Winter_2025_Classes\\INTEX\\INTEX2\\backend\\INTEX\\INTEX\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/Users/michaelbackman/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\jburt\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -32,39 +38,49 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.15, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[9.0.4, )"
+              "version": "[8.0.15, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.14, )"
+              "version": "[8.0.15, )"
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[8.0.14, )"
+              "version": "[8.0.15, )"
             },
             "Microsoft.EntityFrameworkCore.Sqlite": {
               "target": "Package",
-              "version": "[8.0.13, )"
+              "version": "[8.0.15, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.13, )"
+              "version": "[8.0.15, )"
             },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
-              "version": "[9.0.0, )"
+              "version": "[8.0.7, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
@@ -94,7 +110,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet@8/8.0.13/libexec/sdk/8.0.113/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
