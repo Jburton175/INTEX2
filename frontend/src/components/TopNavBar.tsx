@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
 import { LogoIcon } from "./homePage/Icons";
@@ -12,23 +12,14 @@ interface TopNavBarProps {
   onTypeChange: (_type: "Movie" | "TV Show") => void;
 }
 
-const formatGenreLabel = (raw: string) => {
-  return raw
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
-};
-
-const TopNavBar: React.FC<TopNavBarProps> = ({
-  selectedType,
-  onTypeChange,
-}) => {
+const TopNavBar: React.FC<TopNavBarProps> = () => {
   const [isHidden, setIsHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<string[]>([]);
-  const [genres, setGenres] = useState<string[]>([]);
-  const [isGenreOpen, setIsGenreOpen] = useState(false);
-  const genreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // const [genres, setGenres] = useState<string[]>([]);
+  // const [isGenreOpen, setIsGenreOpen] = useState(false);
+  // const genreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,23 +30,6 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
-
-  useEffect(() => {
-    const fetchGenres = async () => {
-      try {
-        const response = await fetch(
-          "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetGenres"
-        );
-        if (!response.ok) throw new Error("Failed to fetch genres");
-        const data = await response.json();
-        setGenres(data);
-      } catch (error) {
-        console.error("Error fetching genres:", error);
-        setGenres(["Action", "Comedy", "Drama"]);
-      }
-    };
-    fetchGenres();
-  }, []);
 
   useEffect(() => {
     if (searchTerm.trim() === "") {
@@ -95,7 +69,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
                 className="nav-search-icon-inside"
               />
               <SearchBar
-                onSearch={function (query: string): void {
+                onSearch={function (_query: string): void {
                   throw new Error("Function not implemented.");
                 }}
               />
