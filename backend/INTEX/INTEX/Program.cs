@@ -48,7 +48,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("App", policy =>
     {
-        policy.AllowAnyOrigin()//.WithOrigins("http://localhost:3000", "https://delightful-bay-0ff08bf1e.6.azurestaticapps.net")
+        policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "https://delightful-bay-0ff08bf1e.6.azurestaticapps.net")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
@@ -66,8 +66,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.Name = ".AspNetCore.Identity.Application";
-    //options.LoginPath = "/login";
-    options.LoginPath = "/signin";
+    options.LoginPath = "/login";
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
