@@ -83,24 +83,38 @@ const PageDetails: React.FC = () => {
   ) => {
     const imgElement = e.currentTarget as HTMLImageElement;
     const imageUrl = imgElement.src;
-    try {
-      // Check if the blob image exists by performing a HEAD request.
-      const headRes = await fetch(imageUrl, { method: "HEAD" });
-      if (!headRes.ok) {
-        // The blob link is invalid—fetch a replacement movie.
-        const replacement = await fetchReplacementMovie();
-        if (replacement) {
-          setMovie(replacement);
-          // Update the image source using the replacement movie's title.
-          imgElement.src = getImageUrl(replacement.title);
+
+    let attempts = 0;
+    const maxAttempts = 3;
+    const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+    while (attempts < maxAttempts) {
+      try {
+        const headRes = await fetch(imageUrl, { method: "HEAD" });
+        if (headRes.ok) {
+          // The image actually exists now, so stop retrying
+          return;
         } else {
-          // Fallback to a default image if no replacement is available.
+          // Try to fetch a replacement
+          const replacement = await fetchReplacementMovie();
+          if (replacement) {
+            setMovie(replacement);
+            imgElement.src = getImageUrl(replacement.title);
+            return;
+          } else {
+            imgElement.src = "/default.jpg";
+          }
+        }
+      } catch (err) {
+        console.error(`Attempt ${attempts + 1} failed:`, err);
+        attempts++;
+        if (attempts < maxAttempts) {
+          await delay(500);
+        } else {
           imgElement.src = "/default.jpg";
+          break;
         }
       }
-    } catch (err) {
-      console.error("Error checking blob link:", err);
-      imgElement.src = "/default.jpg";
     }
   };
 

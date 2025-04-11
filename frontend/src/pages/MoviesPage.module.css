@@ -28,7 +28,7 @@
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   background-color: #141414;
   color: var(--text-color);
 }
@@ -202,7 +202,7 @@ body[data-theme="light"] {
 /* --- MovieRating Container --- */
 .movieRatingContainer {
   max-width: 400px;
-  margin-top: 2rem;  /* More margin to move the ratings down */
+  margin-top: 2rem; /* More margin to move the ratings down */
   background: rgba(255, 255, 255, 0.05);
   border-radius: var(--border-radius);
   padding: 1rem;
@@ -220,22 +220,21 @@ body[data-theme="light"] {
     flex-direction: column;
     max-width: 90%;
   }
-  
+
   .content .poster {
     width: 100%;
     height: auto;
   }
-  
+
   .details {
     padding: 1rem;
     margin-left: 0;
   }
-  
+
   .recommendationsList {
     justify-content: center;
   }
 }
-
 
 .moviesPage {
   display: flex;
@@ -246,7 +245,6 @@ body[data-theme="light"] {
 
   padding-top: 100px; /* ⬅️ Adjust this value to your liking */
 }
-
 
 /* Main content area styling */
 .mainContent {
@@ -308,7 +306,9 @@ body[data-theme="light"] {
   justify-content: center;
   color: #fff;
   opacity: 0;
-  transition: opacity 0.3s ease, height 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    height 0.3s ease;
   padding: 10px;
   box-sizing: border-box;
 }

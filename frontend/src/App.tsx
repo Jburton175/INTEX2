@@ -13,7 +13,6 @@ import PageDetails from "./pages/PageDetails";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import CorsTestPage from "./pages/CorsTestPage"; // import your test page
 
-
 function App() {
   return (
     <Router>
@@ -25,6 +24,7 @@ function App() {
           <Route path="/login" element={<SignInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/privacypolicy" element={<PrivacyPolicyPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/update-movie/:show_id" element={<UpdateMovie />} />
           <Route path="/cookie" element={<CookiePage />} />
@@ -32,7 +32,6 @@ function App() {
           <Route path="/movie/:show_id" element={<PageDetails />} />
           <Route path="/search" element={<SearchResultsPage />} />
           <Route path="/cors-test" element={<CorsTestPage />} />
-
 
           {/* Add more routes as needed */}
         </Routes>

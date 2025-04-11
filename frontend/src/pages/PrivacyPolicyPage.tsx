@@ -2,12 +2,9 @@ import React from "react";
 import styles from "./PrivacyPolicyPage.module.css";
 import ExternalNavBar from "../components/ExternalNavBar";
 import Footer from "../components/Footer";
-import AuthorizeView from "../components/AuthorizeView";
-
 
 const PrivacyPolicyPage: React.FC = () => {
   return (
-    <AuthorizeView>
     <div className={styles.container}>
       {/* <Header
         selectedType={"Movie"}
@@ -34,9 +31,7 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h2 className={styles.sectionTitle}>
-                What Data We Collect
-              </h2>
+              <h2 className={styles.sectionTitle}>What Data We Collect</h2>
               <div className={styles.sectionContent}>
                 <p className={styles.sectionIntro}>
                   We collect the following types of information:
@@ -99,9 +94,7 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h2 className={styles.sectionTitle}>
-                How We Use Your Data
-              </h2>
+              <h2 className={styles.sectionTitle}>How We Use Your Data</h2>
               <div className={styles.sectionContent}>
                 <p>We use your information to:</p>
                 <ul className={styles.categoryList}>
@@ -206,9 +199,7 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h2 className={styles.sectionTitle}>
-                Your Rights Under GDPR
-              </h2>
+              <h2 className={styles.sectionTitle}>Your Rights Under GDPR</h2>
               <div className={styles.sectionContent}>
                 <p>You have the right to:</p>
                 <ul className={styles.categoryList}>
@@ -229,7 +220,7 @@ const PrivacyPolicyPage: React.FC = () => {
 
             <section className={styles.policySection}>
               <h2 className={styles.sectionTitle}>
-               Data Storage &amp; Retention
+                Data Storage &amp; Retention
               </h2>
               <div className={styles.sectionContent}>
                 <p>
@@ -241,9 +232,7 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h2 className={styles.sectionTitle}>
-                Third-Party Integrations
-              </h2>
+              <h2 className={styles.sectionTitle}>Third-Party Integrations</h2>
               <div className={styles.sectionContent}>
                 <p>
                   Our platform may optionally support third-party authentication
@@ -255,9 +244,7 @@ const PrivacyPolicyPage: React.FC = () => {
             </section>
 
             <section className={styles.policySection}>
-              <h2 className={styles.sectionTitle}>
-              Changes to This Policy
-              </h2>
+              <h2 className={styles.sectionTitle}>Changes to This Policy</h2>
               <div className={styles.sectionContent}>
                 <p>
                   We may update this Privacy Policy as needed. If changes are
@@ -272,7 +259,6 @@ const PrivacyPolicyPage: React.FC = () => {
 
       <Footer />
     </div>
-    </AuthorizeView>
   );
 };
 
