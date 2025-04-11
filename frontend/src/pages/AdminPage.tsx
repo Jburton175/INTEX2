@@ -94,7 +94,6 @@ const AdminPage: React.FC = () => {
   if (movieError) return <p className="text-red-500">Error: {movieError}</p>;
 
   return (
-    
     <AuthorizeView>
       <div className={styles.adminPage}>
         {/* {editingMovies && (
@@ -116,6 +115,9 @@ const AdminPage: React.FC = () => {
             throw new Error("Function not implemented.");
           }}
         />
+        <br />
+        <br />
+        <br />
         <br />
         <br />
         <main className={styles.adminContent}>
