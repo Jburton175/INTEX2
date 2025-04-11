@@ -790,7 +790,12 @@ namespace INTEX.Controllers
         }
         [HttpPut("UpdateRating/{show_id}")]
         public IActionResult UpdateRating(string show_id, [FromBody] RatingUpdateRequest request)
+
+
         {
+
+            Console.WriteLine($"PUT UpdateRating hit with show_id={show_id}, user_id={request.user_id}, rating={request.Rating}");
+
             if (request == null || request.user_id <= 0)
                 return BadRequest("Invalid request body");
 
