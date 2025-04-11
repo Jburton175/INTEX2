@@ -1,77 +1,119 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import "./MovieRating.css";
 
 interface MovieRatingProps {
   show_id: string;
   movieId: string;
   onRatingUpdate?: (newRating: number) => void;
+  initialUserRating?: number; // ← add this
+  initialAverageRating?: number; // ← add this
 }
 
-const MovieRating: React.FC<MovieRatingProps> = ({ movieId, show_id, onRatingUpdate }) => {
+const MovieRating: React.FC<MovieRatingProps> = ({
+  movieId,
+  onRatingUpdate,
+}) => {
   const [userRating, setUserRating] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [isRatingLoading, setIsRatingLoading] = useState(false);
-  const userId = localStorage.getItem('userId');
+  const userId = localStorage.getItem("userId");
 
   const fetchRatings = async () => {
-    if (!userId) return;
-
-    try {
-      const response = await fetch(
-        `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetRatings?show_id=${movieId}&user_id=${userId}`
+    if (!userId) {
+      console.warn(
+        "🚫 No userId found in localStorage. Ratings cannot be fetched."
       );
+      return;
+    }
 
+    const url = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetRatings?show_id=${movieId}&user_id=${userId}`;
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ Ratings fetched:', data);
-        setUserRating(data.userRating ?? 0);
-        setAverageRating(data.averageRating ?? 0);
-      } else {
-        console.error('❌ Failed to fetch ratings');
+    console.groupCollapsed(`🔍 fetchRatings() for show_id: ${movieId}`);
+    try {
+      console.log("📥 Fetching ratings from:", url);
+      const response = await fetch(url, {
+        method: "GET",
+        credentials: "include", // ✅ Auth cookie
+      });
+
+      console.log("📬 Response status:", response.status);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(
+          `❌ Failed to fetch ratings (Status: ${response.status})`,
+          errorText
+        );
+        return;
       }
+
+      const data = await response.json();
+      console.log("✅ Ratings data received:", data);
+
+      setUserRating(data.userRating ?? 0);
+      setAverageRating(data.averageRating ?? 0);
     } catch (err) {
-      console.error('💥 Error fetching ratings:', err);
+      console.error("💥 Unexpected error in fetchRatings():", err);
+    } finally {
+      console.groupEnd();
     }
   };
 
   const handleRateMovie = async (rating: number) => {
-    if (!userId) return;
-  
+    if (!userId) {
+      console.warn("🚫 No userId found in localStorage. Cannot submit rating.");
+      return;
+    }
+
+    const endpoint = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/UpdateRating/${movieId}`;
+    const body = JSON.stringify({
+      show_id: movieId,
+      rating,
+      user_id: parseInt(userId),
+    });
+
+    console.groupCollapsed(
+      `⭐ handleRateMovie(${rating}) for show_id: ${movieId}`
+    );
     try {
       setIsRatingLoading(true);
-      const endpoint = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/UpdateRating/${movieId}`;
-  
-      const body = JSON.stringify({
-        show_id: movieId,
-        rating,
-        user_id: parseInt(userId)
-      });
-  
+      console.log("📤 Submitting rating to:", endpoint);
+      console.log("📦 Payload:", body);
+
       const response = await fetch(endpoint, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body
+        method: "PUT",
+        credentials: "include", // Important for auth/session cookie
+        headers: { "Content-Type": "application/json" },
+        body,
       });
-  
+
+      console.log("📬 Response status:", response.status);
       if (!response.ok) {
-        const text = await response.text();
-        console.error(`❌ Rating failed. Status: ${response.status}`, text);
+        const errorText = await response.text();
+        console.error(`❌ PUT failed (Status: ${response.status})`, errorText);
         return;
       }
-  
-      console.log('✅ Rating submitted successfully');
+
+      console.log("✅ Rating submitted successfully.");
       setUserRating(rating);
-      await fetchRatings();
+
+      // ⚡ Optimistically update average (optional)
+      // setAverageRating((prev) => (prev + rating) / 2); <-- not accurate, so we'll refetch
+
+      await fetchRatings(); // ✅ Get latest average
+
+      if (onRatingUpdate) {
+        onRatingUpdate(rating);
+      }
     } catch (error) {
-      console.error('💥 Rating error:', error);
+      console.error("💥 Unexpected error in handleRateMovie():", error);
     } finally {
       setIsRatingLoading(false);
+      console.groupEnd();
     }
   };
-  
 
   const handleRemoveRating = async () => {
+    console.info("🧹 Removing user rating by setting to 0...");
     await handleRateMovie(0);
   };
 
@@ -80,19 +122,19 @@ const MovieRating: React.FC<MovieRatingProps> = ({ movieId, show_id, onRatingUpd
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
-          className={`star ${rating >= star ? 'filled' : ''} ${interactive ? 'interactive' : ''}`}
+          className={`star ${rating >= star ? "filled" : ""} ${interactive ? "interactive" : ""}`}
           onClick={interactive ? () => handleRateMovie(star) : undefined}
           disabled={isRatingLoading}
-          aria-label={`Rate ${star} star${star !== 1 ? 's' : ''}`}
+          aria-label={`Rate ${star} star${star !== 1 ? "s" : ""}`}
         >
           ★
         </button>
       ))}
     </div>
   );
-  
 
   useEffect(() => {
+    console.log(`📺 useEffect triggered for movieId: ${movieId}`);
     fetchRatings();
   }, [movieId]);
 
@@ -102,7 +144,11 @@ const MovieRating: React.FC<MovieRatingProps> = ({ movieId, show_id, onRatingUpd
         <h3>Your Rating:</h3>
         {renderStars(userRating, true)}
         {userRating > 0 && (
-          <button className="remove-rating" onClick={handleRemoveRating} disabled={isRatingLoading}>
+          <button
+            className="remove-rating"
+            onClick={handleRemoveRating}
+            disabled={isRatingLoading}
+          >
             Remove Rating
           </button>
         )}
@@ -118,4 +164,3 @@ const MovieRating: React.FC<MovieRatingProps> = ({ movieId, show_id, onRatingUpd
 };
 
 export default MovieRating;
-

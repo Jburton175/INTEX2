@@ -7,10 +7,18 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-
+public class RatingUpdateRequest
+{
+    public int user_id { get; set; }
+    public string show_id { get; set; } = string.Empty;
+    public int Rating { get; set; }
+}
 
 namespace INTEX.Controllers
 {
+
+    
+
     [Route("[controller]")]
     [ApiController]
     public class INTEXController : ControllerBase
@@ -736,28 +744,15 @@ namespace INTEX.Controllers
         }
 
 
-        /// <summary>
-        /// PUT INTEX/MoviesRatings/UpdateRating/{show_id}
-        /// Updates or creates a rating for the logged-in user on the specified show.
-        /// The new rating is passed in the request body as an integer.
-        /// </summary>
         [HttpPut("UpdateRating/{show_id}")]
-        [Authorize]
-        public IActionResult UpdateRating(string show_id, [FromBody] int rating)
+        public IActionResult UpdateRating(string show_id, [FromBody] RatingUpdateRequest request)
         {
-            // Retrieve the user's id from claims (assuming the user id is stored in ClaimTypes.NameIdentifier)
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-            {
-                return Unauthorized("User not found.");
-            }
-            if (!int.TryParse(userIdClaim.Value, out int userId))
-            {
-                return Unauthorized("Invalid user id.");
-            }
+            Console.WriteLine($"PUT UpdateRating hit with show_id={show_id}, user_id={request.user_id}, rating={request.Rating}");
 
-            // Check if a rating already exists for this user and show using a repository method GetRating
-            var existingRating = _repo.GetRatingById(userId, show_id);
+            if (request == null || request.user_id <= 0)
+                return BadRequest("Invalid request body");
+
+            var existingRating = _repo.GetRatingById(request.user_id, show_id);
             if (existingRating == null)
             {
                 // Create a new rating record
@@ -776,51 +771,131 @@ namespace INTEX.Controllers
                 _repo.UpdateRating(existingRating);  // Ensure you have an implementation for updating the record
             }
 
-            _repo.SaveChanges(); // Save changes to the database
+            _repo.SaveChanges();
 
-            return Ok(new { message = "Rating updated successfully." });
+            // 🔁 Return updated average rating
+            var ratingsForShow = _repo.GetAllShowRatings(show_id);
+            double averageRating = ratingsForShow.Any()
+                ? ratingsForShow.Average(r => (r.rating ?? 0))
+                : 0;
+
+            return Ok(new
+            {
+                message = "Rating updated successfully.",
+                averageRating = averageRating
+            });
         }
+
+
 
         [HttpPost("AddRating")]
         [Authorize]
         public IActionResult AddRating([FromBody] movies_ratings ratingModel)
         {
-            // Retrieve the current user's ID from the Claims (assumes it's stored in ClaimTypes.NameIdentifier)
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
+            if (request == null || request.user_id <= 0)
+                return BadRequest("Invalid request body");
+
+            // Check if the rating already exists
+            var existing = _repo.GetRatingById(request.user_id, request.show_id);
+            if (existing != null)
             {
-                return Unauthorized("User not found.");
+                return BadRequest("Rating already exists. Use PUT to update.");
             }
-            if (!int.TryParse(userIdClaim.Value, out int userId))
+
+            var newRating = new movies_ratings
+            {
+                user_id = request.user_id,
+                show_id = request.show_id,
+                rating = request.Rating
+            };
+
+            _repo.AddRating(newRating);
+            _repo.SaveChanges();
+
+            return Ok(new { message = "Rating added successfully." });
+        }
+
+
+        [Authorize]
+        [HttpGet("GetCurrentUser")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Ok(new
+            {
+                Email = user.Email,
+                Role = roles.FirstOrDefault() ?? "User" // fallback if they have no role
+            });
+        }
+
+
+
+
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] AppLoginRequest request)
+        {
+            var keyString = _configuration["Jwt:Key"];
+            var user = _repo.GetUserByEmail(request.Email);
+            if (user == null || user.Password != request.Password)
             {
                 return Unauthorized("Invalid user id.");
             }
 
-            // Overwrite the user_id in ratingModel with the current user's ID
-            ratingModel.user_id = userId;
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email)
+    };
 
-            // Optionally validate the show_id and ratingModel (e.g. ensure ratingModel.rating is within an acceptable range)
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: creds
+            );
 
-            // Add the new rating using your repository
-            _repo.AddRating(ratingModel);
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-            // Save the changes to the database
-            _repo.SaveChanges();
-
-            // Return a success response
-            return Ok(new { message = "Rating added successfully." });
-        }
-
-        [HttpGet("GetUserRecommendations")]
-        public IActionResult GetUserRecommendations([FromQuery] string email)
-        {
-
-            var movie = _repo.GetUserRecommendations(email);
-
-            if (movie == null)
-                return NotFound();
-
-            return Ok(movie);
+            // 🔥 Ensure this is what gets returned
+            return Ok(new
+            {
+                accessToken = tokenString,
+                tokenType = "Bearer",
+                userId = user.Id,
+                expiresIn = 3600
+            });
         }
     }
-}
+
+
+        public class AppLoginRequest
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+
+
+    public class User
+        {
+            public int Id { get; set; }
+            public string Email { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty; // In production, store hashed passwords!
+        }
+    
+};
+
+
+
+
+
+
+
+

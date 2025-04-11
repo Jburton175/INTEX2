@@ -60,28 +60,43 @@ const SignInPage: React.FC = () => {
         localStorage.setItem("authToken", data.token);
       }
 
-      // 🔥 Role fetch and redirect
-      const userRes = await fetch(
-        "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetCurrentUser",
-        { credentials: "include" }
-      );
+      // 🔥 New: Check /pingauth for role info and log it
+      try {
+        const pingRes = await fetch(
+          "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/pingauth",
+          {
+            method: "GET",
+            credentials: "include"
+          }
+        );
 
-      if (userRes.ok) {
-        const userInfo = await userRes.json();
-        localStorage.setItem("user", JSON.stringify(userInfo));
+        console.log("[/pingauth] Status:", pingRes.status);
 
-        if (userInfo.role === "Admin") {
-          navigate("/admin");
+        const pingData = await pingRes.json();
+        console.log("[/pingauth] Data:", pingData);
+
+        if (pingData?.role) {
+          localStorage.setItem("user", JSON.stringify(pingData));
+
+          if (pingData.role === "Admin") {
+            navigate("/admin");
+          } else {
+            navigate("/movies");
+          }
         } else {
+          console.warn("No role found in /pingauth response. Defaulting to movies.");
           navigate("/movies");
         }
-      } else {
-        navigate("/movies"); // fallback
+      } catch (pingErr) {
+        console.error("Error calling /pingauth:", pingErr);
+        navigate("/movies");
       }
     } catch (err: any) {
+      console.error("Login error:", err);
       setError(err.message || "Error logging in.");
     }
   };
+
 
   return (
     <div className={styles.container}>
@@ -89,6 +104,7 @@ const SignInPage: React.FC = () => {
       <main className={styles.main}>
         <div className={styles.formContainer}>
           <h1 className={styles.title}>Sign In</h1>
+
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.inputGroup}>
               <input
@@ -101,6 +117,7 @@ const SignInPage: React.FC = () => {
                 required
               />
             </div>
+
             <div className={styles.inputGroup}>
               <input
                 type="password"
@@ -112,6 +129,7 @@ const SignInPage: React.FC = () => {
                 required
               />
             </div>
+
             <div className="form-check mb-3">
               <input
                 className="form-check-input"
@@ -125,38 +143,23 @@ const SignInPage: React.FC = () => {
                 Remember password
               </label>
             </div>
+
             <button type="submit" className={styles.signInButton}>
               Sign In
             </button>
+
             <div className={styles.divider}>
               <span className={styles.dividerText}>OR</span>
             </div>
+
             <Link to="/signup" className={styles.signUpLink}>
               Sign Up Now!
             </Link>
           </form>
-          {error && <p className="error">{error}</p>}
+
+          {error && <p className="text-red-500">{error}</p>}
         </div>
       </main>
-      <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <div className={styles.footerDivider}></div>
-          <div className={styles.footerInfo}>
-            <div className={styles.copyright}>
-              @2025 CineNiche, All Rights Reserved
-            </div>
-            <div className={styles.policies}>
-              <Link to="/privacy" className={styles.policyLink}>
-                Privacy Policy
-              </Link>
-              <div className={styles.policySeparator}></div>
-              <Link to="/cookies" className={styles.policyLink}>
-                Cookie Policy
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
