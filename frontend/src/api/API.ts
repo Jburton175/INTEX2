@@ -10,14 +10,7 @@ interface FetchMoviesResponse {
   totalNumMovies: number;
 }
 
-interface FetchSingleMovieResponse {
-  movie: Movies | null;
-}
-
-const API_URL =
-  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
-
-// "https://localhost:5000/INTEX";
+const API_URL = "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
 
 export const fetchMovies = async (
   pageSize: number,
@@ -45,14 +38,20 @@ export const fetchMovies = async (
 
 export const fetchOneMovie = async (
   id: string
-): Promise<FetchSingleMovieResponse> => {
+): Promise<Movies> => {
   try {
     const response = await fetch(`${API_URL}/GetOneMovie?show_id=${id}`);
 
     if (!response.ok) {
       throw new Error("Failed to fetch movie");
     }
-    return await response.json();
+
+    const data: Movies = await response.json();
+    if (!data || !data.show_id) {
+      throw new Error("Movie not found or invalid structure");
+    }
+
+    return data;
   } catch (error) {
     console.error("Error fetching movie: ", error);
     throw error;
@@ -143,16 +142,12 @@ export const deleteUser = async (userId: number): Promise<void> => {
 };
 
 export function useRecommendations() {
-  const user = useContext(UserContext);
-  const [recommendations, setRecommendations] = useState<
-    Recommendation[] | null
-  >(null);
+  const userId = 1; // or get it from context or props
+  const [recommendations, setRecommendations] = useState<Recommendation[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user?.email) return;
-
     const fetchRecommendations = async () => {
       try {
         setLoading(true);
@@ -160,33 +155,11 @@ export function useRecommendations() {
 
         // First try with user's email
         const res = await fetch(
-          `${API_URL}/GetUserRecommendations?email=${encodeURIComponent(user.email)}`
+          `${API_URL}/GetOneHomeRecommendation?userId=${userId}`
         );
 
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          console.error("Primary fetch error:", errorData);
-
-          // Fallback to default user's recommendations
-          const fallbackRes = await fetch(
-            `${API_URL}/GetUserRecommendations?email=${encodeURIComponent("callahanmichael@gmail.com")}`
-          );
-
-          if (!fallbackRes.ok) {
-            const fallbackError = await fallbackRes.json().catch(() => ({}));
-            throw new Error(
-              `Failed to fetch recommendations (user: ${res.status}) ` +
-                `and fallback (fallback: ${fallbackRes.status}). ` +
-                `${errorData.message || ""} ${fallbackError.message || ""}`
-            );
-          }
-
-          const fallbackData = await fallbackRes.json();
-          setRecommendations(fallbackData);
-        } else {
-          const data = await res.json();
-          setRecommendations(data.length ? data : await fetchFallback());
-        }
+        const data = await res.json();
+        setRecommendations(data);
       } catch (err: any) {
         setError(err.message);
         console.error("Fetch recommendations error:", err);
@@ -209,7 +182,8 @@ export function useRecommendations() {
     };
 
     fetchRecommendations();
-  }, [user]);
+  }, []);
 
   return { recommendations, loading, error };
 }
+

@@ -54,35 +54,36 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
 
   return (
     <nav className={`top-navbar ${isHidden ? "hide" : ""}`}>
-      <div className="nav-left">
-        <Link to="/" className="brand-logo">
-          <LogoIcon />
-        </Link>
+  <div className="nav-left">
+    <Link to="/" className="brand-logo">
+      <LogoIcon />
+    </Link>
+  </div>
+
+  <div className="nav-center">
+    <div className="nav-search-container">
+      <div className="nav-search-field">
+        <SearchBar />
+      </div>
     </div>
-                <div className="nav-button-group pretty-buttons">
-          <Logout>
-            <span className="logout">Log out</span>
-          </Logout>
-          <Link to="/movies" className="movieButton">
-            Movies
-          </Link>
-        </div>
+  </div>
 
+  <div className="nav-right">
+    <div className="nav-button-group pretty-buttons">
+      <Logout>
+        <span className="logout">Log out</span>
+      </Logout>
+      <Link to="/movies" className="movieButton">
+        Movies
+      </Link>
+    </div>
 
-      <div className="nav-center">
-        <div className="nav-search-container">
-          <div className="nav-search-field">
-            <SearchBar />
-          </div>
-        </div>
-      </div>
+    <div className="nav-right-left">
+      <ThemeToggle />
+    </div>
+  </div>
+</nav>
 
-      <div className="nav-right">
-        <div className="nav-right-left">
-          <ThemeToggle />
-        </div>
-      </div>
-    </nav>
   );
 };
 
