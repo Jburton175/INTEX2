@@ -40,18 +40,23 @@ const UserRecommendations: React.FC = () => {
       {Object.entries(groupedRecommendations).map(([section, movies]) => (
         <div key={section} className={styles.sectionBlock}>
           <h3 className={styles.sectionTitle}>
-            Recommended for you in{" "}
+            {" "}
             <span className={styles.genreName}>{section}</span>
           </h3>
           <div className={styles.carouselContainer}>
-            {movies.slice(0, 5).map((movie) => (
+            {movies.slice(0, 6).map((movie) => (
               <div key={movie.show_id} className={styles.movieSlide}>
                 <MovieCard
                   movie={{
                     id: movie.show_id,
                     show_id: movie.show_id,
                     title: movie.title,
-                    image: `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(movie.title)}.jpg`,
+                    image: `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(
+                      (movie.title || "default-title").replace(
+                        /['’:\-.!?–&()]/g,
+                        ""
+                      )
+                    )}.jpg`,
                     duration: "",
                     rating: "4.0",
                     releaseDate: "",

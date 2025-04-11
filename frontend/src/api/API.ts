@@ -161,7 +161,20 @@ export function useRecommendations() {
         if (!res.ok) throw new Error("Failed to fetch recommendations");
 
         const data = await res.json();
-        setRecommendations(data);
+
+        if (data.length === 0) {
+          // Fallback to default user's recommendations
+          const fallbackRes = await fetch(
+            `${API_URL}/GetUserRecommendations?email=${encodeURIComponent("callahanmichael@gmail.com")}`
+          );
+          if (!fallbackRes.ok)
+            throw new Error("Failed to fetch fallback recommendations");
+
+          const fallbackData = await fallbackRes.json();
+          setRecommendations(fallbackData);
+        } else {
+          setRecommendations(data);
+        }
       } catch (err: any) {
         setError(err.message);
       } finally {
