@@ -52,7 +52,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("App", policy =>
     {
-        policy.WithOrigins("https://localhost:3000", "http://localhost:3000", "https://delightful-bay-0ff08bf1e.6.azurestaticapps.net")
+        policy.WithOrigins("http://localhost:3000"
+                            , "https://localhost:3000"
+                            , "https://delightful-bay-0ff08bf1e.6.azurestaticapps.net"
+                            , "http://delightful-bay-0ff08bf1e.6.azurestaticapps.net")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
@@ -110,16 +113,6 @@ app.Use(async (context, next) =>
     await next();
 });
 
-// Dev-only OPTIONS handler (for CORS troubleshooting)
-app.Use(async (context, next) =>
-{
-    if (context.Request.Method == HttpMethods.Options)
-    {
-        context.Response.StatusCode = 200;
-        return;
-    }
-    await next();
-});
 
 app.UseAuthentication();
 app.UseAuthorization();
