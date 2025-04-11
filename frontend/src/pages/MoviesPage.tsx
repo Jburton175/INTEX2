@@ -8,7 +8,8 @@ import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
 // import PageDetails from "./PageDetails";
 import GenreFilter from "../components/GenreFilter";
 import UserRecommendations from "../components/UserRecommendations";
-import AuthorizeView from "../components/AuthorizeView";
+import AuthorizeView, { AuthorizedUser } from "../components/AuthorizeView";
+import EmailLogger from "../components/EmailLogger";
 
 const PAGE_SIZE = 20;
 const API_BASE =
@@ -298,6 +299,8 @@ const MoviesPage: React.FC = () => {
 
     return (
       <AuthorizeView>
+        <AuthorizedUser value="email" />
+        <EmailLogger />
         <div className={styles.moviesPage}>
           <Header selectedType="Movie" onTypeChange={() => {}} />
           <CookieConsentBanner />

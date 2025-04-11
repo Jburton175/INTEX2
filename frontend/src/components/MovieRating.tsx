@@ -1,4 +1,3 @@
-// components/MovieRating.tsx
 import React, { useState, useEffect } from 'react';
 import "./MovieRating.css"
 
@@ -19,36 +18,51 @@ const MovieRating: React.FC<MovieRatingProps> = ({
   const [userRating, setUserRating] = useState(initialUserRating);
   const [averageRating, setAverageRating] = useState(initialAverageRating);
   const [isRatingLoading, setIsRatingLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  // This function fetches both the current user's rating and the average rating.
-  const fetchRatings = async () => {
-    const token = localStorage.getItem('authToken');
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-      console.error('User ID not found in localStorage.');
-      return;
-    }
-    
+  // Capture email and fetch user_id from the server
+  const fetchUserId = async () => {
     try {
-      const response = await fetch(
-        `https://localhost:5000/INTEX/GetRatings?show_id=${movieId}&user_id=${userId}`,
-        { headers: token ? { 'Authorization': `Bearer ${token}` } : {} }
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        // data is expected to have { userRating: number, averageRating: number }
-        setUserRating(data.userRating);
-        setAverageRating(data.averageRating);
-      } else {
-        console.error('Error fetching ratings:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error fetching ratings:', error);
+      const res = await fetch('https://localhost:5000/pingauth', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Failed to fetch email');
+      const data = await res.json();
+      const email = data.email;
+      if (!email) throw new Error('Email not found in pingauth response');
+
+      const idRes = await fetch(`https://localhost:5000/INTEX/getUserId?email=${encodeURIComponent(email)}`);
+      if (!idRes.ok) throw new Error('Failed to fetch user_id');
+      const { user_id } = await idRes.json();
+      setUserId(user_id);
+      localStorage.setItem('userId', user_id);
+    } catch (err) {
+      console.error('Error getting user ID:', err);
     }
   };
 
-  // This function is used to either add or update the user's rating.
+  const fetchRatings = async () => {
+    const token = localStorage.getItem('authToken');
+    const storedId = userId || localStorage.getItem('userId');
+    if (!storedId) return;
+
+    try {
+      const res = await fetch(
+        `https://localhost:5000/INTEX/GetRatings?show_id=${movieId}&user_id=${storedId}`,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }
+      );
+      if (!res.ok) throw new Error('Failed to fetch ratings');
+      const data = await res.json();
+      setUserRating(data.userRating);
+      setAverageRating(data.averageRating);
+    } catch (err) {
+      console.error('Error fetching ratings:', err);
+    }
+  };
+
   const handleRateMovie = async (rating: number) => {
     const token = localStorage.getItem('authToken');
     if (!token) {
@@ -58,40 +72,40 @@ const MovieRating: React.FC<MovieRatingProps> = ({
 
     try {
       setIsRatingLoading(true);
-      // Use POST for creating a new rating and PATCH for updating an existing one
       const method = userRating === 0 ? 'POST' : 'PATCH';
-      
-      const response = await fetch(`https://localhost:5000/INTEX/ratings`, {
+      const res = await fetch(`https://localhost:5000/INTEX/ratings`, {
         method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           show_id: movieId,
-          rating
-        })
+          rating,
+        }),
       });
 
-      if (!response.ok) throw new Error('Rating failed');
-
-      // Update the local user rating and invoke any provided callback.
+      if (!res.ok) throw new Error('Rating failed');
       setUserRating(rating);
       onRatingUpdate?.(rating);
-      // Re-fetch ratings to update the average rating as well.
       await fetchRatings();
-    } catch (error) {
-      console.error('Rating error:', error);
+    } catch (err) {
+      console.error('Rating error:', err);
       alert('Failed to submit rating');
     } finally {
       setIsRatingLoading(false);
     }
   };
 
-  // When the component mounts or when the movieId changes, fetch the ratings.
   useEffect(() => {
-    fetchRatings();
-  }, [movieId]);
+    fetchUserId();
+  }, []);
+
+  useEffect(() => {
+    if (userId || localStorage.getItem('userId')) {
+      fetchRatings();
+    }
+  }, [movieId, userId]);
 
   const renderStars = (rating: number, interactive: boolean) => (
     <div className="star-container">

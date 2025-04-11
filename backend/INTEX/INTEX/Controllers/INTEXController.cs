@@ -721,6 +721,25 @@ namespace INTEX.Controllers
             }
         }
 
+        [HttpGet("getUserId")]
+        [AllowAnonymous] // Set as needed (you might want to secure this endpoint)
+        public IActionResult GetUserId([FromQuery] string email)
+        {
+            // Log for debugging purposes
+            Console.WriteLine("GetUserId called for email: " + email);
+
+            var user = _repo.GetUserByEmail(email);
+            if (user == null)
+            {
+                return NotFound(new { error = "User not found." });
+            }
+            return Ok(new { user_id = user.Id });
+        }
+
+
+
+
+
 
 
         [HttpGet("GetRatings")]

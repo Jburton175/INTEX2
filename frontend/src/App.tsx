@@ -12,11 +12,13 @@ import AddMovie from "./pages/AddMoviePage";
 import PageDetails from "./pages/PageDetails";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import CorsTestPage from "./pages/CorsTestPage"; // import your test page
+import EmailLogger from "./components/EmailLogger";
 
 
 function App() {
   return (
     <Router>
+      <EmailLogger />
       <div className="App">
         <Routes>
           <Route path="/" element={<HomePage />} />
