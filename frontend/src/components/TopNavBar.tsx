@@ -21,8 +21,6 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
   // const [isGenreOpen, setIsGenreOpen] = useState(false);
   // const genreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-
-
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -42,7 +40,7 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
     const delayDebounce = setTimeout(async () => {
       try {
         const response = await fetch(
-          `https://localhost:5000/INTEX/SearchTitles?query=${encodeURIComponent(searchTerm)}`
+          `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/SearchTitles?query=${encodeURIComponent(searchTerm)}`
         );
         if (!response.ok) throw new Error("Search failed");
         const data = await response.json();
@@ -89,6 +87,5 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
     </nav>
   );
 };
-
 
 export default TopNavBar;

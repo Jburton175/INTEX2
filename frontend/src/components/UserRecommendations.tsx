@@ -3,7 +3,7 @@ import styles from "./UserRecommendations.module.css";
 import MovieCard from "../components/moviesPage/MovieCard";
 
 const API_URL =
-  "https://localhost:5000/INTEX/GetOneHomeRecommendation?user_id=1";
+  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneHomeRecommendation?user_id=1";
 
 interface RecommendationItem {
   user_id: number;
