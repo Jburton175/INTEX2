@@ -303,6 +303,7 @@ const MoviesPage: React.FC = () => {
         <div className={styles.moviesPage}>
           <Header selectedType="Movie" onTypeChange={() => {}} />
           <CookieConsentBanner />
+
           {/* Render the search bar */}
   
           {/* Render GenreFilter with selected genres state */}

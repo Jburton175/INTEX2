@@ -15,6 +15,8 @@ const UpdateMoviePage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
+
+
   useEffect(() => {
     if (!show_id) return;
 
