@@ -8,7 +8,8 @@ import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
 // import PageDetails from "./PageDetails";
 import GenreFilter from "../components/GenreFilter";
 import UserRecommendations from "../components/UserRecommendations";
-import AuthorizeView from "../components/AuthorizeView";
+import AuthorizeView, { AuthorizedUser } from "../components/AuthorizeView";
+import EmailLogger from "../components/EmailLogger";
 
 const PAGE_SIZE = 20;
 const API_BASE =
@@ -17,7 +18,7 @@ const API_BASE =
 // --- Utility: Build image URL from movie title ---
 const getImageUrl = (title: string | undefined): string => {
   const safeTitle = (title && title.trim() ? title : "default-title").replace(
-    /['’:\-.!?–&()]/g,
+    /['’:\-.!?–&()']/g,
     ""
   );
   return `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(
@@ -85,7 +86,6 @@ const convertToMovie = (data: MovieFromApi): Movie => {
     genres: movieGenres,
   };
 };
-
 
 function formatGenreName(genre: string): string {
   return genre
@@ -291,13 +291,15 @@ const MoviesPage: React.FC = () => {
   const displayedMovies = movies; // For both search and non-search modes
 
   const pageTitle =
-  selectedGenres.length > 0
-    ? `All ${selectedGenres.map(formatGenreName).join(", ")}`
-    : "All Movies";
+    selectedGenres.length > 0
+      ? `All ${selectedGenres.map(formatGenreName).join(", ")}`
+      : "All Movies";
 
 
     return (
       <AuthorizeView>
+        <AuthorizedUser value="email" />
+        <EmailLogger />
         <div className={styles.moviesPage}>
           <Header selectedType="Movie" onTypeChange={() => {}} />
           <CookieConsentBanner />

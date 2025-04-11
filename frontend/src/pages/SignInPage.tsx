@@ -4,11 +4,10 @@ import styles from "./SignInPage.module.css";
 import ExternalNavBar from "../components/ExternalNavBar";
 
 const SignInPage: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [rememberme, setRememberme] = useState<boolean>(false);
-
-  const [error, setError] = useState<string>("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberme, setRememberme] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,13 +21,9 @@ const SignInPage: React.FC = () => {
     }
   };
 
-  // const handleRegisterClick = () => {
-  //   navigate("/signup");
-  // };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(""); // Clear any previous errors
+    setError("");
 
     if (!email || !password) {
       setError("Please fill in all fields.");
@@ -38,8 +33,6 @@ const SignInPage: React.FC = () => {
     const loginUrl = rememberme
       ? "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/login?useCookies=true"
       : "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/login?useSessionCookies=true";
-    //  ? "https://localhost:5000/login?useCookies=true"
-    // : "https://localhost:5000/login?useSessionCookies=true";
 
     try {
       const response = await fetch(loginUrl, {
@@ -49,9 +42,8 @@ const SignInPage: React.FC = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      // Ensure we only parse JSON if there is content
-      let data = null;
       const contentLength = response.headers.get("content-length");
+      let data = null;
       if (contentLength && parseInt(contentLength, 10) > 0) {
         data = await response.json();
       }
@@ -60,20 +52,55 @@ const SignInPage: React.FC = () => {
         throw new Error(data?.message || "Invalid email or password.");
       }
 
-      navigate("/movies");
-    } catch (error: any) {
-      setError(error.message || "Error logging in.");
-      console.error("Fetch attempt failed:", error);
+      if (data?.user_id) {
+        localStorage.setItem("userId", data.user_id.toString());
+      }
+
+      if (data?.token) {
+        localStorage.setItem("authToken", data.token);
+      }
+
+      // 🔥 New: Check /pingauth for role info and log it
+      try {
+        const pingRes = await fetch(
+          "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/pingauth",
+          {
+            method: "GET",
+            credentials: "include"
+          }
+        );
+
+        console.log("[/pingauth] Status:", pingRes.status);
+
+        const pingData = await pingRes.json();
+        console.log("[/pingauth] Data:", pingData);
+
+        if (pingData?.role) {
+          localStorage.setItem("user", JSON.stringify(pingData));
+
+          if (pingData.role === "Admin") {
+            navigate("/admin");
+          } else {
+            navigate("/movies");
+          }
+        } else {
+          console.warn("No role found in /pingauth response. Defaulting to movies.");
+          navigate("/movies");
+        }
+      } catch (pingErr) {
+        console.error("Error calling /pingauth:", pingErr);
+        navigate("/movies");
+      }
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(err.message || "Error logging in.");
     }
   };
+
 
   return (
     <div className={styles.container}>
       <ExternalNavBar />
-      <br />
-      <br />
-      <br />
-      {/* Main Sign In Form */}
       <main className={styles.main}>
         <div className={styles.formContainer}>
           <h1 className={styles.title}>Sign In</h1>
@@ -107,7 +134,6 @@ const SignInPage: React.FC = () => {
               <input
                 className="form-check-input"
                 type="checkbox"
-                value=""
                 id="rememberme"
                 name="rememberme"
                 checked={rememberme}
@@ -130,33 +156,10 @@ const SignInPage: React.FC = () => {
               Sign Up Now!
             </Link>
           </form>
-          {error && <p className="error">{error}</p>}
-          <br />
-          <br />
-          <br />
-          <br />
+
+          {error && <p className="text-red-500">{error}</p>}
         </div>
       </main>
-
-      <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <div className={styles.footerDivider}></div>
-          <div className={styles.footerInfo}>
-            <div className={styles.copyright}>
-              @2025 CineNiche, All Rights Reserved
-            </div>
-            <div className={styles.policies}>
-              <Link to="/privacy" className={styles.policyLink}>
-                Privacy Policy
-              </Link>
-              <div className={styles.policySeparator}></div>
-              <Link to="/cookies" className={styles.policyLink}>
-                Cookie Policy
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

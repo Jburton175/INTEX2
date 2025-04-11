@@ -1,4 +1,5 @@
-﻿using INTEX.Data;
+﻿using INTEX.Controllers;
+using INTEX.Data;
 using Microsoft.EntityFrameworkCore;
 
 public class INTEXContext : DbContext
@@ -8,6 +9,11 @@ public class INTEXContext : DbContext
     public DbSet<movies_ratings> movies_ratings { get; set; }
     public DbSet<home_recommendations> home_recommendations { get; set; }
     public DbSet<movie_recommendations> movie_recommendations { get; set; }
+
+    public DbSet<User> Users { get; set; }
+
+
+
 
     public INTEXContext(DbContextOptions<INTEXContext> options) : base(options) { }
 

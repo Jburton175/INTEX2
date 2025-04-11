@@ -1,6 +1,9 @@
 import { addMovies } from "../types/addMovies";
 import { Movies } from "../types/Movies";
 import { Users } from "../types/Users";
+import { Recommendation } from "../types/recommendation";
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "../components/AuthorizeView";
 
 // implement crud for movies
 interface FetchMoviesResponse {
@@ -12,7 +15,8 @@ interface FetchSingleMovieResponse {
   movie: Movies | null;
 }
 
-const API_URL =   "https://localhost:5000/INTEX";
+const API_URL =
+  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
 
 // "https://localhost:5000/INTEX";
 
@@ -138,3 +142,49 @@ export const deleteUser = async (userId: number): Promise<void> => {
   });
   if (!response.ok) throw new Error("Failed to delete user");
 };
+
+export function useRecommendations() {
+  const user = useContext(UserContext);
+  const [recommendations, setRecommendations] = useState<
+    Recommendation[] | null
+  >(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user?.email) return;
+
+    const fetchRecommendations = async () => {
+      try {
+        const res = await fetch(
+          `${API_URL}/GetUserRecommendations?email=${encodeURIComponent(user.email)}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch recommendations");
+
+        const data = await res.json();
+
+        if (data.length === 0) {
+          // Fallback to default user's recommendations
+          const fallbackRes = await fetch(
+            `${API_URL}/GetUserRecommendations?email=${encodeURIComponent("callahanmichael@gmail.com")}`
+          );
+          if (!fallbackRes.ok)
+            throw new Error("Failed to fetch fallback recommendations");
+
+          const fallbackData = await fallbackRes.json();
+          setRecommendations(fallbackData);
+        } else {
+          setRecommendations(data);
+        }
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecommendations();
+  }, [user]);
+
+  return { recommendations, loading, error };
+}

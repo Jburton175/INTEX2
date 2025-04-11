@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./SearchBar.module.css";
 
-const API_BASE = "https://localhost:5000";
+const API_BASE = "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
 
 
 
@@ -60,7 +60,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialQuery = "" }) => {
   // Hide suggestions dropdown when clicking outside.
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     };
@@ -90,7 +93,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialQuery = "" }) => {
           className={styles.navSearchInput}
         />
         <button type="submit" className={styles.navSearchButton}>
-            
           Search
         </button>
       </form>

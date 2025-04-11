@@ -1,118 +1,142 @@
-// components/MovieRating.tsx
-import React, { useState, useEffect } from 'react';
-import "./MovieRating.css"
-
-
+import React, { useState, useEffect } from "react";
+import "./MovieRating.css";
 
 interface MovieRatingProps {
   show_id: string;
   movieId: string;
-  initialUserRating?: number;
-  initialAverageRating?: number;
   onRatingUpdate?: (newRating: number) => void;
+  initialUserRating?: number; // ← add this
+  initialAverageRating?: number; // ← add this
 }
 
 const MovieRating: React.FC<MovieRatingProps> = ({
   movieId,
-  initialUserRating = 0,
-  initialAverageRating = 0,
-  onRatingUpdate
+  onRatingUpdate,
 }) => {
-  const [userRating, setUserRating] = useState(initialUserRating);
-  const [averageRating, setAverageRating] = useState(initialAverageRating);
+  const [userRating, setUserRating] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
   const [isRatingLoading, setIsRatingLoading] = useState(false);
+  const userId = localStorage.getItem("userId");
 
-  const fetchAverageRating = async () => {
-    try {
-      const response = await fetch(
-        `https://localhost:5000/INTEX/ratings/${movieId}/average`
+  const fetchRatings = async () => {
+    if (!userId) {
+      console.warn(
+        "🚫 No userId found in localStorage. Ratings cannot be fetched."
       );
-      const data = await response.json();
-      setAverageRating(data.average_rating);
-    } catch (error) {
-      console.error('Error fetching average rating:', error);
+      return;
     }
-  };
 
-  const fetchUserRating = async () => {
-    const token = localStorage.getItem('authToken');
-    if (!token) return;
+    const url = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetRatings?show_id=${movieId}&user_id=${userId}`;
 
+    console.groupCollapsed(`🔍 fetchRatings() for show_id: ${movieId}`);
     try {
-      const response = await fetch(
-        `https://localhost:5000/INTEX/ratings/${movieId}`,
-        {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        setUserRating(data.rating);
+      console.log("📥 Fetching ratings from:", url);
+      const response = await fetch(url, {
+        method: "GET",
+        credentials: "include", // ✅ Auth cookie
+      });
+
+      console.log("📬 Response status:", response.status);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(
+          `❌ Failed to fetch ratings (Status: ${response.status})`,
+          errorText
+        );
+        return;
       }
-    } catch (error) {
-      console.error('Error fetching user rating:', error);
+
+      const data = await response.json();
+      console.log("✅ Ratings data received:", data);
+
+      setUserRating(data.userRating ?? 0);
+      setAverageRating(data.averageRating ?? 0);
+    } catch (err) {
+      console.error("💥 Unexpected error in fetchRatings():", err);
+    } finally {
+      console.groupEnd();
     }
   };
 
   const handleRateMovie = async (rating: number) => {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      alert('Please login to rate movies');
+    if (!userId) {
+      console.warn("🚫 No userId found in localStorage. Cannot submit rating.");
       return;
     }
 
+    const endpoint = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/UpdateRating/${movieId}`;
+    const body = JSON.stringify({
+      show_id: movieId,
+      rating,
+      user_id: parseInt(userId),
+    });
+
+    console.groupCollapsed(
+      `⭐ handleRateMovie(${rating}) for show_id: ${movieId}`
+    );
     try {
       setIsRatingLoading(true);
-      const method = userRating === 0 ? 'POST' : 'PATCH';
-      
-      const response = await fetch(`https://localhost:5000/INTEX/ratings`, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          show_id: movieId,
-          rating
-        })
+      console.log("📤 Submitting rating to:", endpoint);
+      console.log("📦 Payload:", body);
+
+      const response = await fetch(endpoint, {
+        method: "PUT",
+        credentials: "include", // Important for auth/session cookie
+        headers: { "Content-Type": "application/json" },
+        body,
       });
 
-      if (!response.ok) throw new Error('Rating failed');
-      
+      console.log("📬 Response status:", response.status);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`❌ PUT failed (Status: ${response.status})`, errorText);
+        return;
+      }
+
+      console.log("✅ Rating submitted successfully.");
       setUserRating(rating);
-      onRatingUpdate?.(rating);
-      await fetchAverageRating();
+
+      // ⚡ Optimistically update average (optional)
+      // setAverageRating((prev) => (prev + rating) / 2); <-- not accurate, so we'll refetch
+
+      await fetchRatings(); // ✅ Get latest average
+
+      if (onRatingUpdate) {
+        onRatingUpdate(rating);
+      }
     } catch (error) {
-      console.error('Rating error:', error);
-      alert('Failed to submit rating');
+      console.error("💥 Unexpected error in handleRateMovie():", error);
     } finally {
       setIsRatingLoading(false);
+      console.groupEnd();
     }
   };
 
-  useEffect(() => {
-    if (!initialUserRating) fetchUserRating();
-    if (!initialAverageRating) fetchAverageRating();
-  }, [movieId]);
+  const handleRemoveRating = async () => {
+    console.info("🧹 Removing user rating by setting to 0...");
+    await handleRateMovie(0);
+  };
 
   const renderStars = (rating: number, interactive: boolean) => (
     <div className="star-container">
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
-          className={`star ${star <= rating ? 'filled' : ''} ${
-            interactive ? 'interactive' : ''
-          }`}
+          className={`star ${rating >= star ? "filled" : ""} ${interactive ? "interactive" : ""}`}
           onClick={interactive ? () => handleRateMovie(star) : undefined}
-          disabled={isRatingLoading || !interactive}
-          aria-label={`Rate ${star} star${star !== 1 ? 's' : ''}`}
+          disabled={isRatingLoading}
+          aria-label={`Rate ${star} star${star !== 1 ? "s" : ""}`}
         >
           ★
         </button>
       ))}
     </div>
   );
+
+  useEffect(() => {
+    console.log(`📺 useEffect triggered for movieId: ${movieId}`);
+    fetchRatings();
+  }, [movieId]);
 
   return (
     <div className="rating-component">
@@ -122,7 +146,7 @@ const MovieRating: React.FC<MovieRatingProps> = ({
         {userRating > 0 && (
           <button
             className="remove-rating"
-            onClick={() => handleRateMovie(0)}
+            onClick={handleRemoveRating}
             disabled={isRatingLoading}
           >
             Remove Rating
