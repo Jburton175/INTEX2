@@ -310,7 +310,7 @@ a {
 }
 .pretty-buttons {
   display: flex;
-  gap: 0.75rem;
+  gap: 1rem;
   background: transparent; /* remove background color */
   padding: 0.35rem 0.75rem;
   border-radius: 10px;
@@ -325,6 +325,7 @@ a {
 }
 .nav-button-group {
   display: flex;
-  gap: 3rem;       /* Controls spacing between buttons */
-  margin-left: -50rem; /* 🔧 Move closer to the logo */
+  gap: 3rem;
+  margin-left: -110rem; /* 🔧 Move closer to the logo */
 }
+

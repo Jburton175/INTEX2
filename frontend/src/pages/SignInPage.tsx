@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./SignInPage.module.css";
 import ExternalNavBar from "../components/ExternalNavBar";
+import CookieConsentBanner from "../components/CookieConsentBanner";
 
 const SignInPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -101,6 +102,7 @@ const SignInPage: React.FC = () => {
   return (
     <div className={styles.container}>
       <ExternalNavBar />
+      <CookieConsentBanner />
       <main className={styles.main}>
         <div className={styles.formContainer}>
           <h1 className={styles.title}>Sign In</h1>

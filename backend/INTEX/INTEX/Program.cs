@@ -189,7 +189,7 @@ app.MapGet("/pingauth", async (ClaimsPrincipal user, UserManager<IdentityUser> u
         email = email,
         role = role
     });
-}).RequireAuthorization();
+});
 
 
 app.Run();
