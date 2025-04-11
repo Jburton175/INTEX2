@@ -21,6 +21,7 @@ const MovieRating: React.FC<MovieRatingProps> = ({ movieId, show_id, onRatingUpd
         `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetRatings?show_id=${movieId}&user_id=${userId}`
       );
 
+
       if (response.ok) {
         const data = await response.json();
         console.log('✅ Ratings fetched:', data);
@@ -117,3 +118,4 @@ const MovieRating: React.FC<MovieRatingProps> = ({ movieId, show_id, onRatingUpd
 };
 
 export default MovieRating;
+

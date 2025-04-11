@@ -60,7 +60,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialQuery = "" }) => {
   // Hide suggestions dropdown when clicking outside.
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     };
@@ -90,7 +93,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialQuery = "" }) => {
           className={styles.navSearchInput}
         />
         <button type="submit" className={styles.navSearchButton}>
-            
           Search
         </button>
       </form>

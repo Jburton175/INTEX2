@@ -1,7 +1,7 @@
-import React, { useState, useEffect, createContext } from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { useState, useEffect, createContext } from "react";
+import { Navigate } from "react-router-dom";
 
-const UserContext = createContext<User | null>(null);
+export const UserContext = createContext<User | null>(null);
 
 interface User {
   email: string;
@@ -11,7 +11,7 @@ function AuthorizeView(props: { children: React.ReactNode }) {
   const [authorized, setAuthorized] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true); // add a loading state
   //const navigate = useNavigate();
-  let emptyuser: User = { email: '' };
+  let emptyuser: User = { email: "" };
 
   const [user, setUser] = useState(emptyuser);
 
@@ -21,11 +21,11 @@ function AuthorizeView(props: { children: React.ReactNode }) {
         const response = await fetch(url, options);
         //console.log('AuthorizeView: Raw Response:', response);
 
-        const contentType = response.headers.get('content-type');
+        const contentType = response.headers.get("content-type");
 
         // Ensure response is JSON before parsing
-        if (!contentType || !contentType.includes('application/json')) {
-          throw new Error('Invalid response format from server');
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Invalid response format from server");
         }
 
         const data = await response.json();
@@ -34,7 +34,7 @@ function AuthorizeView(props: { children: React.ReactNode }) {
           setUser({ email: data.email });
           setAuthorized(true);
         } else {
-          throw new Error('Invalid user session');
+          throw new Error("Invalid user session");
         }
       } catch (error) {
         setAuthorized(false);
@@ -43,10 +43,13 @@ function AuthorizeView(props: { children: React.ReactNode }) {
       }
     }
 
-    fetchWithRetry('https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/pingauth', {
-      method: 'GET',
-      credentials: 'include',
-    });
+    fetchWithRetry(
+      "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/pingauth",
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
   }, []);
 
   if (loading) {
@@ -67,7 +70,7 @@ export function AuthorizedUser(props: { value: string }) {
 
   if (!user) return null; // Prevents errors if context is null
 
-  return props.value === 'email' ? <>{user.email}</> : null;
+  return props.value === "email" ? <>{user.email}</> : null;
 }
 
 export default AuthorizeView;

@@ -923,3 +923,24 @@ namespace INTEX.Controllers
 
 
 
+
+            // Save the changes to the database
+            _repo.SaveChanges();
+
+            // Return a success response
+            return Ok(new { message = "Rating added successfully." });
+        }
+
+        [HttpGet("GetUserRecommendations")]
+        public IActionResult GetUserRecommendations([FromQuery] string email)
+        {
+
+            var movie = _repo.GetUserRecommendations(email);
+
+            if (movie == null)
+                return NotFound();
+
+            return Ok(movie);
+        }
+    }
+}

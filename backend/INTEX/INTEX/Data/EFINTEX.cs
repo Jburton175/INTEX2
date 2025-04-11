@@ -126,6 +126,28 @@ namespace INTEX.Data
                            .Where(hr => hr.user_id == userId)
                            .ToList();
         }
+
+        public IEnumerable<dynamic> GetUserRecommendations(string email)
+        {
+            var recommendations = _context.movies_users
+                .Where(mu => mu.email == email)
+                .Join(
+                    _context.home_recommendations,
+                    mu => mu.user_id,         
+                    hr => hr.user_id,          
+                    (mu, hr) => new           
+                    {
+                        email = mu.email,
+                        user_id = mu.user_id,
+                        show_id = hr.show_id,
+                        title = hr.title,
+                        section = hr.section
+                    })
+                .ToList();
+
+            return recommendations;
+        }
+
         public IEnumerable<movie_recommendations> GetMovieRecommendations()
         {
             return _context.movie_recommendations.ToList();

@@ -89,43 +89,43 @@ const SearchResultsPage: React.FC = () => {
 
   return (
     <AuthorizeView>
-    <div className={styles.moviesPage}>
-      <Header selectedType="Movie" onTypeChange={() => {}} />
-      <CookieConsentBanner />
+      <div className={styles.moviesPage}>
+        <Header selectedType="Movie" onTypeChange={() => {}} />
+        <CookieConsentBanner />
 
-      <div className={styles.mainContent}>
-        <h2 className={styles.pageTitle}>
-          {query ? `Search results for "${query}"` : "Search Movies"}
-        </h2>
+        <div className={styles.mainContent}>
+          <h2 className={styles.pageTitle}>
+            {query ? `Search results for "${query}"` : "Search Movies"}
+          </h2>
 
-        {loading ? (
-          <div className={styles.loading}>
-            <div className={styles.spinner} />
-            Searching for "{query}"...
-          </div>
-        ) : error ? (
-          <div className={styles.error}>Error: {error}</div>
-        ) : movies.length === 0 ? (
-          <div className={styles.emptyState}>
-            No results found for "{query}"
-          </div>
-        ) : (
-          <div className={styles.moviesGrid}>
-            {displayedMovies.map((movie) => (
-              <div
-                key={movie.id}
-                onClick={() => handleCardClick(movie.id)}
-                className={styles.movieCardWrapper}
-              >
-                <MovieCard movie={movie} onImageError={handleImageError} />
-              </div>
-            ))}
-          </div>
-        )}
+          {loading ? (
+            <div className={styles.loading}>
+              <div className={styles.spinner} />
+              Searching for "{query}"...
+            </div>
+          ) : error ? (
+            <div className={styles.error}>Error: {error}</div>
+          ) : movies.length === 0 ? (
+            <div className={styles.emptyState}>
+              No results found for "{query}"
+            </div>
+          ) : (
+            <div className={styles.moviesGrid}>
+              {displayedMovies.map((movie) => (
+                <div
+                  key={movie.id}
+                  onClick={() => handleCardClick(movie.id)}
+                  className={styles.movieCardWrapper}
+                >
+                  <MovieCard movie={movie} onImageError={handleImageError} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <Footer />
       </div>
-
-      <Footer />
-    </div>
     </AuthorizeView>
   );
 };

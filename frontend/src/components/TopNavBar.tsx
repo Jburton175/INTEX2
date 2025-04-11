@@ -21,8 +21,6 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
   // const [isGenreOpen, setIsGenreOpen] = useState(false);
   // const genreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-
-
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -87,6 +85,5 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
     </nav>
   );
 };
-
 
 export default TopNavBar;
