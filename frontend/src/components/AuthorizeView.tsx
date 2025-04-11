@@ -44,7 +44,7 @@ function AuthorizeView(props: { children: React.ReactNode }) {
     }
 
     fetchWithRetry(
-      "https://delightful-bay-0ff08bf1e.6.azurestaticapps.net/pingauth",
+      "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/pingauth",
       {
         method: "GET",
         credentials: "include",
