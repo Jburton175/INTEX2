@@ -9,6 +9,7 @@
   text-decoration: none;
   gap: 0.5rem;
   transition: background-color 0.3s ease;
+  width: fit-content; /* Added this line */
 }
 
 .shareButton:hover {

@@ -1,5 +1,6 @@
 ﻿using INTEX.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -10,6 +11,10 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
+public class RatingUpdateRequest
+{
+    public int Rating { get; set; }
+}
 
 
 namespace INTEX.Controllers
@@ -774,8 +779,8 @@ namespace INTEX.Controllers
         /// The new rating is passed in the request body as an integer.
         /// </summary>
         [HttpPut("UpdateRating/{show_id}")]
-        [Authorize]
-        public IActionResult UpdateRating(string show_id, [FromBody] int rating)
+
+        public IActionResult UpdateRating(string show_id, [FromBody] RatingUpdateRequest request)
         {
             // Retrieve the user's id from claims (assuming the user id is stored in ClaimTypes.NameIdentifier)
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -788,7 +793,7 @@ namespace INTEX.Controllers
                 return Unauthorized("Invalid user id.");
             }
 
-            // Check if a rating already exists for this user and show using a repository method GetRating
+            // Check if a rating already exists for this user and show
             var existingRating = _repo.GetRatingById(userId, show_id);
             if (existingRating == null)
             {
@@ -797,68 +802,51 @@ namespace INTEX.Controllers
                 {
                     user_id = userId,
                     show_id = show_id,
-                    rating = rating
+                    rating = request.Rating
                 };
-                _repo.AddRating(newRating);  // Your AddRating method accepts a movies_ratings object
+                _repo.AddRating(newRating);
             }
             else
             {
                 // Update the existing rating
-                existingRating.rating = rating;
-                _repo.UpdateRating(existingRating);  // Ensure you have an implementation for updating the record
+                existingRating.rating = request.Rating;
+                _repo.UpdateRating(existingRating);
             }
 
-            _repo.SaveChanges(); // Save changes to the database
+            _repo.SaveChanges();
 
             return Ok(new { message = "Rating updated successfully." });
         }
 
+
         [HttpPost("AddRating")]
-        [Authorize]
         public IActionResult AddRating([FromBody] movies_ratings ratingModel)
         {
-            // Retrieve the current user's ID from the Claims (assumes it's stored in ClaimTypes.NameIdentifier)
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
+            // Validate the inputs
+            if (ratingModel == null || string.IsNullOrEmpty(ratingModel.show_id) || ratingModel.user_id == 0)
             {
-                return Unauthorized("User not found.");
-            }
-            if (!int.TryParse(userIdClaim.Value, out int userId))
-            {
-                return Unauthorized("Invalid user id.");
+                return BadRequest("Invalid rating data.");
             }
 
-            // Overwrite the user_id in ratingModel with the current user's ID
-            ratingModel.user_id = userId;
+            var existingRating = _repo.GetRatingById(ratingModel.user_id ?? 0, ratingModel.show_id);
+            if (existingRating != null)
+            {
+                return BadRequest("Rating already exists. Use PUT to update.");
+            }
 
-            // Optionally validate the show_id and ratingModel (e.g. ensure ratingModel.rating is within an acceptable range)
-
-            // Add the new rating using your repository
             _repo.AddRating(ratingModel);
-
-            // Save the changes to the database
-            _repo.SaveChanges();
-
-            // Return a success response
             return Ok(new { message = "Rating added successfully." });
         }
 
 
 
-        [HttpPost("/login")]
-        [AllowAnonymous]
-        public IActionResult Login([FromBody] INTEXLoginRequest request)
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] AppLoginRequest request)
         {
-            // Your login logic...
             var user = _repo.GetUserByEmail(request.Email);
-            if (user == null)
+            if (user == null || user.Password != request.Password)
             {
-                return Unauthorized("User not found.");
-            }
-
-            if (user.Password != request.Password)
-            {
-                return Unauthorized("Invalid password.");
+                return Unauthorized("Invalid email or password.");
             }
 
             var claims = new List<Claim>
@@ -867,7 +855,7 @@ namespace INTEX.Controllers
         new Claim(ClaimTypes.Email, user.Email)
     };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? throw new Exception("JWT Key missing")));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
@@ -876,26 +864,35 @@ namespace INTEX.Controllers
                 expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds
             );
+
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return Ok(new { token = tokenString, userId = user.Id });
+            // 🔥 Ensure this is what gets returned
+            return Ok(new
+            {
+                accessToken = tokenString,
+                tokenType = "Bearer",
+                userId = user.Id,
+                expiresIn = 3600
+            });
         }
-
     }
 
-    // Supporting models:
-    public class INTEXLoginRequest
+
+        public class AppLoginRequest
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }
 
+
     public class User
-    {
-        public int Id { get; set; }
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty; // In production, store hashed passwords!
-    }
+        {
+            public int Id { get; set; }
+            public string Email { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty; // In production, store hashed passwords!
+        }
+    
 };
 
 

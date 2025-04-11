@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail } from "lucide-react"; // Optional: replace with another icon if not using lucide
+import { Share2 } from "lucide-react";
 import styles from "./ShareMovieButton.module.css";
 
 interface ShareMovieButtonProps {
@@ -12,12 +12,14 @@ const ShareMovieButton: React.FC<ShareMovieButtonProps> = ({ title }) => {
 
 Let me know what you think.`;
 
-  const mailtoLink = `mailto:?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+  const mailtoLink = `mailto:?subject=${encodeURIComponent(
+    mailSubject
+  )}&body=${encodeURIComponent(mailBody)}`;
 
   return (
     <a href={mailtoLink} className={styles.shareButton}>
-      <Mail className={styles.icon} />
-      Share via Email
+      <Share2 className={styles.icon} />
+      Share
     </a>
   );
 };
