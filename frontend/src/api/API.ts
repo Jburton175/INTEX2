@@ -2,8 +2,8 @@ import { addMovies } from "../types/addMovies";
 import { Movies } from "../types/Movies";
 import { Users } from "../types/Users";
 import { Recommendation } from "../types/recommendation";
-import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../components/AuthorizeView";
+import { useEffect, useState } from "react";
+
 
 interface FetchMoviesResponse {
   movies: Movies[];

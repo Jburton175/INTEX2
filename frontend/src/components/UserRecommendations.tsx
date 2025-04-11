@@ -50,7 +50,7 @@ const UserRecommendations: React.FC = () => {
     <div className={styles.recommendationsWrapper}>
       {debug && (
         <div className={styles.debugBox}>
-          <strong>Debug Info:</strong> {debug}
+
         </div>
       )}
 

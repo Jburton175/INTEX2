@@ -26,11 +26,13 @@
 
 /* Ensure each movie slide doesn't shrink and snaps into place */
 .movieSlide {
-  flex: 0 0 auto;
+  flex: 0 0 calc((100% - 6rem) / 7); /* 7 items, 6 gaps of 1rem */
   scroll-snap-align: start;
-  margin-right: 0.5rem;
-  width: 180px; /* or use % if you want more fluid behavior */
+  margin-right: 1rem;
+  width: auto;
 }
+
+
 
 /* Optional: Hide scrollbar for a cleaner look */
 .carouselContainer::-webkit-scrollbar {

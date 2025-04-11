@@ -1,265 +1,285 @@
 :root {
-  --bg-light: #f9f9f9;
-  --text-light: #111;
-  --bg-dark: #141414;
-  --text-dark: #ffffff;
+  --primary-color: #e50914;
+  --hover-color: #f40612;
+  --background-overlay: rgba(0, 0, 0, 0.85);
+  --content-bg: #1e1e1e;
+  --text-color: #ffffff;
+  --shadow-light: 0px 2px 4px rgba(0, 0, 0, 0.7);
+  --border-radius: 8px;
+  --transition-speed: 0.3s;
 }
 
-[data-theme="light"] .container,
-[data-theme="light"] .policyContainer,
-[data-theme="light"] .footer {
-  background-color: var(--bg-light);
-  color: var(--text-light);
+:root[data-theme="light"] {
+  --background-overlay: rgba(255, 255, 255, 0.85);
+  --content-bg: #ffffff;
+  --text-color: #141414;
+  --shadow-light: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-[data-theme="dark"] .container,
-[data-theme="dark"] .policyContainer,
-[data-theme="dark"] .footer {
-  background-color: var(--bg-dark);
-  color: var(--text-dark);
+body {
+  background-color: var(--content-bg);
+  color: var(--text-color);
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  padding-top: 10rem;
-}
 
-.header {
-  display: flex;
-  align-items: center;
-  padding: 24px 80px;
-  z-index: 10;
-}
-
-.brandContainer {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-}
-
-.brandName {
-  color: inherit;
-  font-family:
-    Manrope,
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 150%;
+* {
+  box-sizing: border-box;
   margin: 0;
-}
-
-.mainContent {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 40px 80px;
-}
-
-.policyContainer {
-  width: 100%;
-  max-width: 1225px;
-  padding: 24px;
-  border-radius: 10px;
-  background-color: inherit;
-  text-align: left;
-  margin: 0 auto; /* ✅ This line centers the container */
-}
-.policyContainer,
-.policyContainer * {
-  color: #fff !important;
-}
-.policyContent {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-}
-
-.introSection {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.policyTitle,
-.policyDate,
-.policyIntro,
-.sectionTitle,
-.sectionContent {
-  color: inherit;
-  font-family:
-    Manrope,
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
-  line-height: 150%;
-  margin: 0;
-}
-
-.policyTitle {
-  font-size: 60px;
-  font-weight: 700;
-  text-align: left;
-}
-
-.policyDate {
-  font-size: 40px;
-  font-weight: 400;
-  text-align: left;
-}
-
-.policyIntro {
-  font-size: 20px;
-  font-weight: 400;
-  text-align: left;
-}
-
-.sectionTitle {
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.sectionContent {
-  font-size: 18px;
-  font-weight: 400;
-}
-
-.sectionIntro {
-  margin-bottom: 20px;
-}
-
-.categoryGroup {
-  margin-bottom: 20px;
-}
-
-.categoryTitle {
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.categoryList {
-  list-style-type: disc;
-  padding-left: 20px;
-}
-
-.listItem {
-  margin-bottom: 8px;
-}
-
-.paragraph {
-  margin-top: 20px;
-}
-
-.footer {
-  margin-top: auto;
-  padding: 40px 80px;
-  background-color: inherit;
-}
-
-.footerContent {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.divider {
-  height: 1px;
-  background-color: #ccc;
-  border: none;
-  margin: 0;
-}
-
-.footerBottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.copyright,
-.policyLink {
-  color: inherit;
-  font-family:
-    Manrope,
-    -apple-system,
-    Roboto,
-    Helvetica,
-    sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 150%;
-  margin: 0;
-}
-
-.policyLinks {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.policyLink {
-  cursor: pointer;
-  background: none;
-  border: none;
   padding: 0;
 }
 
-.separator {
-  width: 1px;
-  height: 21px;
-  background-color: #ccc;
+body[data-theme="light"] {
+  background-color: #ffffff;
 }
 
-@media (max-width: 991px) {
-  .header,
-  .mainContent,
-  .footer {
-    padding: 24px 40px;
-  }
+/* --- Main Overlay --- */
+/* Increased top padding to give more space from the top */
+.overlay {
+  position: relative;
+  top: 0;
+  left: 0;
+  padding-top: 6rem; /* Intended top padding */
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  background-color: var(--background-overlay);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
 
-  .policyTitle {
-    font-size: 48px;
-  }
-
-  .policyDate {
-    font-size: 32px;
-  }
 }
 
-@media (max-width: 640px) {
-  .header,
-  .mainContent,
-  .footer {
-    padding: 24px 20px;
-  }
 
-  .policyTitle {
-    font-size: 36px;
-  }
+.content {
+  display: flex;
+  flex-direction: row;
+  background-color: var(--content-bg);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  max-width: 80%;
+  width: 100%;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
 
-  .policyDate {
-    font-size: 24px;
-  }
+.content .poster {
+  width: 300px;
+  height: auto;
+  flex-shrink: 0;
+  object-fit: cover;
+  display: block;
+}
+/* Enhance the details area styling */
+.details {
+  padding: 2rem;
+  flex: 1;
+  margin-left: 2rem;
+  background-color: rgba(255, 255, 255, 0.05); /* Subtle contrast overlay */
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
 
-  .policyIntro {
-    font-size: 16px;
-  }
+.details h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+  text-shadow: var(--shadow-light);
+}
 
-  .sectionTitle {
-    font-size: 20px;
-  }
+.details p {
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  text-shadow: var(--shadow-light);
+}
 
-  .sectionContent {
-    font-size: 16px;
-  }
+/* Style the list of details (cast, country, etc.) */
+.details ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
 
-  .footerBottom {
+.details ul li {
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Use a bullet before each list item, colored with the primary color */
+.details ul li::before {
+  content: "•";
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+/* Optional: adjust button styling if needed */
+.details button {
+  background-color: var(--primary-color);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  margin-top: 1rem;
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color var(--transition-speed) ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+.details button:hover {
+  background-color: var(--hover-color);
+}
+
+
+
+/* Recommendations */
+.recommendationsContainer {
+  width: 80%;
+  margin-bottom: 2rem;
+}
+
+.recommendationsContainer h2 {
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  text-shadow: var(--shadow-light);
+}
+
+.recommendationsList {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.recommendationItem {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  min-width: 150px;
+  transition: transform var(--transition-speed) ease;
+  border-radius: 4px;
+}
+
+.recommendationItem:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+}
+
+.recommendationItem .poster {
+  width: 150px;
+  height: 225px;
+  object-fit: cover;
+  display: block;
+  border-radius: 4px;
+}
+
+.recommendationOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-speed) ease;
+  padding: 0.5rem;
+}
+
+.recommendationOverlay p {
+  color: var(--text-color);
+  font-size: 1rem;
+  text-align: center;
+  margin: 0;
+  text-shadow: var(--shadow-light);
+}
+
+.recommendationItem:hover .recommendationOverlay {
+  opacity: 1;
+}
+
+/* MovieRating Container: slightly more styling, so the rating box stands out */
+.movieRatingContainer {
+  max-width: 400px;
+  margin-top: 1.5rem;
+  background: rgba(255, 255, 255, 0.05); /* Subtle background in dark mode */
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+/* Light mode override for rating container background */
+[data-theme="light"] .movieRatingContainer {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content {
     flex-direction: column;
-    gap: 20px;
-    text-align: center;
+    max-width: 90%;
   }
+
+  .content .poster {
+    width: 100%;
+    height: auto;
+  }
+
+  .details {
+    padding: 1rem;
+    margin-left: 0;
+  }
+
+  .recommendationsList {
+    justify-content: center;
+  }
+}
+.shareButtonWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%; /* Take full height of the surrounding space */
+  padding: 1rem 0;
+}
+.ratingShareGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}.container {
+  background-color: var(--background-overlay);
+  color: var(--text-color);
+  padding-top: 6rem;
+}
+
+.mainContent {
+  max-width: 80%;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: var(--content-bg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.policyTitle,
+.sectionTitle {
+  color: var(--text-color);
+  text-shadow: var(--shadow-light);
+}
+
+.listItem::before {
+  content: "•";
+  color: var(--primary-color);
+  margin-right: 0.5rem;
+}
+/* Ensure all text uses the theme color unless otherwise specified */
+.container,
+.container * {
+  color: var(--text-color);
 }
