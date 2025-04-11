@@ -37,6 +37,7 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
 
             <Route path="/update-movie/:show_id" element={<UpdateMovie />} />
             <Route path="/cookie" element={<CookiePage />} />

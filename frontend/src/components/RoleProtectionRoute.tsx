@@ -1,25 +1,17 @@
-import React, { JSX } from "react";
+import React, { JSX, useContext } from "react";
 import { Navigate } from "react-router-dom";
+import { UserContext } from "./AuthorizeView";
 
 export interface RoleProtectedRouteProps {
   children: JSX.Element;
   allowedRoles: string[];
 }
 
-const getUserRole = (): string | null => {
-  try {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    return user.role || null;
-  } catch {
-    return null;
-  }
-};
-
 const RoleProtectedRoute: React.FC<RoleProtectedRouteProps> = ({ children, allowedRoles }) => {
-  const role = getUserRole();
+  const user = useContext(UserContext);
 
-  if (!role) return <Navigate to="/login" replace />;
-  if (!allowedRoles.includes(role)) return <Navigate to="/unauthorized" replace />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (!allowedRoles.includes(user.role)) return <Navigate to="/unauthorized" replace />;
 
   return children;
 };
