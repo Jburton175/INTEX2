@@ -1,5 +1,8 @@
 .recommendationsWrapper {
   padding: 2rem;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden; /* just in case a child element overflows */
 }
 
 .sectionBlock {
@@ -17,7 +20,8 @@
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch; /* For momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
 }
 
 /* Ensure each movie slide doesn't shrink and snaps into place */
@@ -25,9 +29,17 @@
   flex: 0 0 auto;
   scroll-snap-align: start;
   margin-right: 0.5rem;
+  width: 180px; /* or use % if you want more fluid behavior */
 }
 
 /* Optional: Hide scrollbar for a cleaner look */
 .carouselContainer::-webkit-scrollbar {
   display: none;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }

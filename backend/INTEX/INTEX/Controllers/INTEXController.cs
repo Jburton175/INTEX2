@@ -11,7 +11,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 
 public class RatingUpdateRequest
 {
@@ -787,15 +786,13 @@ namespace INTEX.Controllers
                 averageRating = averageRating
             });
         }
+
+
         [HttpPut("UpdateRating/{show_id}")]
         public IActionResult UpdateRating(string show_id, [FromBody] RatingUpdateRequest request)
         {
             Console.WriteLine($"PUT UpdateRating hit with show_id={show_id}, user_id={request.user_id}, rating={request.Rating}");
-            if (request == null || request.user_id <= 0)
-                return BadRequest("Invalid request body");
-            var existingRating = _repo.GetRatingById(request.user_id, show_id);
-        public IActionResult UpdateRating(string show_id, [FromBody] RatingUpdateRequest request)
-        {
+
             if (request == null || request.user_id <= 0)
                 return BadRequest("Invalid request body");
 
@@ -814,13 +811,11 @@ namespace INTEX.Controllers
             {
                 existingRating.rating = request.Rating;
                 _repo.UpdateRating(existingRating);
-                existingRating.rating = request.Rating;
-                _repo.UpdateRating(existingRating);
             }
 
             _repo.SaveChanges();
 
-            // 🔁 NEW: return updated average
+            // 🔁 Return updated average rating
             var ratingsForShow = _repo.GetAllShowRatings(show_id);
             double averageRating = ratingsForShow.Any()
                 ? ratingsForShow.Average(r => (r.rating ?? 0))
@@ -832,6 +827,7 @@ namespace INTEX.Controllers
                 averageRating = averageRating
             });
         }
+
 
 
         [HttpPost("AddRating")]
@@ -884,6 +880,7 @@ namespace INTEX.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] AppLoginRequest request)
         {
+            var keyString = _configuration["Jwt:Key"];
             var user = _repo.GetUserByEmail(request.Email);
             if (user == null || user.Password != request.Password)
             {
@@ -896,7 +893,7 @@ namespace INTEX.Controllers
         new Claim(ClaimTypes.Email, user.Email)
     };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
