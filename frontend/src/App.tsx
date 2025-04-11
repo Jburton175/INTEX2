@@ -1,7 +1,8 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import MoviesPage from "./pages/MoviesPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
@@ -11,25 +12,32 @@ import CookiePage from "./pages/CookiePolicyPage";
 import AddMovie from "./pages/AddMoviePage";
 import PageDetails from "./pages/PageDetails";
 import SearchResultsPage from "./pages/SearchResultsPage";
-import CorsTestPage from "./pages/CorsTestPage"; // import your test page
+import CorsTestPage from "./pages/CorsTestPage";
+
 import EmailLogger from "./components/EmailLogger";
 import RoleProtectedRoute from "./components/RoleProtectionRoute";
-
 
 function App() {
   return (
     <Router>
       <EmailLogger />
       <div className="App">
-      <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/movies" element={<MoviesPage />} />
-            <Route path="/signin" element={<SignInPage />} />
-            <Route path="/login" element={<SignInPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/privacypolicy" element={<PrivacyPolicyPage />} />
-            
-            <Route
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/movies" element={<MoviesPage />} />
+          <Route path="/signin" element={<SignInPage />} />
+          <Route path="/login" element={<SignInPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/privacypolicy" element={<PrivacyPolicyPage />} />
+          <Route path="/cookie" element={<CookiePage />} />
+          <Route path="/search" element={<SearchResultsPage />} />
+          <Route path="/cors-test" element={<CorsTestPage />} />
+          <Route path="/movie/:show_id" element={<PageDetails />} />
+          <Route path="/update-movie/:show_id" element={<UpdateMovie />} />
+          <Route path="/add-movie" element={<AddMovie />} />
+
+                      <Route
               path="/admin"
               element={
                 <RoleProtectedRoute allowedRoles={["Admin"]}>
@@ -37,16 +45,7 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-          <Route path="/privacy" element={<PrivacyPolicyPage />} />
-
-            <Route path="/update-movie/:show_id" element={<UpdateMovie />} />
-            <Route path="/cookie" element={<CookiePage />} />
-            <Route path="/add-movie" element={<AddMovie />} />
-            <Route path="/movie/:show_id" element={<PageDetails />} />
-            <Route path="/search" element={<SearchResultsPage />} />
-            <Route path="/cors-test" element={<CorsTestPage />} />
-      </Routes>
-
+        </Routes>
       </div>
     </Router>
   );
