@@ -4,11 +4,10 @@ import styles from "./SignInPage.module.css";
 import ExternalNavBar from "../components/ExternalNavBar";
 
 const SignInPage: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [rememberme, setRememberme] = useState<boolean>(false);
-
-  const [error, setError] = useState<string>("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberme, setRememberme] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,13 +21,9 @@ const SignInPage: React.FC = () => {
     }
   };
 
-  // const handleRegisterClick = () => {
-  //   navigate("/signup");
-  // };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(""); // Clear any previous errors
+    setError("");
 
     if (!email || !password) {
       setError("Please fill in all fields.");
@@ -38,8 +33,6 @@ const SignInPage: React.FC = () => {
     const loginUrl = rememberme
       ? "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/login?useCookies=true"
       : "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/login?useSessionCookies=true";
-    //  ? "https://localhost:5000/login?useCookies=true"
-    // : "https://localhost:5000/login?useSessionCookies=true";
 
     try {
       const response = await fetch(loginUrl, {
@@ -49,9 +42,8 @@ const SignInPage: React.FC = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      // Ensure we only parse JSON if there is content
-      let data = null;
       const contentLength = response.headers.get("content-length");
+      let data = null;
       if (contentLength && parseInt(contentLength, 10) > 0) {
         data = await response.json();
       }
@@ -60,41 +52,43 @@ const SignInPage: React.FC = () => {
         throw new Error(data?.message || "Invalid email or password.");
       }
 
-// After receiving and parsing the login response:
-console.log("Login response data:", data);
-if (data && data.userId) {
-  localStorage.setItem("userId", data.userId.toString());
-  console.log("UserId stored in localStorage:", localStorage.getItem("userId"));
-} else {
-  console.error("No userId found in the login response.");
-}
+      if (data?.user_id) {
+        localStorage.setItem("userId", data.user_id.toString());
+      }
 
+      if (data?.token) {
+        localStorage.setItem("authToken", data.token);
+      }
 
+      // 🔥 Role fetch and redirect
+      const userRes = await fetch(
+        "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetCurrentUser",
+        { credentials: "include" }
+      );
 
-    // Optionally, also store the token if you're using it.
-    if (data && data.token) {
-      localStorage.setItem("authToken", data.token);
-    }
+      if (userRes.ok) {
+        const userInfo = await userRes.json();
+        localStorage.setItem("user", JSON.stringify(userInfo));
 
-
-      navigate("/movies");
-    } catch (error: any) {
-      setError(error.message || "Error logging in.");
-      console.error("Fetch attempt failed:", error);
+        if (userInfo.role === "Admin") {
+          navigate("/admin");
+        } else {
+          navigate("/movies");
+        }
+      } else {
+        navigate("/movies"); // fallback
+      }
+    } catch (err: any) {
+      setError(err.message || "Error logging in.");
     }
   };
 
   return (
     <div className={styles.container}>
       <ExternalNavBar />
-      <br />
-      <br />
-      <br />
-      {/* Main Sign In Form */}
       <main className={styles.main}>
         <div className={styles.formContainer}>
           <h1 className={styles.title}>Sign In</h1>
-
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.inputGroup}>
               <input
@@ -107,7 +101,6 @@ if (data && data.userId) {
                 required
               />
             </div>
-
             <div className={styles.inputGroup}>
               <input
                 type="password"
@@ -119,12 +112,10 @@ if (data && data.userId) {
                 required
               />
             </div>
-
             <div className="form-check mb-3">
               <input
                 className="form-check-input"
                 type="checkbox"
-                value=""
                 id="rememberme"
                 name="rememberme"
                 checked={rememberme}
@@ -134,27 +125,19 @@ if (data && data.userId) {
                 Remember password
               </label>
             </div>
-
             <button type="submit" className={styles.signInButton}>
               Sign In
             </button>
-
             <div className={styles.divider}>
               <span className={styles.dividerText}>OR</span>
             </div>
-
             <Link to="/signup" className={styles.signUpLink}>
               Sign Up Now!
             </Link>
           </form>
           {error && <p className="error">{error}</p>}
-          <br />
-          <br />
-          <br />
-          <br />
         </div>
       </main>
-
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
           <div className={styles.footerDivider}></div>

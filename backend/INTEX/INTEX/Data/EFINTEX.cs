@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using INTEX.Controllers;
 using Microsoft.EntityFrameworkCore;
 
 namespace INTEX.Data
@@ -125,6 +126,28 @@ namespace INTEX.Data
                            .Where(hr => hr.user_id == userId)
                            .ToList();
         }
+
+        public IEnumerable<dynamic> GetUserRecommendations(string email)
+        {
+            var recommendations = _context.movies_users
+                .Where(mu => mu.email == email)
+                .Join(
+                    _context.home_recommendations,
+                    mu => mu.user_id,         
+                    hr => hr.user_id,          
+                    (mu, hr) => new           
+                    {
+                        email = mu.email,
+                        user_id = mu.user_id,
+                        show_id = hr.show_id,
+                        title = hr.title,
+                        section = hr.section
+                    })
+                .ToList();
+
+            return recommendations;
+        }
+
         public IEnumerable<movie_recommendations> GetMovieRecommendations()
         {
             return _context.movie_recommendations.ToList();
@@ -157,5 +180,24 @@ namespace INTEX.Data
         {
             _context.SaveChanges();
         }
+
+        public User? GetUserByEmail(string email)
+        {
+            // Query the movies_users DbSet for the user
+            var movieUser = _context.movies_users.FirstOrDefault(u => u.email == email);
+            if (movieUser == null)
+                return null;
+
+            // Map movies_users to the User type
+            return new User
+            {
+                Id = movieUser.user_id,
+                Email = movieUser.email ?? string.Empty,
+                Password = movieUser.password ?? string.Empty  // Note: In production, store hashed passwords!
+            };
+        }
+
+
+
     }
 }

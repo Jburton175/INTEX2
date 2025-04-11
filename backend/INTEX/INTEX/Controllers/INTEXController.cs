@@ -1,11 +1,26 @@
 ﻿using INTEX.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+
+
+public class RatingUpdateRequest
+{
+    public int user_id { get; set; }
+    public string show_id { get; set; } = string.Empty;
+    public int Rating { get; set; }
+}
+
 
 
 
@@ -16,10 +31,22 @@ namespace INTEX.Controllers
     public class INTEXController : ControllerBase
     {
         private readonly INTEXInterface _repo;
-        public INTEXController(INTEXInterface repo)
+        private readonly IConfiguration _configuration;
+        private readonly UserManager<IdentityUser> _userManager;
+
+
+
+        public INTEXController(
+            INTEXInterface repo,
+            IConfiguration configuration,
+            UserManager<IdentityUser> userManager
+        )
         {
             _repo = repo;
+            _configuration = configuration;
+            _userManager = userManager; // ✅ fixed!
         }
+
 
 
         // the main API to fetch all movies.
@@ -87,7 +114,7 @@ namespace INTEX.Controllers
 
 
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("AddMovie")]
         public IActionResult AddMovie([FromBody] movies_titles movieData)
         {
@@ -151,6 +178,7 @@ namespace INTEX.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("UpdateMovie/{show_id}")]
         public IActionResult UpdateMovie(string show_id, [FromBody] movies_titles updateMovie)
         {
@@ -214,6 +242,7 @@ namespace INTEX.Controllers
             return Ok(existingMovie);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("DeleteMovie/{show_id}")]
         public IActionResult DeleteBook(string show_id)
         {
@@ -313,7 +342,8 @@ namespace INTEX.Controllers
 
             var matchedTitles = _repo.GetMovies()
                 .Where(m => m.title != null && m.title.Contains(query, StringComparison.OrdinalIgnoreCase))
-                .Select(m => new {
+                .Select(m => new
+                {
                     title = m.title ?? string.Empty,
                     m.show_id
                 })
@@ -713,6 +743,25 @@ namespace INTEX.Controllers
             }
         }
 
+        [HttpGet("getUserId")]
+        [AllowAnonymous] // Set as needed (you might want to secure this endpoint)
+        public IActionResult GetUserId([FromQuery] string email)
+        {
+            // Log for debugging purposes
+            Console.WriteLine("GetUserId called for email: " + email);
+
+            var user = _repo.GetUserByEmail(email);
+            if (user == null)
+            {
+                return NotFound(new { error = "User not found." });
+            }
+            return Ok(new { user_id = user.Id });
+        }
+
+
+
+
+
 
 
         [HttpGet("GetRatings")]
@@ -739,75 +788,141 @@ namespace INTEX.Controllers
                 averageRating = averageRating
             });
         }
-
-
-        /// <summary>
-        /// PUT INTEX/MoviesRatings/UpdateRating/{show_id}
-        /// Updates or creates a rating for the logged-in user on the specified show.
-        /// The new rating is passed in the request body as an integer.
-        /// </summary>
         [HttpPut("UpdateRating/{show_id}")]
-        [Authorize]
-        public IActionResult UpdateRating(string show_id, [FromBody] int rating)
+        public IActionResult UpdateRating(string show_id, [FromBody] RatingUpdateRequest request)
         {
-            // Retrieve the user's id from claims (assuming the user id is stored in ClaimTypes.NameIdentifier)
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-            {
-                return Unauthorized("User not found.");
-            }
-            if (!int.TryParse(userIdClaim.Value, out int userId))
-            {
-                return Unauthorized("Invalid user id.");
-            }
+            if (request == null || request.user_id <= 0)
+                return BadRequest("Invalid request body");
 
-            // Check if a rating already exists for this user and show using a repository method GetRating
-            var existingRating = _repo.GetRatingById(userId, show_id);
+            var existingRating = _repo.GetRatingById(request.user_id, show_id);
             if (existingRating == null)
             {
-                // Create a new rating record
                 var newRating = new movies_ratings
                 {
-                    user_id = userId,
+                    user_id = request.user_id,
                     show_id = show_id,
-                    rating = rating
+                    rating = request.Rating
                 };
-                _repo.AddRating(newRating);  // Your AddRating method accepts a movies_ratings object
+                _repo.AddRating(newRating);
             }
             else
             {
-                // Update the existing rating
-                existingRating.rating = rating;
-                _repo.UpdateRating(existingRating);  // Ensure you have an implementation for updating the record
+                existingRating.rating = request.Rating;
+                _repo.UpdateRating(existingRating);
             }
 
-            _repo.SaveChanges(); // Save changes to the database
-
+            _repo.SaveChanges();
             return Ok(new { message = "Rating updated successfully." });
         }
 
+
         [HttpPost("AddRating")]
-        [Authorize]
-        public IActionResult AddRating([FromBody] movies_ratings ratingModel)
+        public IActionResult AddRating([FromBody] RatingUpdateRequest request)
         {
-            // Retrieve the current user's ID from the Claims (assumes it's stored in ClaimTypes.NameIdentifier)
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
+            if (request == null || request.user_id <= 0)
+                return BadRequest("Invalid request body");
+
+            // Check if the rating already exists
+            var existing = _repo.GetRatingById(request.user_id, request.show_id);
+            if (existing != null)
             {
-                return Unauthorized("User not found.");
+                return BadRequest("Rating already exists. Use PUT to update.");
             }
-            if (!int.TryParse(userIdClaim.Value, out int userId))
+
+            var newRating = new movies_ratings
             {
-                return Unauthorized("Invalid user id.");
+                user_id = request.user_id,
+                show_id = request.show_id,
+                rating = request.Rating
+            };
+
+            _repo.AddRating(newRating);
+            _repo.SaveChanges();
+
+            return Ok(new { message = "Rating added successfully." });
+        }
+
+        [HttpGet("GetCurrentUser")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Ok(new
+            {
+                Email = user.Email,
+                Role = roles.FirstOrDefault() ?? "User" // fallback if they have no role
+            });
+        }
+
+
+
+
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] AppLoginRequest request)
+        {
+            var user = _repo.GetUserByEmail(request.Email);
+            if (user == null || user.Password != request.Password)
+            {
+                return Unauthorized("Invalid email or password.");
             }
 
-            // Overwrite the user_id in ratingModel with the current user's ID
-            ratingModel.user_id = userId;
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email)
+    };
 
-            // Optionally validate the show_id and ratingModel (e.g. ensure ratingModel.rating is within an acceptable range)
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: creds
+            );
 
-            // Add the new rating using your repository
-            _repo.AddRating(ratingModel);
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            // 🔥 Ensure this is what gets returned
+            return Ok(new
+            {
+                accessToken = tokenString,
+                tokenType = "Bearer",
+                userId = user.Id,
+                expiresIn = 3600
+            });
+        }
+    }
+
+
+        public class AppLoginRequest
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+
+
+    public class User
+        {
+            public int Id { get; set; }
+            public string Email { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty; // In production, store hashed passwords!
+        }
+    
+};
+
+
+
+
+
+
+
+
 
             // Save the changes to the database
             _repo.SaveChanges();
@@ -816,6 +931,16 @@ namespace INTEX.Controllers
             return Ok(new { message = "Rating added successfully." });
         }
 
+        [HttpGet("GetUserRecommendations")]
+        public IActionResult GetUserRecommendations([FromQuery] string email)
+        {
 
+            var movie = _repo.GetUserRecommendations(email);
+
+            if (movie == null)
+                return NotFound();
+
+            return Ok(movie);
+        }
     }
 }

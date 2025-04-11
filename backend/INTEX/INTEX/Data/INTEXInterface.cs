@@ -1,4 +1,6 @@
-﻿namespace INTEX.Data
+﻿using INTEX.Controllers;
+
+namespace INTEX.Data
 {
     public interface INTEXInterface
     {
@@ -28,8 +30,14 @@
         //home recommendations
         IEnumerable<movie_recommendations> GetMovieRecommendations();
         IEnumerable<movie_recommendations> GetMovieRecommendationsByID(string movieId);
+
+
+        IEnumerable<dynamic> GetUserRecommendations(string email);
         int GetMaxShowIdNumber();
 
         void SaveChanges();
+
+        User? GetUserByEmail(string email);
+
     }
 }
