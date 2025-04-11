@@ -132,9 +132,9 @@ namespace INTEX.Data
                 .Where(mu => mu.email == email)
                 .Join(
                     _context.home_recommendations,
-                    mu => mu.user_id,         
-                    hr => hr.user_id,          
-                    (mu, hr) => new           
+                    mu => mu.user_id,
+                    hr => hr.user_id,
+                    (mu, hr) => new
                     {
                         email = mu.email,
                         user_id = mu.user_id,
@@ -142,10 +142,18 @@ namespace INTEX.Data
                         title = hr.title,
                         section = hr.section
                     })
+                .AsEnumerable() // Move filtering and sorting to memory
+                .Where(hr =>
+                    hr.section != null &&
+                    (hr.section.StartsWith("recommended", StringComparison.OrdinalIgnoreCase)
+                     || hr.section == "Top Picks for You"))
+                .OrderBy(hr => hr.section == "Top Picks for You" ? 0 : 1) // Top Picks goes first
                 .ToList();
 
             return recommendations;
         }
+
+
 
         public IEnumerable<movie_recommendations> GetMovieRecommendations()
         {
