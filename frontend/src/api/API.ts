@@ -5,6 +5,7 @@ import { Recommendation } from "../types/recommendation";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../components/AuthorizeView";
 
+// implement crud for movies
 interface FetchMoviesResponse {
   movies: Movies[];
   totalNumMovies: number;
@@ -15,9 +16,9 @@ interface FetchSingleMovieResponse {
 }
 
 const API_URL =
-  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
+  // "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
 
-// "https://localhost:5000/INTEX";
+  "https://localhost:5000/INTEX";
 
 export const fetchMovies = async (
   pageSize: number,
@@ -155,56 +156,30 @@ export function useRecommendations() {
 
     const fetchRecommendations = async () => {
       try {
-        setLoading(true);
-        setError(null);
-
-        // First try with user's email
         const res = await fetch(
           `${API_URL}/GetUserRecommendations?email=${encodeURIComponent(user.email)}`
         );
+        if (!res.ok) throw new Error("Failed to fetch recommendations");
 
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({}));
-          console.error("Primary fetch error:", errorData);
+        const data = await res.json();
 
+        if (data.length === 0) {
           // Fallback to default user's recommendations
           const fallbackRes = await fetch(
             `${API_URL}/GetUserRecommendations?email=${encodeURIComponent("callahanmichael@gmail.com")}`
           );
-
-          if (!fallbackRes.ok) {
-            const fallbackError = await fallbackRes.json().catch(() => ({}));
-            throw new Error(
-              `Failed to fetch recommendations (user: ${res.status}) ` +
-                `and fallback (fallback: ${fallbackRes.status}). ` +
-                `${errorData.message || ""} ${fallbackError.message || ""}`
-            );
-          }
+          if (!fallbackRes.ok)
+            throw new Error("Failed to fetch fallback recommendations");
 
           const fallbackData = await fallbackRes.json();
           setRecommendations(fallbackData);
         } else {
-          const data = await res.json();
-          setRecommendations(data.length ? data : await fetchFallback());
+          setRecommendations(data);
         }
       } catch (err: any) {
         setError(err.message);
-        console.error("Fetch recommendations error:", err);
       } finally {
         setLoading(false);
-      }
-    };
-
-    const fetchFallback = async () => {
-      try {
-        const fallbackRes = await fetch(
-          `${API_URL}/GetUserRecommendations?email=${encodeURIComponent("callahanmichael@gmail.com")}`
-        );
-        if (!fallbackRes.ok) throw new Error("Fallback data unavailable");
-        return await fallbackRes.json();
-      } catch (fallbackErr) {
-        console.error("Fallback fetch failed:", fallbackErr);
-        return []; // Return empty array instead of failing completely
       }
     };
 
