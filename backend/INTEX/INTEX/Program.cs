@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers(options =>
-{
+{ 
     options.Filters.Add(new Microsoft.AspNetCore.Mvc.RequireHttpsAttribute());
 });
 
@@ -20,19 +20,23 @@ builder.Services.AddDbContext<INTEXContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("IntexConnection")));
 
 // Add Identity with strong password settings
-builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
+    // Password configuration
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
     options.Password.RequiredLength = 15;
     options.Password.RequiredUniqueChars = 3;
 
+    // Claims identity settings
     options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
     options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Email;
 })
-.AddRoles<IdentityRole>()
-.AddEntityFrameworkStores<AuthDBContext>();
+.AddEntityFrameworkStores<AuthDBContext>() // or ApplicationDbContext if that's your main one
+.AddDefaultTokenProviders(); // Needed for password resets, email confirmations, etc.
+
+
 
 // db for authorization
 builder.Services.AddDbContext<AuthDBContext>(options =>
@@ -72,6 +76,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/login";
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
+
+builder.Services.AddSingleton<IEmailSender<IdentityUser>, NoOpEmailSender<IdentityUser>>();
+
 
 var app = builder.Build();
 

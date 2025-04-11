@@ -108,7 +108,7 @@ const PageDetails: React.FC = () => {
     if (show_id) {
       // Fetch main movie data.
       fetch(
-        `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovie?show_id=${show_id}`
+        `https://localhost:5000/INTEX/GetOneMovie?show_id=${show_id}`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -122,7 +122,7 @@ const PageDetails: React.FC = () => {
 
       // Fetch recommendations.
       fetch(
-        `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovieRecommendation?show_id=${show_id}`
+        `https://localhost:5000/INTEX/GetOneMovieRecommendation?show_id=${show_id}`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -144,7 +144,7 @@ const PageDetails: React.FC = () => {
   const fetchReplacementMovie = async (): Promise<Movie | null> => {
     try {
       const res = await fetch(
-        "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetRandomMovie"
+        "https://localhost:5000/INTEX/GetRandomMovie"
       );
       if (!res.ok) return null;
 

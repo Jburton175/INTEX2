@@ -261,27 +261,49 @@
   margin-left: 1rem;
   margin-top: 12px; /* Adjust the value as needed */
 }
-.movieButton {
+
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+/* Logout button styles (mirroring movies button) */
+.logout {
   margin-left: 1rem;
   padding: 0.5rem 1rem;
   background-color: #cc0000; /* Maroon */
-  color: #ffffff !important; /* Force white text */
+  color: #ffffff; /* White text */
   border: none;
   border-radius: 12px;
   font-weight: 600;
   font-size: 1rem;
-  text-decoration: none !important; /* Remove underline */
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.logout:hover {
+  background-color: #800000; /* Darker red on hover */
+  transform: scale(1.05);
+}
+
+/* Movies button (if needed, you can keep your existing styles) */
+.movieButton {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #cc0000; /* Maroon */
+  color: #ffffff !important;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none !important;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .movieButton:hover {
-  background-color: #800000; /* Red on hover */
-  color: #ffffff !important; /* Ensure text stays white on hover */
-  text-decoration: none !important;
+  background-color: #800000;
   transform: scale(1.05);
 }
-a {
-  text-decoration: none;
-  color: inherit;
-}
+

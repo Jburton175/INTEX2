@@ -4,8 +4,10 @@
     {
         // ratings
         IEnumerable<movies_ratings> GetRatings();
-        movies_ratings? GetRatingById(int ratingId);
+        movies_ratings? GetRatingById(int userId, string show_id);
+        IEnumerable<movies_ratings> GetAllShowRatings(string show_id);
         void AddRating(movies_ratings rating);
+        void UpdateRating(movies_ratings rating);
 
         // users
         IEnumerable<movies_users> GetUsers();
@@ -28,5 +30,6 @@
         IEnumerable<movie_recommendations> GetMovieRecommendationsByID(string movieId);
         int GetMaxShowIdNumber();
 
+        void SaveChanges();
     }
 }

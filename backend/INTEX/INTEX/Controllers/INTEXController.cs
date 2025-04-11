@@ -1,8 +1,10 @@
 ﻿using INTEX.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 
@@ -710,6 +712,105 @@ namespace INTEX.Controllers
                 return StatusCode(500, $"Error retrieving max show ID number: {ex.Message}");
             }
         }
+
+
+
+
+        [HttpGet("GetRatings")]
+        public IActionResult GetRatings([FromQuery] string show_id, [FromQuery] int user_id)
+        {
+            // Retrieve the user's rating for the specified show.
+            // If no record is found, default to 0.
+            var userRatingRecord = _repo.GetRatingById(user_id, show_id);
+            int userRating = userRatingRecord?.rating ?? 0;
+
+            // Retrieve all ratings for the specified show.
+            var ratingsForShow = _repo.GetAllShowRatings(show_id);
+
+            // Return both values in a combined JSON object.
+            return Ok(new
+            {
+                userRating = userRating,
+                allRatings = ratingsForShow
+            });
+        }
+
+
+        /// <summary>
+        /// PUT INTEX/MoviesRatings/UpdateRating/{show_id}
+        /// Updates or creates a rating for the logged-in user on the specified show.
+        /// The new rating is passed in the request body as an integer.
+        /// </summary>
+        [HttpPut("UpdateRating/{show_id}")]
+        [Authorize]
+        public IActionResult UpdateRating(string show_id, [FromBody] int rating)
+        {
+            // Retrieve the user's id from claims (assuming the user id is stored in ClaimTypes.NameIdentifier)
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not found.");
+            }
+            if (!int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return Unauthorized("Invalid user id.");
+            }
+
+            // Check if a rating already exists for this user and show using a repository method GetRating
+            var existingRating = _repo.GetRatingById(userId, show_id);
+            if (existingRating == null)
+            {
+                // Create a new rating record
+                var newRating = new movies_ratings
+                {
+                    user_id = userId,
+                    show_id = show_id,
+                    rating = rating
+                };
+                _repo.AddRating(newRating);  // Your AddRating method accepts a movies_ratings object
+            }
+            else
+            {
+                // Update the existing rating
+                existingRating.rating = rating;
+                _repo.UpdateRating(existingRating);  // Ensure you have an implementation for updating the record
+            }
+
+            _repo.SaveChanges(); // Save changes to the database
+
+            return Ok(new { message = "Rating updated successfully." });
+        }
+
+        [HttpPost("AddRating")]
+        [Authorize]
+        public IActionResult AddRating([FromBody] movies_ratings ratingModel)
+        {
+            // Retrieve the current user's ID from the Claims (assumes it's stored in ClaimTypes.NameIdentifier)
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not found.");
+            }
+            if (!int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return Unauthorized("Invalid user id.");
+            }
+
+            // Overwrite the user_id in ratingModel with the current user's ID
+            ratingModel.user_id = userId;
+
+            // Optionally validate the show_id and ratingModel (e.g. ensure ratingModel.rating is within an acceptable range)
+
+            // Add the new rating using your repository
+            _repo.AddRating(ratingModel);
+
+            // Save the changes to the database
+            _repo.SaveChanges();
+
+            // Return a success response
+            return Ok(new { message = "Rating added successfully." });
+        }
+
 
     }
 }
