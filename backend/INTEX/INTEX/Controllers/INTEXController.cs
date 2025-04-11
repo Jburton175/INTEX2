@@ -819,7 +819,18 @@ namespace INTEX.Controllers
             }
 
             _repo.SaveChanges();
-            return Ok(new { message = "Rating updated successfully." });
+
+            // 🔁 NEW: return updated average
+            var ratingsForShow = _repo.GetAllShowRatings(show_id);
+            double averageRating = ratingsForShow.Any()
+                ? ratingsForShow.Average(r => (r.rating ?? 0))
+                : 0;
+
+            return Ok(new
+            {
+                message = "Rating updated successfully.",
+                averageRating = averageRating
+            });
         }
 
 
