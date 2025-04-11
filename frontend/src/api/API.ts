@@ -5,7 +5,6 @@ import { Recommendation } from "../types/recommendation";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../components/AuthorizeView";
 
-// implement crud for movies
 interface FetchMoviesResponse {
   movies: Movies[];
   totalNumMovies: number;
@@ -15,9 +14,7 @@ interface FetchSingleMovieResponse {
   movie: Movies | null;
 }
 
-const API_URL =   "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
-
-  "https://localhost:5000/INTEX";
+const API_URL = "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
 
 export const fetchMovies = async (
   pageSize: number,
@@ -144,9 +141,7 @@ export const deleteUser = async (userId: number): Promise<void> => {
 
 export function useRecommendations() {
   const user = useContext(UserContext);
-  const [recommendations, setRecommendations] = useState<
-    Recommendation[] | null
-  >(null);
+  const [recommendations, setRecommendations] = useState<Recommendation[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
