@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import "./MovieRating.css"
 
-
-
 interface MovieRatingProps {
   show_id: string;
   movieId: string;
@@ -22,39 +20,35 @@ const MovieRating: React.FC<MovieRatingProps> = ({
   const [averageRating, setAverageRating] = useState(initialAverageRating);
   const [isRatingLoading, setIsRatingLoading] = useState(false);
 
-  const fetchAverageRating = async () => {
-    try {
-      const response = await fetch(
-        `https://localhost:5000/INTEX/ratings/${movieId}/average`
-      );
-      const data = await response.json();
-      setAverageRating(data.average_rating);
-    } catch (error) {
-      console.error('Error fetching average rating:', error);
-    }
-  };
-
-  const fetchUserRating = async () => {
+  // This function fetches both the current user's rating and the average rating.
+  const fetchRatings = async () => {
     const token = localStorage.getItem('authToken');
-    if (!token) return;
-
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      console.error('User ID not found in localStorage.');
+      return;
+    }
+    
     try {
       const response = await fetch(
-        `https://localhost:5000/INTEX/ratings/${movieId}`,
-        {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }
+        `https://localhost:5000/INTEX/GetRatings?show_id=${movieId}&user_id=${userId}`,
+        { headers: token ? { 'Authorization': `Bearer ${token}` } : {} }
       );
       
       if (response.ok) {
         const data = await response.json();
-        setUserRating(data.rating);
+        // data is expected to have { userRating: number, averageRating: number }
+        setUserRating(data.userRating);
+        setAverageRating(data.averageRating);
+      } else {
+        console.error('Error fetching ratings:', response.statusText);
       }
     } catch (error) {
-      console.error('Error fetching user rating:', error);
+      console.error('Error fetching ratings:', error);
     }
   };
 
+  // This function is used to either add or update the user's rating.
   const handleRateMovie = async (rating: number) => {
     const token = localStorage.getItem('authToken');
     if (!token) {
@@ -64,6 +58,7 @@ const MovieRating: React.FC<MovieRatingProps> = ({
 
     try {
       setIsRatingLoading(true);
+      // Use POST for creating a new rating and PATCH for updating an existing one
       const method = userRating === 0 ? 'POST' : 'PATCH';
       
       const response = await fetch(`https://localhost:5000/INTEX/ratings`, {
@@ -79,10 +74,12 @@ const MovieRating: React.FC<MovieRatingProps> = ({
       });
 
       if (!response.ok) throw new Error('Rating failed');
-      
+
+      // Update the local user rating and invoke any provided callback.
       setUserRating(rating);
       onRatingUpdate?.(rating);
-      await fetchAverageRating();
+      // Re-fetch ratings to update the average rating as well.
+      await fetchRatings();
     } catch (error) {
       console.error('Rating error:', error);
       alert('Failed to submit rating');
@@ -91,9 +88,9 @@ const MovieRating: React.FC<MovieRatingProps> = ({
     }
   };
 
+  // When the component mounts or when the movieId changes, fetch the ratings.
   useEffect(() => {
-    if (!initialUserRating) fetchUserRating();
-    if (!initialAverageRating) fetchAverageRating();
+    fetchRatings();
   }, [movieId]);
 
   const renderStars = (rating: number, interactive: boolean) => (
@@ -101,9 +98,7 @@ const MovieRating: React.FC<MovieRatingProps> = ({
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
-          className={`star ${star <= rating ? 'filled' : ''} ${
-            interactive ? 'interactive' : ''
-          }`}
+          className={`star ${star <= rating ? 'filled' : ''} ${interactive ? 'interactive' : ''}`}
           onClick={interactive ? () => handleRateMovie(star) : undefined}
           disabled={isRatingLoading || !interactive}
           aria-label={`Rate ${star} star${star !== 1 ? 's' : ''}`}
