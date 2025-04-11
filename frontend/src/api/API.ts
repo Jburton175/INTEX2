@@ -5,6 +5,7 @@ import { Recommendation } from "../types/recommendation";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../components/AuthorizeView";
 
+// implement crud for movies
 interface FetchMoviesResponse {
   movies: Movies[];
   totalNumMovies: number;

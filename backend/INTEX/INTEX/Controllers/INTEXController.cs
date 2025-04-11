@@ -112,7 +112,7 @@ namespace INTEX.Controllers
 
 
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPost("AddMovie")]
         public IActionResult AddMovie([FromBody] movies_titles movieData)
         {
@@ -176,7 +176,7 @@ namespace INTEX.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPut("UpdateMovie/{show_id}")]
         public IActionResult UpdateMovie(string show_id, [FromBody] movies_titles updateMovie)
         {
@@ -240,7 +240,7 @@ namespace INTEX.Controllers
             return Ok(existingMovie);
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpDelete("DeleteMovie/{show_id}")]
         public IActionResult DeleteBook(string show_id)
         {
