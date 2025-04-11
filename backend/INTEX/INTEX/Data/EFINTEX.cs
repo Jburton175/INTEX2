@@ -30,6 +30,25 @@ namespace INTEX.Data
             _context.SaveChanges();
         }
 
+        public IEnumerable<movies_ratings> GetAllShowRatings(string show_id)
+        {
+            return _context.movies_ratings
+                .Where(r => r.show_id == show_id)
+                .ToList();
+        }
+
+        public movies_ratings? GetRatingById(int userId, string show_id)
+        {
+            return _context.movies_ratings
+                .FirstOrDefault(r => r.user_id == userId && r.show_id == show_id);
+        }
+        public void UpdateRating(movies_ratings rating)
+        {
+            _context.movies_ratings.Update(rating);
+            _context.SaveChanges();
+        }
+
+
         // users
         public IEnumerable<movies_users> GetUsers()
         {
@@ -79,11 +98,7 @@ namespace INTEX.Data
             _context.SaveChanges();
         }
 
-        public void 
-            
-            
-            
-            UpdateMovie(movies_titles movie)
+        public void UpdateMovie(movies_titles movie)
         {
             _context.movies_titles.Update(movie);
             _context.SaveChanges();
@@ -136,6 +151,11 @@ namespace INTEX.Data
                 .Select(id => int.Parse(id.Substring(1)))
                 .DefaultIfEmpty(0)
                 .Max();
+        }
+
+        public void SaveChanges()
+        {
+            _context.SaveChanges();
         }
     }
 }
