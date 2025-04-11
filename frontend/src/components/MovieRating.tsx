@@ -18,7 +18,7 @@ const MovieRating: React.FC<MovieRatingProps> = ({ movieId, show_id, onRatingUpd
 
     try {
       const response = await fetch(
-        `https://localhost:5000/INTEX/GetRatings?show_id=${movieId}&user_id=${userId}`
+        `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetRatings?show_id=${movieId}&user_id=${userId}`
       );
 
       if (response.ok) {
@@ -39,7 +39,7 @@ const MovieRating: React.FC<MovieRatingProps> = ({ movieId, show_id, onRatingUpd
   
     try {
       setIsRatingLoading(true);
-      const endpoint = `https://localhost:5000/INTEX/UpdateRating/${movieId}`;
+      const endpoint = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/UpdateRating/${movieId}`;
   
       const body = JSON.stringify({
         show_id: movieId,

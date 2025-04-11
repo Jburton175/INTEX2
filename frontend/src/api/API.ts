@@ -12,7 +12,7 @@ interface FetchSingleMovieResponse {
   movie: Movies | null;
 }
 
-const API_URL =   "https://localhost:5000/INTEX";
+const API_URL =   "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
 
 // "https://localhost:5000/INTEX";
 

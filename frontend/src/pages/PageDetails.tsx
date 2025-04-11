@@ -108,7 +108,7 @@ const PageDetails: React.FC = () => {
     if (show_id) {
       // Fetch main movie data.
       fetch(
-        `https://localhost:5000/INTEX/GetOneMovie?show_id=${show_id}`
+        `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovie?show_id=${show_id}`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -122,7 +122,7 @@ const PageDetails: React.FC = () => {
 
       // Fetch recommendations.
       fetch(
-        `https://localhost:5000/INTEX/GetOneMovieRecommendation?show_id=${show_id}`
+        `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovieRecommendation?show_id=${show_id}`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -144,7 +144,7 @@ const PageDetails: React.FC = () => {
   const fetchReplacementMovie = async (): Promise<Movie | null> => {
     try {
       const res = await fetch(
-        "https://localhost:5000/INTEX/GetRandomMovie"
+        "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetRandomMovie"
       );
       if (!res.ok) return null;
 
@@ -211,19 +211,26 @@ const PageDetails: React.FC = () => {
           </ul>
           <button onClick={() => navigate("/movies")}>Back to Home</button>
         </div>
-        <MovieRating
-          show_id={movie.show_id}
-          movieId={movie.show_id}
-          initialUserRating={0} // Change if you have real data
-          initialAverageRating={0} // Change if you have real data
-          onRatingUpdate={(newRating) => {
-            // Update local state if desired
-            setMovie((prev) =>
-              prev ? { ...prev, user_rating: newRating } : null
-            );
-          }}
-        />
-        {movie?.title && <ShareMovieButton title={movie.title} />}
+        <div className={styles.ratingShareGroup}>
+  <MovieRating
+    show_id={movie.show_id}
+    movieId={movie.show_id}
+    initialUserRating={0}
+    initialAverageRating={0}
+    onRatingUpdate={(newRating) => {
+      setMovie((prev) =>
+        prev ? { ...prev, user_rating: newRating } : null
+      );
+    }}
+  />
+  {movie?.title && <ShareMovieButton title={movie.title} />}
+</div>
+
+       <div style={{ marginTop: "0.5rem" }}>
+       <div className={styles.shareButtonWrapper}>
+</div>
+</div>
+
 
 
       </div>

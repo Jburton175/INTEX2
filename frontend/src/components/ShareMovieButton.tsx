@@ -8,16 +8,12 @@ interface ShareMovieButtonProps {
 
 const ShareMovieButton: React.FC<ShareMovieButtonProps> = ({ title }) => {
   const mailSubject = `Check out this movie: ${title}`;
-  const mailBody = `Hey, I found this movie called "${title}" and thought you might like it!
+  const mailBody = `Hey, I found this movie called "${title}" and thought you might like it!\n\nLet me know what you think.`;
 
-Let me know what you think.`;
-
-  const mailtoLink = `mailto:?subject=${encodeURIComponent(
-    mailSubject
-  )}&body=${encodeURIComponent(mailBody)}`;
+  const mailtoLink = `mailto:?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
 
   return (
-    <a href={mailtoLink} className={styles.shareButton}>
+    <a href={mailtoLink} className={styles.shareButton} title="Share via Email">
       <Share2 className={styles.icon} />
       Share
     </a>

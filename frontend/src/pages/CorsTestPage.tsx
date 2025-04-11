@@ -11,7 +11,7 @@ interface FetchResult {
 const CorsTestPage: React.FC = () => {
   // Default endpoint to test (update as needed)
   const [endpoint, setEndpoint] = useState<string>(
-    "https://localhost:5000/INTEX"
+    "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX"
   );
   const [method, setMethod] = useState<string>("GET");
   const [body, setBody] = useState<string>("");

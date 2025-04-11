@@ -32,8 +32,8 @@ const SignInPage: React.FC = () => {
   
     // Use your production API endpoint or local endpoint as needed.
     const loginUrl = rememberme
-      ? "https://localhost:5000/login?useCookies=true"
-      : "https://localhost:5000/login?useSessionCookies=true";
+      ? "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/login?useCookies=true"
+      : "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/login?useSessionCookies=true";
   
     try {
       console.log("Sending login request to:", loginUrl);
