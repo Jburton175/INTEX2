@@ -53,38 +53,42 @@ const MovieRating: React.FC<MovieRatingProps> = ({ movieId, show_id, onRatingUpd
       console.warn("🚫 No userId found in localStorage. Cannot submit rating.");
       return;
     }
-
+  
     const endpoint = `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/UpdateRating/${movieId}`;
     const body = JSON.stringify({
       show_id: movieId,
       rating,
       user_id: parseInt(userId),
     });
-
+  
     console.groupCollapsed(`⭐ handleRateMovie(${rating}) for show_id: ${movieId}`);
     try {
       setIsRatingLoading(true);
       console.log("📤 Submitting rating to:", endpoint);
       console.log("📦 Payload:", body);
-
+  
       const response = await fetch(endpoint, {
         method: "PUT",
-        credentials: "include", // ✅ Auth cookie
+        credentials: "include", // Important for auth/session cookie
         headers: { "Content-Type": "application/json" },
         body,
       });
-
+  
       console.log("📬 Response status:", response.status);
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`❌ PUT failed (Status: ${response.status})`, errorText);
         return;
       }
-
+  
       console.log("✅ Rating submitted successfully.");
       setUserRating(rating);
-      await fetchRatings();
-
+  
+      // ⚡ Optimistically update average (optional)
+      // setAverageRating((prev) => (prev + rating) / 2); <-- not accurate, so we'll refetch
+  
+      await fetchRatings(); // ✅ Get latest average
+  
       if (onRatingUpdate) {
         onRatingUpdate(rating);
       }
@@ -95,7 +99,7 @@ const MovieRating: React.FC<MovieRatingProps> = ({ movieId, show_id, onRatingUpd
       console.groupEnd();
     }
   };
-
+  
   const handleRemoveRating = async () => {
     console.info("🧹 Removing user rating by setting to 0...");
     await handleRateMovie(0);

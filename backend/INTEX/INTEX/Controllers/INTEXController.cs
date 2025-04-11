@@ -790,12 +790,7 @@ namespace INTEX.Controllers
         }
         [HttpPut("UpdateRating/{show_id}")]
         public IActionResult UpdateRating(string show_id, [FromBody] RatingUpdateRequest request)
-
-
         {
-
-            Console.WriteLine($"PUT UpdateRating hit with show_id={show_id}, user_id={request.user_id}, rating={request.Rating}");
-
             if (request == null || request.user_id <= 0)
                 return BadRequest("Invalid request body");
 
@@ -817,7 +812,18 @@ namespace INTEX.Controllers
             }
 
             _repo.SaveChanges();
-            return Ok(new { message = "Rating updated successfully." });
+
+            // 🔁 NEW: return updated average
+            var ratingsForShow = _repo.GetAllShowRatings(show_id);
+            double averageRating = ratingsForShow.Any()
+                ? ratingsForShow.Average(r => (r.rating ?? 0))
+                : 0;
+
+            return Ok(new
+            {
+                message = "Rating updated successfully.",
+                averageRating = averageRating
+            });
         }
 
 
