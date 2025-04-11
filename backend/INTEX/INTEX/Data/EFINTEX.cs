@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using INTEX.Controllers;
 using Microsoft.EntityFrameworkCore;
 
 namespace INTEX.Data
@@ -187,5 +188,24 @@ namespace INTEX.Data
         {
             _context.SaveChanges();
         }
+
+        public User? GetUserByEmail(string email)
+        {
+            // Query the movies_users DbSet for the user
+            var movieUser = _context.movies_users.FirstOrDefault(u => u.email == email);
+            if (movieUser == null)
+                return null;
+
+            // Map movies_users to the User type
+            return new User
+            {
+                Id = movieUser.user_id,
+                Email = movieUser.email ?? string.Empty,
+                Password = movieUser.password ?? string.Empty  // Note: In production, store hashed passwords!
+            };
+        }
+
+
+
     }
 }

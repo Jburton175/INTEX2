@@ -94,6 +94,7 @@ const AdminPage: React.FC = () => {
   if (movieError) return <p className="text-red-500">Error: {movieError}</p>;
 
   return (
+    
     <AuthorizeView>
       <div className={styles.adminPage}>
         {/* {editingMovies && (

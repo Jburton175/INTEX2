@@ -18,6 +18,8 @@ interface MovieData {
   rating?: string;
   duration?: string;
   description?: string;
+  user_rating?: number;
+  avg_rating?: number;
 
   // Genres
   Action?: number;
@@ -119,39 +121,55 @@ const PageDetails: React.FC = () => {
   };
 
   useEffect(() => {
-    if (show_id) {
-      // Fetch main movie data.
-      fetch(
-        `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovie?show_id=${show_id}`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          setMovie(data);
-          setLoadingMovie(false);
-        })
-        .catch((err) => {
-          console.error("Error fetching movie:", err);
-          setLoadingMovie(false);
-        });
-
-      // Fetch recommendations.
-      fetch(
-        `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovieRecommendation?show_id=${show_id}`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          setRecommendations(data);
-          setLoadingRec(false);
-        })
-        .catch((err) => {
-          console.error("Error fetching recommendations:", err);
-          setLoadingRec(false);
-        });
-    }
+    if (!show_id) return;
+  
+    const userId = localStorage.getItem("userId");
+  
+    // 1. Fetch main movie details
+    fetch(`https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovie?show_id=${show_id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setMovie(data);
+        setLoadingMovie(false);
+  
+        // 2. Fetch rating info
+        if (userId) {
+          fetch(`https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetRatings?show_id=${show_id}&user_id=${userId}`)
+            .then((res) => res.json())
+            .then((ratingData) => {
+              const avgRating = ratingData.allRatings?.length
+                ? ratingData.allRatings.reduce((a: number, b: number) => a + b, 0) / ratingData.allRatings.length
+                : 0;
+  
+              setMovie((prev) =>
+                prev ? { ...prev, user_rating: ratingData.userRating, avg_rating: avgRating } : prev
+              );
+            })
+            .catch((err) => console.error("Error fetching ratings:", err));
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching movie:", err);
+        setLoadingMovie(false);
+      });
+  
+    // 3. Fetch recommendations
+    fetch(`https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetOneMovieRecommendation?show_id=${show_id}`)
+      .then((res) => res.json())
+      .then(setRecommendations)
+      .catch((err) => {
+        console.error("Error fetching recommendations:", err);
+      })
+      .finally(() => setLoadingRec(false));
   }, [show_id]);
-
+  
+  
   if (loadingMovie) return <div>Loading movie...</div>;
   if (!movie) return <div>No movie data found.</div>;
+
+
+
+
 
   // This function attempts to fetch a replacement movie.
   // You can use a dedicated endpoint or pick one from your recommendations.
@@ -159,6 +177,7 @@ const PageDetails: React.FC = () => {
     try {
       const res = await fetch(
         "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetRandomMovie"
+        // "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetRandomMovie"
       );
       if (!res.ok) return null;
 
@@ -187,12 +206,10 @@ const PageDetails: React.FC = () => {
     <AuthorizeView>
       <div className={styles.overlay}>
         <TopNavBar
-          selectedType={"Movie"}
-          onTypeChange={function (_type: "Movie" | "TV Show"): void {
-            throw new Error("Function not implemented.");
-          }}
+          selectedType="Movie"
+          onTypeChange={() => {}}
         />
-        {/* Main Content: Poster and movie details */}
+  
         <div className={styles.content}>
           <img
             className={styles.poster}
@@ -200,47 +217,38 @@ const PageDetails: React.FC = () => {
             onError={handleImageError}
             alt={movie.title}
           />
+  
           <div className={styles.details}>
             <h1>{movie.title}</h1>
             <p>{movie.description}</p>
             <ul>
-              <li>
-                <strong>Director:</strong> {movie.director}
-              </li>
-              <li>
-                <strong>Cast:</strong> {movie.cast}
-              </li>
-              <li>
-                <strong>Country:</strong> {movie.country}
-              </li>
-              <li>
-                <strong>Release Year:</strong> {movie.release_year}
-              </li>
-              <li>
-                <strong>Rating:</strong> {movie.rating}
-              </li>
-              <li>
-                <strong>Duration:</strong> {movie.duration}
-              </li>
+              <li><strong>Director:</strong> {movie.director}</li>
+              <li><strong>Cast:</strong> {movie.cast}</li>
+              <li><strong>Country:</strong> {movie.country}</li>
+              <li><strong>Release Year:</strong> {movie.release_year}</li>
+              <li><strong>Rating:</strong> {movie.rating}</li>
+              <li><strong>Duration:</strong> {movie.duration}</li>
             </ul>
             <button onClick={() => navigate("/movies")}>Back to Home</button>
           </div>
+  
+          <div className={styles.ratingShareGroup}>
           <MovieRating
             show_id={movie.show_id}
             movieId={movie.show_id}
-            initialUserRating={0} // Change if you have real data
-            initialAverageRating={0} // Change if you have real data
+            initialUserRating={movie.user_rating || 0}
+            initialAverageRating={movie.avg_rating || 0}
             onRatingUpdate={(newRating) => {
-              // Update local state if desired
               setMovie((prev) =>
                 prev ? { ...prev, user_rating: newRating } : null
               );
             }}
           />
-          {movie?.title && <ShareMovieButton title={movie.title} />}
-        </div>
 
-        {/* Recommendations Section and MovieRating */}
+            {movie?.title && <ShareMovieButton title={movie.title} />}
+          </div>
+        </div>
+  
         <div className={styles.recommendationsContainer}>
           <h2>Recommendations</h2>
           <div>
@@ -263,15 +271,12 @@ const PageDetails: React.FC = () => {
                         onError={handleImageError}
                         alt={rec.recommended_title}
                       />
-
                       <div className={styles.recommendationOverlay}>
                         <p>{rec.recommended_title}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-                {/* Wrap MovieRating inside its own container */}
-                <div className={styles.movieRatingContainer}></div>
               </>
             ) : (
               <p>No recommendations available.</p>
@@ -281,6 +286,7 @@ const PageDetails: React.FC = () => {
       </div>
     </AuthorizeView>
   );
-};
+}
+
 
 export default PageDetails;

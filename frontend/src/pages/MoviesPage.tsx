@@ -8,7 +8,8 @@ import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
 // import PageDetails from "./PageDetails";
 import GenreFilter from "../components/GenreFilter";
 import UserRecommendations from "../components/UserRecommendations";
-import AuthorizeView from "../components/AuthorizeView";
+import AuthorizeView, { AuthorizedUser } from "../components/AuthorizeView";
+import EmailLogger from "../components/EmailLogger";
 
 const PAGE_SIZE = 20;
 const API_BASE =
@@ -294,50 +295,53 @@ const MoviesPage: React.FC = () => {
       ? `All ${selectedGenres.map(formatGenreName).join(", ")}`
       : "All Movies";
 
-  return (
-    <AuthorizeView>
-      <div className={styles.moviesPage}>
-        <Header selectedType="Movie" onTypeChange={() => {}} />
-        <CookieConsentBanner />
-        {/* Render the search bar */}
 
-        {/* Render GenreFilter with selected genres state */}
-        <GenreFilter
-          selectedGenres={selectedGenres}
-          setSelectedGenres={setSelectedGenres}
-          searchQuery={""}
-          setSearchQuery={function (_query: string): void {
-            throw new Error("Function not implemented.");
-          }}
-        />
-        <div className={styles.mainContent}>
-          <h2 className={styles.pageTitle}>{/* Any subtitle you need */}</h2>
-          {/* Only show recommendations if no genre is selected */}
-          {selectedGenres.length === 0 && <UserRecommendations />}
-          <h1>{pageTitle}</h1>
-          <br /> <br /> <br /> <br />
-          <div className={styles.moviesGrid}>
-            {displayedMovies.map((movie) => (
-              <div
-                key={movie.id}
-                onClick={() => handleCardClick(movie.id)}
-                className={styles.movieCardWrapper}
-              >
-                <MovieCard movie={movie} onImageError={handleImageError} />
-              </div>
-            ))}
-          </div>
-          <div ref={sentinelRef} className={styles.sentinel} />
-          {loading && (
-            <div className={styles.loading}>
-              <div className={styles.spinner} />
-              Loading more movies...
+    return (
+      <AuthorizeView>
+        <AuthorizedUser value="email" />
+        <EmailLogger />
+        <div className={styles.moviesPage}>
+          <Header selectedType="Movie" onTypeChange={() => {}} />
+          <CookieConsentBanner />
+          {/* Render the search bar */}
+  
+          {/* Render GenreFilter with selected genres state */}
+          <GenreFilter
+            selectedGenres={selectedGenres}
+            setSelectedGenres={setSelectedGenres}
+            searchQuery={""}
+            setSearchQuery={function (_query: string): void {
+              throw new Error("Function not implemented.");
+            }}
+          />
+          <div className={styles.mainContent}>
+            <h2 className={styles.pageTitle}>{/* Any subtitle you need */}</h2>
+            {/* Only show recommendations if no genre is selected */}
+            {selectedGenres.length === 0 && <UserRecommendations />}
+            <h1>{pageTitle}</h1>
+            <br /> <br /> <br /> <br />
+            <div className={styles.moviesGrid}>
+              {displayedMovies.map((movie) => (
+                <div
+                  key={movie.id}
+                  onClick={() => handleCardClick(movie.id)}
+                  className={styles.movieCardWrapper}
+                >
+                  <MovieCard movie={movie} onImageError={handleImageError} />
+                </div>
+              ))}
             </div>
-          )}
+            <div ref={sentinelRef} className={styles.sentinel} />
+            {loading && (
+              <div className={styles.loading}>
+                <div className={styles.spinner} />
+                Loading more movies...
+              </div>
+            )}
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
-    </AuthorizeView>
-  );
-};
+      </AuthorizeView>
+    );
+  };
 export default MoviesPage;

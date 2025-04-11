@@ -8,9 +8,8 @@ import Footer from "../components/Footer";
 import MovieCard, { Movie } from "../components/moviesPage/MovieCard";
 import AuthorizeView from "../components/AuthorizeView";
 
-const API_BASE =
-  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net";
-// "https://https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net:5000";
+const API_BASE = "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net"
+  // "https://https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net:5000";
 
 // ("https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net"); // Update to your localhost
 

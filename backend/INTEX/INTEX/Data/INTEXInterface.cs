@@ -1,4 +1,6 @@
-﻿namespace INTEX.Data
+﻿using INTEX.Controllers;
+
+namespace INTEX.Data
 {
     public interface INTEXInterface
     {
@@ -34,5 +36,8 @@
         int GetMaxShowIdNumber();
 
         void SaveChanges();
+
+        User? GetUserByEmail(string email);
+
     }
 }

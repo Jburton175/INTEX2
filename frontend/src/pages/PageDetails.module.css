@@ -243,3 +243,17 @@ body[data-theme="light"] {
     justify-content: center;
   }
 }
+.shareButtonWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%; /* Take full height of the surrounding space */
+  padding: 1rem 0;
+}
+.ratingShareGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}

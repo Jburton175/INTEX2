@@ -58,18 +58,16 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
         <Link to="/" className="brand-logo">
           <LogoIcon />
         </Link>
-
-        <div className="nav-button-group">
-          {/* Render the logout button first */}
+    </div>
+                <div className="nav-button-group pretty-buttons">
           <Logout>
             <span className="logout">Log out</span>
           </Logout>
-          {/* Then render the movies button */}
           <Link to="/movies" className="movieButton">
             Movies
           </Link>
         </div>
-      </div>
+
 
       <div className="nav-center">
         <div className="nav-search-container">

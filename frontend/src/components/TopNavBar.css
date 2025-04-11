@@ -37,7 +37,9 @@
 .nav-left {
   display: flex;
   align-items: center;
+  gap: 0.5rem; /* Add this to control spacing between logo and buttons */
 }
+
 
 .brand-logo {
   display: inline-flex;
@@ -269,7 +271,7 @@ a {
 }
 /* Logout button styles (mirroring movies button) */
 .logout {
-  margin-left: 1rem;
+
   padding: 0.5rem 1rem;
   background-color: #cc0000; /* Maroon */
   color: #ffffff; /* White text */
@@ -289,7 +291,7 @@ a {
 
 /* Movies button (if needed, you can keep your existing styles) */
 .movieButton {
-  margin-left: 1rem;
+
   padding: 0.5rem 1rem;
   background-color: #cc0000; /* Maroon */
   color: #ffffff !important;
@@ -306,4 +308,23 @@ a {
   background-color: #800000;
   transform: scale(1.05);
 }
+.pretty-buttons {
+  display: flex;
+  gap: 0.75rem;
+  background: transparent; /* remove background color */
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+  align-items: center;
+  box-shadow: none; /* optional: remove shadow if you want full transparency */
+}
 
+
+/* Light mode override */
+[data-theme="light"] .pretty-buttons {
+  background: rgba(0, 0, 0, 0.05);
+}
+.nav-button-group {
+  display: flex;
+  gap: 3rem;       /* Controls spacing between buttons */
+  margin-left: -50rem; /* 🔧 Move closer to the logo */
+}
