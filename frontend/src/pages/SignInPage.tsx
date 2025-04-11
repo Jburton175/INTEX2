@@ -7,7 +7,6 @@ const SignInPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [rememberme, setRememberme] = useState<boolean>(false);
-
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
 
@@ -22,67 +21,72 @@ const SignInPage: React.FC = () => {
     }
   };
 
-  // const handleRegisterClick = () => {
-  //   navigate("/signup");
-  // };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(""); // Clear any previous errors
-
+  
     if (!email || !password) {
       setError("Please fill in all fields.");
       return;
     }
-
+  
+    // Use your production API endpoint or local endpoint as needed.
     const loginUrl = rememberme
-      ? "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/login?useCookies=true"
-      : "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/login?useSessionCookies=true";
-    //  ? "https://localhost:5000/login?useCookies=true"
-    // : "https://localhost:5000/login?useSessionCookies=true";
-
+      ? "https://localhost:5000/login?useCookies=true"
+      : "https://localhost:5000/login?useSessionCookies=true";
+  
     try {
+      console.log("Sending login request to:", loginUrl);
       const response = await fetch(loginUrl, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
-      // Ensure we only parse JSON if there is content
+      console.log("Fetch response object:", response);
+  
+      // Inspect the response status and headers
+      console.log("Response status:", response.status);
+      console.log("Response headers:", [...response.headers.entries()]);
+  
+      // Parse JSON only if a content-length exists (i.e., response has a body)
       let data = null;
       const contentLength = response.headers.get("content-length");
       if (contentLength && parseInt(contentLength, 10) > 0) {
         data = await response.json();
+        console.log("Fetched data:", data);
+      } else {
+        console.warn("No content-length header or empty response body.");
       }
-
+  
+      // If the request was not OK, throw an error now
       if (!response.ok) {
+        console.error("Response not OK:", response.status, data);
         throw new Error(data?.message || "Invalid email or password.");
       }
-
-// After receiving and parsing the login response:
-console.log("Login response data:", data);
-if (data && data.userId) {
-  localStorage.setItem("userId", data.userId.toString());
-  console.log("UserId stored in localStorage:", localStorage.getItem("userId"));
-} else {
-  console.error("No userId found in the login response.");
-}
-
-
-
-    // Optionally, also store the token if you're using it.
-    if (data && data.token) {
-      localStorage.setItem("authToken", data.token);
-    }
-
-
+  
+      // Log to see if the expected key exists in the response
+      if (data && data.user_id) {
+        localStorage.setItem("userId", data.user_id.toString());
+        console.log("UserId stored in localStorage:", localStorage.getItem("userId"));
+      } else {
+        console.error("No user_id found in the login response.");
+      }
+  
+      // Store the token if it's in the response
+      if (data && data.token) {
+        localStorage.setItem("authToken", data.token);
+        console.log("Auth token stored in localStorage:", localStorage.getItem("authToken"));
+      }
+  
       navigate("/movies");
     } catch (error: any) {
       setError(error.message || "Error logging in.");
       console.error("Fetch attempt failed:", error);
     }
   };
+  
+      
 
   return (
     <div className={styles.container}>
@@ -124,7 +128,6 @@ if (data && data.userId) {
               <input
                 className="form-check-input"
                 type="checkbox"
-                value=""
                 id="rememberme"
                 name="rememberme"
                 checked={rememberme}

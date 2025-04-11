@@ -2,9 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 
@@ -16,9 +19,13 @@ namespace INTEX.Controllers
     public class INTEXController : ControllerBase
     {
         private readonly INTEXInterface _repo;
-        public INTEXController(INTEXInterface repo)
+        private readonly IConfiguration _configuration;
+
+
+        public INTEXController(INTEXInterface repo, IConfiguration configuration)
         {
             _repo = repo;
+            _configuration = configuration; // Now _configuration is available.
         }
 
 
@@ -313,7 +320,8 @@ namespace INTEX.Controllers
 
             var matchedTitles = _repo.GetMovies()
                 .Where(m => m.title != null && m.title.Contains(query, StringComparison.OrdinalIgnoreCase))
-                .Select(m => new {
+                .Select(m => new
+                {
                     title = m.title ?? string.Empty,
                     m.show_id
                 })
@@ -817,5 +825,64 @@ namespace INTEX.Controllers
         }
 
 
+
+        [HttpPost("/login")]
+        [AllowAnonymous]
+        public IActionResult Login([FromBody] INTEXLoginRequest request)
+        {
+            // Your login logic...
+            var user = _repo.GetUserByEmail(request.Email);
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+
+            if (user.Password != request.Password)
+            {
+                return Unauthorized("Invalid password.");
+            }
+
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email)
+    };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? throw new Exception("JWT Key missing")));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: creds
+            );
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return Ok(new { token = tokenString, userId = user.Id });
+        }
+
     }
-}
+
+    // Supporting models:
+    public class INTEXLoginRequest
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+
+    public class User
+    {
+        public int Id { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty; // In production, store hashed passwords!
+    }
+};
+
+
+
+
+
+
+
+
