@@ -7,7 +7,7 @@ import HomePage from "./pages/HomePage";
 import MoviesPage from "./pages/MoviesPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import AdminPage from "./pages/AdminPage";
-import UpdateMovie from "./pages/UpdateMoviePage";
+import UpdateMoviePage from "./pages/UpdateMoviePage";
 import CookiePage from "./pages/CookiePolicyPage";
 import AddMovie from "./pages/AddMoviePage";
 import PageDetails from "./pages/PageDetails";
@@ -34,17 +34,17 @@ function App() {
           <Route path="/search" element={<SearchResultsPage />} />
           <Route path="/cors-test" element={<CorsTestPage />} />
           <Route path="/movie/:show_id" element={<PageDetails />} />
-          <Route path="/update-movie/:show_id" element={<UpdateMovie />} />
+          <Route path="/update-movie/:show_id" element={<UpdateMoviePage />} />
           <Route path="/add-movie" element={<AddMovie />} />
 
-                      <Route
-              path="/admin"
-              element={
-                <RoleProtectedRoute allowedRoles={["Admin"]}>
-                  <AdminPage />
-                </RoleProtectedRoute>
-              }
-            />
+          <Route
+            path="/admin"
+            element={
+              <RoleProtectedRoute allowedRoles={["Admin"]}>
+                <AdminPage />
+              </RoleProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </Router>
