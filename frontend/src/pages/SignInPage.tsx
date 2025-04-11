@@ -4,10 +4,10 @@ import styles from "./SignInPage.module.css";
 import ExternalNavBar from "../components/ExternalNavBar";
 
 const SignInPage: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [rememberme, setRememberme] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberme, setRememberme] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,82 +23,72 @@ const SignInPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(""); // Clear any previous errors
-  
+    setError("");
+
     if (!email || !password) {
       setError("Please fill in all fields.");
       return;
     }
-  
-    // Use your production API endpoint or local endpoint as needed.
+
     const loginUrl = rememberme
       ? "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/login?useCookies=true"
       : "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/login?useSessionCookies=true";
-  
+
     try {
-      console.log("Sending login request to:", loginUrl);
       const response = await fetch(loginUrl, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      console.log("Fetch response object:", response);
-  
-      // Inspect the response status and headers
-      console.log("Response status:", response.status);
-      console.log("Response headers:", [...response.headers.entries()]);
-  
-      // Parse JSON only if a content-length exists (i.e., response has a body)
-      let data = null;
+
       const contentLength = response.headers.get("content-length");
+      let data = null;
       if (contentLength && parseInt(contentLength, 10) > 0) {
         data = await response.json();
-        console.log("Fetched data:", data);
-      } else {
-        console.warn("No content-length header or empty response body.");
       }
-  
-      // If the request was not OK, throw an error now
+
       if (!response.ok) {
-        console.error("Response not OK:", response.status, data);
         throw new Error(data?.message || "Invalid email or password.");
       }
-  
-      // Log to see if the expected key exists in the response
-      if (data && data.user_id) {
+
+      if (data?.user_id) {
         localStorage.setItem("userId", data.user_id.toString());
-        console.log("UserId stored in localStorage:", localStorage.getItem("userId"));
-      } else {
-        console.error("No user_id found in the login response.");
       }
-  
-      // Store the token if it's in the response
-      if (data && data.token) {
+
+      if (data?.token) {
         localStorage.setItem("authToken", data.token);
-        console.log("Auth token stored in localStorage:", localStorage.getItem("authToken"));
       }
-  
-      navigate("/movies");
-    } catch (error: any) {
-      setError(error.message || "Error logging in.");
-      console.error("Fetch attempt failed:", error);
+
+      // 🔥 Role fetch and redirect
+      const userRes = await fetch(
+        "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/GetCurrentUser",
+        { credentials: "include" }
+      );
+
+      if (userRes.ok) {
+        const userInfo = await userRes.json();
+        localStorage.setItem("user", JSON.stringify(userInfo));
+
+        if (userInfo.role === "Admin") {
+          navigate("/admin");
+        } else {
+          navigate("/movies");
+        }
+      } else {
+        navigate("/movies"); // fallback
+      }
+    } catch (err: any) {
+      setError(err.message || "Error logging in.");
     }
   };
-  
-      
 
   return (
     <div className={styles.container}>
       <ExternalNavBar />
-      <br />
-      <br />
-      <br />
-      {/* Main Sign In Form */}
       <main className={styles.main}>
         <div className={styles.formContainer}>
           <h1 className={styles.title}>Sign In</h1>
-
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.inputGroup}>
               <input
@@ -111,7 +101,6 @@ const SignInPage: React.FC = () => {
                 required
               />
             </div>
-
             <div className={styles.inputGroup}>
               <input
                 type="password"
@@ -123,7 +112,6 @@ const SignInPage: React.FC = () => {
                 required
               />
             </div>
-
             <div className="form-check mb-3">
               <input
                 className="form-check-input"
@@ -137,27 +125,19 @@ const SignInPage: React.FC = () => {
                 Remember password
               </label>
             </div>
-
             <button type="submit" className={styles.signInButton}>
               Sign In
             </button>
-
             <div className={styles.divider}>
               <span className={styles.dividerText}>OR</span>
             </div>
-
             <Link to="/signup" className={styles.signUpLink}>
               Sign Up Now!
             </Link>
           </form>
           {error && <p className="error">{error}</p>}
-          <br />
-          <br />
-          <br />
-          <br />
         </div>
       </main>
-
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
           <div className={styles.footerDivider}></div>

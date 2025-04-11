@@ -13,6 +13,7 @@ import PageDetails from "./pages/PageDetails";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import CorsTestPage from "./pages/CorsTestPage"; // import your test page
 import EmailLogger from "./components/EmailLogger";
+import RoleProtectedRoute from "./components/RoleProtectionRoute";
 
 
 function App() {
@@ -20,24 +21,31 @@ function App() {
     <Router>
       <EmailLogger />
       <div className="App">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/movies" element={<MoviesPage />} />
-          <Route path="/signin" element={<SignInPage />} />
-          <Route path="/login" element={<SignInPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/privacypolicy" element={<PrivacyPolicyPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/update-movie/:show_id" element={<UpdateMovie />} />
-          <Route path="/cookie" element={<CookiePage />} />
-          <Route path="/add-movie" element={<AddMovie />} />
-          <Route path="/movie/:show_id" element={<PageDetails />} />
-          <Route path="/search" element={<SearchResultsPage />} />
-          <Route path="/cors-test" element={<CorsTestPage />} />
+      <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/movies" element={<MoviesPage />} />
+            <Route path="/signin" element={<SignInPage />} />
+            <Route path="/login" element={<SignInPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/privacypolicy" element={<PrivacyPolicyPage />} />
+            
+            <Route
+              path="/admin"
+              element={
+                <RoleProtectedRoute allowedRoles={["Admin"]}>
+                  <AdminPage />
+                </RoleProtectedRoute>
+              }
+            />
 
+            <Route path="/update-movie/:show_id" element={<UpdateMovie />} />
+            <Route path="/cookie" element={<CookiePage />} />
+            <Route path="/add-movie" element={<AddMovie />} />
+            <Route path="/movie/:show_id" element={<PageDetails />} />
+            <Route path="/search" element={<SearchResultsPage />} />
+            <Route path="/cors-test" element={<CorsTestPage />} />
+      </Routes>
 
-          {/* Add more routes as needed */}
-        </Routes>
       </div>
     </Router>
   );

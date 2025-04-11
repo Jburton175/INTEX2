@@ -1,5 +1,6 @@
 ﻿using INTEX.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+
 
 public class RatingUpdateRequest
 {
@@ -29,13 +32,21 @@ namespace INTEX.Controllers
     {
         private readonly INTEXInterface _repo;
         private readonly IConfiguration _configuration;
+        private readonly UserManager<IdentityUser> _userManager;
 
 
-        public INTEXController(INTEXInterface repo, IConfiguration configuration)
+
+        public INTEXController(
+            INTEXInterface repo,
+            IConfiguration configuration,
+            UserManager<IdentityUser> userManager
+        )
         {
             _repo = repo;
-            _configuration = configuration; // Now _configuration is available.
+            _configuration = configuration;
+            _userManager = userManager; // ✅ fixed!
         }
+
 
 
         // the main API to fetch all movies.
@@ -103,7 +114,7 @@ namespace INTEX.Controllers
 
 
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("AddMovie")]
         public IActionResult AddMovie([FromBody] movies_titles movieData)
         {
@@ -167,6 +178,7 @@ namespace INTEX.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("UpdateMovie/{show_id}")]
         public IActionResult UpdateMovie(string show_id, [FromBody] movies_titles updateMovie)
         {
@@ -230,6 +242,7 @@ namespace INTEX.Controllers
             return Ok(existingMovie);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("DeleteMovie/{show_id}")]
         public IActionResult DeleteBook(string show_id)
         {
@@ -828,6 +841,23 @@ namespace INTEX.Controllers
 
             return Ok(new { message = "Rating added successfully." });
         }
+
+        [HttpGet("GetCurrentUser")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Ok(new
+            {
+                Email = user.Email,
+                Role = roles.FirstOrDefault() ?? "User" // fallback if they have no role
+            });
+        }
+
 
 
 
