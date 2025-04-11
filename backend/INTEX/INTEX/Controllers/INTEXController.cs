@@ -715,7 +715,6 @@ namespace INTEX.Controllers
 
 
 
-
         [HttpGet("GetRatings")]
         public IActionResult GetRatings([FromQuery] string show_id, [FromQuery] int user_id)
         {
@@ -727,11 +726,17 @@ namespace INTEX.Controllers
             // Retrieve all ratings for the specified show.
             var ratingsForShow = _repo.GetAllShowRatings(show_id);
 
+            // Calculate the average rating.
+            // If there are no ratings, the average defaults to 0.
+            double averageRating = ratingsForShow.Any()
+                ? ratingsForShow.Average(r => (r.rating ?? 0))
+                : 0;
+
             // Return both values in a combined JSON object.
             return Ok(new
             {
                 userRating = userRating,
-                allRatings = ratingsForShow
+                averageRating = averageRating
             });
         }
 

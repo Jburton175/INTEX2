@@ -60,6 +60,23 @@ const SignInPage: React.FC = () => {
         throw new Error(data?.message || "Invalid email or password.");
       }
 
+// After receiving and parsing the login response:
+console.log("Login response data:", data);
+if (data && data.userId) {
+  localStorage.setItem("userId", data.userId.toString());
+  console.log("UserId stored in localStorage:", localStorage.getItem("userId"));
+} else {
+  console.error("No userId found in the login response.");
+}
+
+
+
+    // Optionally, also store the token if you're using it.
+    if (data && data.token) {
+      localStorage.setItem("authToken", data.token);
+    }
+
+
       navigate("/movies");
     } catch (error: any) {
       setError(error.message || "Error logging in.");
