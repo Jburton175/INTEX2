@@ -40,7 +40,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 
 // db for authorization
 builder.Services.AddDbContext<AuthDBContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("AuthConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection")));
 
 // Authorization
 builder.Services.AddAuthorization();
@@ -52,7 +52,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("App", policy =>
     {
-        policy.WithOrigins("https://localhost:3000", "https://delightful-bay-0ff08bf1e.6.azurestaticapps.net")
+        policy.WithOrigins("https://localhost:3000", "http://localhost:3000", "https://delightful-bay-0ff08bf1e.6.azurestaticapps.net")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();

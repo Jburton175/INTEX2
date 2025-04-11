@@ -1,18 +1,33 @@
 .recommendationsWrapper {
-    padding: 2rem;
-  }
-  
-  .sectionBlock {
-    margin-bottom: 3rem;
-  }
-  
-  .sectionTitle {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #fff;
-  }
-  
-  .movieSlide {
-    padding: 0 0.5rem;
-  }
-  
+  padding: 2rem;
+}
+
+.sectionBlock {
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+/* Horizontal carousel container */
+.carouselContainer {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch; /* For momentum scrolling on iOS */
+}
+
+/* Ensure each movie slide doesn't shrink and snaps into place */
+.movieSlide {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  margin-right: 0.5rem;
+}
+
+/* Optional: Hide scrollbar for a cleaner look */
+.carouselContainer::-webkit-scrollbar {
+  display: none;
+}

@@ -4,6 +4,8 @@ import ThemeToggle from "./ThemeToggle";
 import { LogoIcon } from "./homePage/Icons";
 import "./TopNavBar.css";
 import "./ThemeToggle.css";
+import SearchBar from "./SearchBar";
+import Logout from "./Logout";
 
 interface TopNavBarProps {
   selectedType: "Movie" | "TV Show";
@@ -19,6 +21,8 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
   // const [isGenreOpen, setIsGenreOpen] = useState(false);
   // const genreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+
+
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -32,12 +36,13 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
   useEffect(() => {
     if (searchTerm.trim() === "") {
       setSearchResults([]);
+      console.log(searchResults);
       return;
     }
     const delayDebounce = setTimeout(async () => {
       try {
         const response = await fetch(
-          `https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX/SearchTitles?query=${encodeURIComponent(searchTerm)}`
+          `https://localhost:5000/INTEX/SearchTitles?query=${encodeURIComponent(searchTerm)}`
         );
         if (!response.ok) throw new Error("Search failed");
         const data = await response.json();
@@ -56,8 +61,13 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
           <LogoIcon />
         </Link>
 
-        <div className={"movieButton"}>
-          <Link to="/movies" className="nav-button">
+        <div className="nav-button-group">
+          {/* Render the logout button first */}
+          <Logout>
+            <span className="logout">Log out</span>
+          </Logout>
+          {/* Then render the movies button */}
+          <Link to="/movies" className="movieButton">
             Movies
           </Link>
         </div>
@@ -65,32 +75,20 @@ const TopNavBar: React.FC<TopNavBarProps> = () => {
 
       <div className="nav-center">
         <div className="nav-search-container">
-          <div className="nav-search-field"></div>
-          {searchResults.length > 0 && (
-            <ul className="search-dropdown">
-              {searchResults.map((title) => (
-                <li key={title}>
-                  <Link
-                    to={`/movies/${encodeURIComponent(title)}`}
-                    className="search-result"
-                  >
-                    {title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
+          <div className="nav-search-field">
+            <SearchBar />
+          </div>
         </div>
       </div>
 
       <div className="nav-right">
         <div className="nav-right-left">
-          {/* You can reposition ThemeToggle by moving it within or outside this container */}
           <ThemeToggle />
         </div>
       </div>
     </nav>
   );
 };
+
 
 export default TopNavBar;
