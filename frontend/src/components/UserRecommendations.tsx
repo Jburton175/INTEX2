@@ -20,7 +20,10 @@ const UserRecommendations: React.FC = () => {
   useEffect(() => {
     if (recommendations) {
       if (recommendations.length === 0) {
-        setDebug("✅ API call succeeded, but no recommendations were returned.");
+        setDebug(
+          "✅ API call succeeded, but no recommendations were returned."
+        );
+        console.log(debug);
       } else {
         setDebug(`✅ API returned ${recommendations.length} recommendations.`);
       }
@@ -48,12 +51,6 @@ const UserRecommendations: React.FC = () => {
 
   return (
     <div className={styles.recommendationsWrapper}>
-      {debug && (
-        <div className={styles.debugBox}>
-          <strong>Debug Info:</strong> {debug}
-        </div>
-      )}
-
       {isEmpty ? (
         <div className={styles.emptyMessage}>
           <p>No grouped recommendations available.</p>

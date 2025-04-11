@@ -86,6 +86,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:3000"
                             , "https://localhost:3000"
+                            , "http://localhost:3001"
+                            , "https://localhost:3001"
                             , "https://delightful-bay-0ff08bf1e.6.azurestaticapps.net"
                             , "http://delightful-bay-0ff08bf1e.6.azurestaticapps.net")
               .AllowAnyMethod()

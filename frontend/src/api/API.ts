@@ -2,8 +2,7 @@ import { addMovies } from "../types/addMovies";
 import { Movies } from "../types/Movies";
 import { Users } from "../types/Users";
 import { Recommendation } from "../types/recommendation";
-import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../components/AuthorizeView";
+import { useEffect, useState } from "react";
 
 // implement crud for movies
 interface FetchMoviesResponse {
@@ -11,7 +10,9 @@ interface FetchMoviesResponse {
   totalNumMovies: number;
 }
 
-const API_URL = "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
+const API_URL =
+  "https://intexbackenddeployment-dzebbsdtf7fkapb7.westus2-01.azurewebsites.net/INTEX";
+// "https://localhost:5000//INTEX";
 
 export const fetchMovies = async (
   pageSize: number,
@@ -37,9 +38,7 @@ export const fetchMovies = async (
   }
 };
 
-export const fetchOneMovie = async (
-  id: string
-): Promise<Movies> => {
+export const fetchOneMovie = async (id: string): Promise<Movies> => {
   try {
     const response = await fetch(`${API_URL}/GetOneMovie?show_id=${id}`);
 
@@ -143,8 +142,10 @@ export const deleteUser = async (userId: number): Promise<void> => {
 };
 
 export function useRecommendations() {
-  const userId = 1; // or get it from context or props
-  const [recommendations, setRecommendations] = useState<Recommendation[] | null>(null);
+  const userId = 0; // or get it from context or props
+  const [recommendations, setRecommendations] = useState<
+    Recommendation[] | null
+  >(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -170,4 +171,3 @@ export function useRecommendations() {
 
   return { recommendations, loading, error };
 }
-

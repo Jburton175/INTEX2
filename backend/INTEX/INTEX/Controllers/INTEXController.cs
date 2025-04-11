@@ -915,8 +915,23 @@ namespace INTEX.Controllers
                 userId = user.Id,
                 expiresIn = 3600
             });
+
+            
+        }
+
+        [HttpGet("GetUserRecommendations")]
+        public IActionResult GetUserRecommendations([FromQuery] string email)
+        {
+
+            var movie = _repo.GetUserRecommendations(email);
+
+            if (movie == null)
+                return NotFound();
+
+            return Ok(movie);
         }
     }
+
 
 
         public class AppLoginRequest
