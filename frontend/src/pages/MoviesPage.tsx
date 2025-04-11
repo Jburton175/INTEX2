@@ -17,7 +17,7 @@ const API_BASE =
 // --- Utility: Build image URL from movie title ---
 const getImageUrl = (title: string | undefined): string => {
   const safeTitle = (title && title.trim() ? title : "default-title").replace(
-    /['’:\-.!?–&()]/g,
+    /['’:\-.!?–&()']/g,
     ""
   );
   return `https://blobintex.blob.core.windows.net/movieimages/${encodeURIComponent(
@@ -85,7 +85,6 @@ const convertToMovie = (data: MovieFromApi): Movie => {
     genres: movieGenres,
   };
 };
-
 
 function formatGenreName(genre: string): string {
   return genre
@@ -291,55 +290,54 @@ const MoviesPage: React.FC = () => {
   const displayedMovies = movies; // For both search and non-search modes
 
   const pageTitle =
-  selectedGenres.length > 0
-    ? `All ${selectedGenres.map(formatGenreName).join(", ")}`
-    : "All Movies";
+    selectedGenres.length > 0
+      ? `All ${selectedGenres.map(formatGenreName).join(", ")}`
+      : "All Movies";
 
+  return (
+    <AuthorizeView>
+      <div className={styles.moviesPage}>
+        <Header selectedType="Movie" onTypeChange={() => {}} />
+        <CookieConsentBanner />
+        {/* Render the search bar */}
 
-    return (
-      <AuthorizeView>
-        <div className={styles.moviesPage}>
-          <Header selectedType="Movie" onTypeChange={() => {}} />
-          <CookieConsentBanner />
-          {/* Render the search bar */}
-  
-          {/* Render GenreFilter with selected genres state */}
-          <GenreFilter
-            selectedGenres={selectedGenres}
-            setSelectedGenres={setSelectedGenres}
-            searchQuery={""}
-            setSearchQuery={function (_query: string): void {
-              throw new Error("Function not implemented.");
-            }}
-          />
-          <div className={styles.mainContent}>
-            <h2 className={styles.pageTitle}>{/* Any subtitle you need */}</h2>
-            {/* Only show recommendations if no genre is selected */}
-            {selectedGenres.length === 0 && <UserRecommendations />}
-            <h1>{pageTitle}</h1>
-            <br /> <br /> <br /> <br />
-            <div className={styles.moviesGrid}>
-              {displayedMovies.map((movie) => (
-                <div
-                  key={movie.id}
-                  onClick={() => handleCardClick(movie.id)}
-                  className={styles.movieCardWrapper}
-                >
-                  <MovieCard movie={movie} onImageError={handleImageError} />
-                </div>
-              ))}
-            </div>
-            <div ref={sentinelRef} className={styles.sentinel} />
-            {loading && (
-              <div className={styles.loading}>
-                <div className={styles.spinner} />
-                Loading more movies...
+        {/* Render GenreFilter with selected genres state */}
+        <GenreFilter
+          selectedGenres={selectedGenres}
+          setSelectedGenres={setSelectedGenres}
+          searchQuery={""}
+          setSearchQuery={function (_query: string): void {
+            throw new Error("Function not implemented.");
+          }}
+        />
+        <div className={styles.mainContent}>
+          <h2 className={styles.pageTitle}>{/* Any subtitle you need */}</h2>
+          {/* Only show recommendations if no genre is selected */}
+          {selectedGenres.length === 0 && <UserRecommendations />}
+          <h1>{pageTitle}</h1>
+          <br /> <br /> <br /> <br />
+          <div className={styles.moviesGrid}>
+            {displayedMovies.map((movie) => (
+              <div
+                key={movie.id}
+                onClick={() => handleCardClick(movie.id)}
+                className={styles.movieCardWrapper}
+              >
+                <MovieCard movie={movie} onImageError={handleImageError} />
               </div>
-            )}
+            ))}
           </div>
-          <Footer />
+          <div ref={sentinelRef} className={styles.sentinel} />
+          {loading && (
+            <div className={styles.loading}>
+              <div className={styles.spinner} />
+              Loading more movies...
+            </div>
+          )}
         </div>
-      </AuthorizeView>
-    );
-  };
+        <Footer />
+      </div>
+    </AuthorizeView>
+  );
+};
 export default MoviesPage;

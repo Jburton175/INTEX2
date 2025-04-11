@@ -811,6 +811,16 @@ namespace INTEX.Controllers
             return Ok(new { message = "Rating added successfully." });
         }
 
+        [HttpGet("GetUserRecommendations")]
+        public IActionResult GetUserRecommendations([FromQuery] string email)
+        {
 
+            var movie = _repo.GetUserRecommendations(email);
+
+            if (movie == null)
+                return NotFound();
+
+            return Ok(movie);
+        }
     }
 }
