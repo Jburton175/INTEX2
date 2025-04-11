@@ -13,8 +13,12 @@ using System.Threading.Tasks;
 
 public class RatingUpdateRequest
 {
+    public int user_id { get; set; }
+    public string show_id { get; set; } = string.Empty;
     public int Rating { get; set; }
 }
+
+
 
 
 namespace INTEX.Controllers
@@ -771,36 +775,18 @@ namespace INTEX.Controllers
                 averageRating = averageRating
             });
         }
-
-
-        /// <summary>
-        /// PUT INTEX/MoviesRatings/UpdateRating/{show_id}
-        /// Updates or creates a rating for the logged-in user on the specified show.
-        /// The new rating is passed in the request body as an integer.
-        /// </summary>
         [HttpPut("UpdateRating/{show_id}")]
-
         public IActionResult UpdateRating(string show_id, [FromBody] RatingUpdateRequest request)
         {
-            // Retrieve the user's id from claims (assuming the user id is stored in ClaimTypes.NameIdentifier)
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-            {
-                return Unauthorized("User not found.");
-            }
-            if (!int.TryParse(userIdClaim.Value, out int userId))
-            {
-                return Unauthorized("Invalid user id.");
-            }
+            if (request == null || request.user_id <= 0)
+                return BadRequest("Invalid request body");
 
-            // Check if a rating already exists for this user and show
-            var existingRating = _repo.GetRatingById(userId, show_id);
+            var existingRating = _repo.GetRatingById(request.user_id, show_id);
             if (existingRating == null)
             {
-                // Create a new rating record
                 var newRating = new movies_ratings
                 {
-                    user_id = userId,
+                    user_id = request.user_id,
                     show_id = show_id,
                     rating = request.Rating
                 };
@@ -808,33 +794,38 @@ namespace INTEX.Controllers
             }
             else
             {
-                // Update the existing rating
                 existingRating.rating = request.Rating;
                 _repo.UpdateRating(existingRating);
             }
 
             _repo.SaveChanges();
-
             return Ok(new { message = "Rating updated successfully." });
         }
 
 
         [HttpPost("AddRating")]
-        public IActionResult AddRating([FromBody] movies_ratings ratingModel)
+        public IActionResult AddRating([FromBody] RatingUpdateRequest request)
         {
-            // Validate the inputs
-            if (ratingModel == null || string.IsNullOrEmpty(ratingModel.show_id) || ratingModel.user_id == 0)
-            {
-                return BadRequest("Invalid rating data.");
-            }
+            if (request == null || request.user_id <= 0)
+                return BadRequest("Invalid request body");
 
-            var existingRating = _repo.GetRatingById(ratingModel.user_id ?? 0, ratingModel.show_id);
-            if (existingRating != null)
+            // Check if the rating already exists
+            var existing = _repo.GetRatingById(request.user_id, request.show_id);
+            if (existing != null)
             {
                 return BadRequest("Rating already exists. Use PUT to update.");
             }
 
-            _repo.AddRating(ratingModel);
+            var newRating = new movies_ratings
+            {
+                user_id = request.user_id,
+                show_id = request.show_id,
+                rating = request.Rating
+            };
+
+            _repo.AddRating(newRating);
+            _repo.SaveChanges();
+
             return Ok(new { message = "Rating added successfully." });
         }
 
